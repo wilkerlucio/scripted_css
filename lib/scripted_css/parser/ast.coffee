@@ -25,18 +25,18 @@ CssAST =
     constructor: (@rules) ->
     string: -> (rule.string() for rule in @rules).join("\n")
 
-  RuleNode:  class RuleNode
+  RuleNode: class RuleNode
     constructor: (@selectors, @attributes) ->
 
     selectorsString:  -> collectStrings(@selectors).join(" , ")
     attributesString: -> collectStrings(@attributes).join("; ")
     string:           -> "#{@selectorsString()} { #{@attributesString()} }"
 
-  MetaNode:  class MetaNode
+  MetaNode: class MetaNode
     constructor: (@name, @value) ->
     string: -> "@#{@name} #{@value}"
 
-  SelectorNode:  class SelectorNode
+  SelectorNode: class SelectorNode
     constructor: (@selector, @attributes = null, @meta = null) ->
       @next = null
 
@@ -54,28 +54,28 @@ CssAST =
     metaString:      -> if @meta then @meta.string() else ""
     string:          -> "#{@selector}#{@attributeString()}#{@metaString()}#{@nextString()}"
 
-  MetaSelectorNode:  class MetaSelectorNode
+  MetaSelectorNode: class MetaSelectorNode
     constructor: (@value, @operator) ->
 
     string: -> "#{@operator}#{@value.string()}"
 
-  AttributeNode:  class AttributeNode
+  AttributeNode: class AttributeNode
     constructor: (@name, @values) ->
 
     value:  -> collectStrings(@values).join(" ")
     string: -> "#{@name}: #{@value()}"
 
-  FunctionNode:  class FunctionNode
+  FunctionNode: class FunctionNode
     constructor: (@name, @arguments) ->
 
     argumentsString: -> collectStrings(@arguments).join(",")
     string: -> "#{@name}(#{@argumentsString()})"
 
-  AttributeSelectorNode:  class AttributeSelectorNode
+  AttributeSelectorNode: class AttributeSelectorNode
     constructor: (@name, @operator, @value) ->
     string: -> "#{@name}#{@operator}#{@value.string()}"
 
-  LiteralNode:  class LiteralNode
+  LiteralNode: class LiteralNode
     constructor: (@value) ->
     string: -> @value.toString()
 
