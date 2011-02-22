@@ -88,11 +88,11 @@ grammar =
   ]
 
   MetaSelector: [
-    o "MetaSelectorOperator MetaSelectorItem",           -> $2
+    o "MetaSelectorOperator MetaSelectorItem",           -> new MetaSelectorNode($2, $1)
   ]
 
   MetaSelectorItem: [
-    o "IDENTIFIER"
+    o "IDENTIFIER",                                      -> new LiteralNode($1)
     o "Function"
   ]
 

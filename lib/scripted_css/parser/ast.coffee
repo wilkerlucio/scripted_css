@@ -18,17 +18,25 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+collectStrings = (list) -> (item.string() for item in list)
+
 exports.RulesNode = class RulesNode
   constructor: (@rules) ->
+  string: -> (rule.string() for rule in @rules).join("\n")
 
 exports.RuleNode = class RuleNode
   constructor: (@selectors, @attributes) ->
 
+  selectorsString:  -> collectStrings(@selectors).join(" , ")
+  attributesString: -> collectStrings(@attributes).join("; ")
+  string:           -> "#{@selectorsString()} { #{@attributesString()} }"
+
 exports.MetaNode = class MetaNode
   constructor: (@name, @value) ->
+  string: -> "@#{@name} #{@value}"
 
 exports.SelectorNode = class SelectorNode
-  constructor: (@selector, @attributes, @meta) ->
+  constructor: (@selector, @attributes = null, @meta = null) ->
     @next = null
 
   nestSelector: (selector, rule = " ") ->
@@ -40,22 +48,31 @@ exports.SelectorNode = class SelectorNode
 
     this
 
+  nextString:      -> if @next then " #{@nextRule} #{@next.string()}" else ""
+  attributeString: -> if @attributes then "[#{@attributes.string()}]" else ""
+  metaString:      -> if @meta then @meta.string() else ""
+  string:          -> "#{@selector}#{@attributeString()}#{@metaString()}#{@nextString()}"
+
+exports.MetaSelectorNode = class MetaSelectorNode
+  constructor: (@value, @operator) ->
+
+  string: -> "#{@operator}#{@value.string()}"
+
 exports.AttributeNode = class AttributeNode
   constructor: (@name, @values) ->
 
-  value: ->
-    rawValues = (value.string() for value in @values)
-    rawValues.join(" ")
+  value:  -> collectStrings(@values).join(" ")
+  string: -> "#{@name}: #{@value()}"
 
 exports.FunctionNode = class FunctionNode
   constructor: (@name, @arguments) ->
-  argumentsString: ->
-    (arg.string() for arg in @arguments).join(",")
 
+  argumentsString: -> collectStrings(@arguments).join(",")
   string: -> "#{@name}(#{@argumentsString()})"
 
 exports.AttributeSelectorNode = class AttributeSelectorNode
   constructor: (@name, @operator, @value) ->
+  string: -> "#{@name}#{@operator}#{@value.string()}"
 
 exports.LiteralNode = class LiteralNode
   constructor: (@value) ->

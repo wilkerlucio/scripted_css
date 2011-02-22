@@ -19,6 +19,7 @@
 # THE SOFTWARE.
 
 parser = require "scripted_css/parser"
+ast = require "scripted_css/parser/ast"
 
 suite =
   "test it parsing metadata": (test) ->
@@ -104,17 +105,16 @@ suite =
 
     test.done()
 
-  "test it parsing simple": (test) ->
+  "test it parsing simple metaselector": (test) ->
     css = parser.parse("body:before {}")
     test.same(css.rules[0].selectors[0].selector, "body")
-    test.same(css.rules[0].selectors[0].meta, "before")
+    test.same(css.rules[0].selectors[0].meta.string(), ":before")
     test.done()
 
   "test it parsing metaselector": (test) ->
     css = parser.parse("body::slot(a) {}")
     test.same(css.rules[0].selectors[0].selector, "body")
-    test.same(css.rules[0].selectors[0].meta.name, "slot")
-    test.same(css.rules[0].selectors[0].meta.argumentsString(), "a")
+    test.same(css.rules[0].selectors[0].meta.string(), "::slot(a)")
     test.done()
 
   "test simple attribute": (test) ->
@@ -170,6 +170,19 @@ suite =
   "test full complex attribute": (test) ->
     css = parser.parse("body {display: 'aaa' / 20px 'bcc' 100px * minmax(80px, 120px);}")
     test.same(css.rules[0].attributes[0].value(), "'aaa' / 20px 'bcc' 100px * minmax(80px,120px)")
+    test.done()
+
+  "test selector generating string": (test) ->
+    selector = new ast.SelectorNode("body")
+    selector.nestSelector(
+      new ast.SelectorNode(
+        "p",
+        new ast.AttributeSelectorNode("type", "=", new ast.LiteralNode("text")),
+        new ast.MetaSelectorNode(new ast.LiteralNode("before"), ":")
+      ),
+      ">")
+
+    test.same(selector.string(), "body > p[type=text]:before")
     test.done()
 
 global.testWrapper(suite)
