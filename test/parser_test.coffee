@@ -19,7 +19,8 @@
 # THE SOFTWARE.
 
 parser = require "scripted_css/parser"
-ast = require "scripted_css/parser/ast"
+ast    = require "scripted_css/parser/ast"
+fs     = require "fs"
 
 suite =
   "test it parsing metadata": (test) ->
@@ -167,9 +168,38 @@ suite =
     test.same(css.rules[0].attributes[0].values[0].argumentsString(), "100px,200px")
     test.done()
 
+  "test function with multi-item params": (test) ->
+    css = parser.parse("body {background: gradient(linear, left top, left bottom);}")
+    test.same(css.rules[0].attributes[0].values[0].name, "gradient")
+    test.same(css.rules[0].attributes[0].values[0].arguments[0].string(), "linear")
+    test.same(css.rules[0].attributes[0].values[0].arguments[1].string(), "left top")
+    test.same(css.rules[0].attributes[0].values[0].arguments[2].string(), "left bottom")
+    test.done()
+
+  "test IE filter function": (test) ->
+    css = parser.parse("body {filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#f4f4f4',endColorstr='#ececec');}")
+    test.same(css.rules[0].attributes[0].values[0].name, "progid:DXImageTransform.Microsoft.gradient")
+    test.same(css.rules[0].attributes[0].values[0].arguments[0].string(), "GradientType=0")
+    test.same(css.rules[0].attributes[0].values[0].arguments[0].string(), "startColorstr='#f4f4f4'")
+    test.same(css.rules[0].attributes[0].values[0].arguments[0].string(), "endColorstr='#ececec'")
+    test.done()
+
+
+  "test url function": (test) ->
+    css = parser.parse("body {background: url(../testing/file.png)}")
+    test.same(css.rules[0].attributes[0].values[0].name, "url")
+    test.same(css.rules[0].attributes[0].values[0].argumentsString(), "../testing/file.png")
+    test.done()
+
   "test full complex attribute": (test) ->
     css = parser.parse("body {display: 'aaa' / 20px 'bcc' 100px * minmax(80px, 120px);}")
     test.same(css.rules[0].attributes[0].value(), "'aaa' / 20px 'bcc' 100px * minmax(80px,120px)")
+    test.done()
+
+  "test multi-item value": (test) ->
+    css = parser.parse("body {display: a, b, c d;}")
+    test.same(css.rules[0].attributes[0].values[0].string(), "a, b, c")
+    test.same(css.rules[0].attributes[0].values[1].string(), "d")
     test.done()
 
   "test selector generating string": (test) ->
@@ -184,6 +214,18 @@ suite =
 
     test.same(selector.string(), "body > p[type=text]:before")
     test.done()
+
+  "test compiling a full sized css": (test) ->
+    fixturesDir = "#{__dirname}/fixtures/css_examples"
+
+    fs.readdir fixturesDir, (err, files) ->
+      for file in files
+        filePath = "#{fixturesDir}/#{file}"
+        fileContent = fs.readFileSync(filePath).toString()
+
+        parser.parse(fileContent)
+
+      test.done()
 
 global.testWrapper(suite)
 module.exports = suite

@@ -1,4 +1,5 @@
-fs = require "fs"
+fs           = require "fs"
+CoffeeScript = require "coffee-script"
 
 task 'test', 'run tests', (options) ->
   require.paths.unshift(__dirname + "/vendor")
@@ -28,9 +29,14 @@ task 'test', 'run tests', (options) ->
   # setup database
   runTests()
 
+task 'build', 'build new version of scripted css', (options) ->
+  # TODO
+
 task 'compile:parser', 'compile the css parser', (options) ->
+  astSource    = fs.readFileSync("./lib/scripted_css/parser/ast.coffee").toString()
   parser       = require "./lib/scripted_css/parser"
   parserSource = parser.generate(moduleName: "CssParser")
+  ast          = CoffeeScript.compile astSource
 
-  fs.writeFile "lib/css_parser.js", parserSource
+  fs.writeFile "lib/css_parser.js", parserSource + ast
   console.log "Compiled parser to lib/css_parser.js"

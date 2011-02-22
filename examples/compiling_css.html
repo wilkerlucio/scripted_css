@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Compiling CSS Source</title>
+		<style type="text/css">
+			body { margin: 50px; background: #eee;}
+		</style>
+		<script type="text/javascript" src="../lib/css_parser.js"></script>
+		<script type="text/javascript">
+			CssParser.yy = CssAST;
+
+			window.onload = function() {
+				var button = document.getElementById("compile-input");
+				var textarea = document.getElementById("input-css");
+
+				button.onclick = function() {
+					console.log(CssParser.parse(textarea.value));
+				};
+			};
+		</script>
+	</head>
+	<body>
+		Type text on input below, click on compile and the result will be in your browser console.<br />
+		<textarea id="input-css" style="width: 500px; height: 400px;"></textarea><br />
+		<button type="button" id="compile-input">Parse CSS</button>
+	</body>
+</html>

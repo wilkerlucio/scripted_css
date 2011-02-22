@@ -20,15 +20,16 @@
 
 lexer =
   rules: [
+    ["url",                                            "return 'URLIDENTIFIER';"]
     ["[a-zA-Z_-][a-zA-Z0-9_-]*",                       "return 'IDENTIFIER';"]
     ["(\"[^\"]*\"|'[^']*')",                           "return 'STRING';"]
     ["#([0-9a-fA-F]+)\\b",                             "return 'HEXNUMBER'"]
-    ["-?\\d+(\\.\\d+)?(%|in|cm|mm|em|ex|pt|pc|px)\\b", "return 'UNITNUMBER'"]
-    ["-?\\.\\d+(%|in|cm|mm|em|ex|pt|pc|px)\\b",        "return 'UNITNUMBER'"]
+    ["-?\\d+(\\.\\d+)?(%|in|cm|mm|em|ex|pt|pc|px)",    "return 'UNITNUMBER'"]
+    ["-?\\.\\d+(%|in|cm|mm|em|ex|pt|pc|px)",           "return 'UNITNUMBER'"]
     ["-?\\d+(\\.\\d+)?",                               "return 'NUMBER'"]
     ["-?\\.\\d+",                                      "return 'NUMBER'"]
     ["\\s+",                                           "/* skip whitespaces */"]
-    ["/\\*.*?\\*/",                                    "/* skip comments */"]
+    ["\\/\\*.*?\\*\\/",                                "/* skip comments */"]
     ["\\@",                                            "return '@';"]
     ["\\$",                                            "return '$';"]
     ["\\+",                                            "return '+';"]
@@ -41,6 +42,9 @@ lexer =
     ["\\<",                                            "return '<';"]
     ["\\>",                                            "return '>';"]
     ["\\^",                                            "return '^';"]
+    ["\\?",                                            "return '?';"]
+    ["\\&",                                            "return '&';"]
+    ["\\!",                                            "return '!';"]
     ["\\~",                                            "return '~';"]
     ["=",                                              "return '=';"]
     ["\\-",                                            "return '-';"]
@@ -52,7 +56,7 @@ lexer =
     [";",                                              "return ';';"]
     ["\\*",                                            "return '*';"]
     ["\\\\",                                           "return '\';"]
-    ["/",                                              "return '/';"]
+    ["\\/",                                            "return '/';"]
     [",",                                              "return ',';"]
   ]
 

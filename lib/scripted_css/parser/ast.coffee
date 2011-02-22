@@ -79,5 +79,9 @@ CssAST =
     constructor: (@value) ->
     string: -> @value.toString()
 
+  MultiLiteral: class MultiLiteral
+    constructor: (@literals, @separator) ->
+    string: -> collectStrings(@literals).join(@separator)
+
 window.CssAST = CssAST if window?
 module.exports = CssAST if module?
