@@ -37,6 +37,7 @@ task 'compile:parser', 'compile the css parser', (options) ->
   parser       = require "./lib/scripted_css/parser"
   parserSource = parser.generate(moduleName: "CssParser")
   ast          = CoffeeScript.compile astSource
+  ast          += "\nCssParser.yy = CssAST;"
 
   fs.writeFile "lib/css_parser.js", parserSource + ast
   console.log "Compiled parser to lib/css_parser.js"
