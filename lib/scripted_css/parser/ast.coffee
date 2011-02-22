@@ -20,60 +20,64 @@
 
 collectStrings = (list) -> (item.string() for item in list)
 
-exports.RulesNode = class RulesNode
-  constructor: (@rules) ->
-  string: -> (rule.string() for rule in @rules).join("\n")
+CssAST =
+  RulesNode: class RulesNode
+    constructor: (@rules) ->
+    string: -> (rule.string() for rule in @rules).join("\n")
 
-exports.RuleNode = class RuleNode
-  constructor: (@selectors, @attributes) ->
+  RuleNode:  class RuleNode
+    constructor: (@selectors, @attributes) ->
 
-  selectorsString:  -> collectStrings(@selectors).join(" , ")
-  attributesString: -> collectStrings(@attributes).join("; ")
-  string:           -> "#{@selectorsString()} { #{@attributesString()} }"
+    selectorsString:  -> collectStrings(@selectors).join(" , ")
+    attributesString: -> collectStrings(@attributes).join("; ")
+    string:           -> "#{@selectorsString()} { #{@attributesString()} }"
 
-exports.MetaNode = class MetaNode
-  constructor: (@name, @value) ->
-  string: -> "@#{@name} #{@value}"
+  MetaNode:  class MetaNode
+    constructor: (@name, @value) ->
+    string: -> "@#{@name} #{@value}"
 
-exports.SelectorNode = class SelectorNode
-  constructor: (@selector, @attributes = null, @meta = null) ->
-    @next = null
+  SelectorNode:  class SelectorNode
+    constructor: (@selector, @attributes = null, @meta = null) ->
+      @next = null
 
-  nestSelector: (selector, rule = " ") ->
-    if @next
-      @next.nestSelector.call(@next, selector, rule)
-    else
-      @next     = selector
-      @nextRule = rule
+    nestSelector: (selector, rule = " ") ->
+      if @next
+        @next.nestSelector.call(@next, selector, rule)
+      else
+        @next     = selector
+        @nextRule = rule
 
-    this
+      this
 
-  nextString:      -> if @next then " #{@nextRule} #{@next.string()}" else ""
-  attributeString: -> if @attributes then "[#{@attributes.string()}]" else ""
-  metaString:      -> if @meta then @meta.string() else ""
-  string:          -> "#{@selector}#{@attributeString()}#{@metaString()}#{@nextString()}"
+    nextString:      -> if @next then " #{@nextRule} #{@next.string()}" else ""
+    attributeString: -> if @attributes then "[#{@attributes.string()}]" else ""
+    metaString:      -> if @meta then @meta.string() else ""
+    string:          -> "#{@selector}#{@attributeString()}#{@metaString()}#{@nextString()}"
 
-exports.MetaSelectorNode = class MetaSelectorNode
-  constructor: (@value, @operator) ->
+  MetaSelectorNode:  class MetaSelectorNode
+    constructor: (@value, @operator) ->
 
-  string: -> "#{@operator}#{@value.string()}"
+    string: -> "#{@operator}#{@value.string()}"
 
-exports.AttributeNode = class AttributeNode
-  constructor: (@name, @values) ->
+  AttributeNode:  class AttributeNode
+    constructor: (@name, @values) ->
 
-  value:  -> collectStrings(@values).join(" ")
-  string: -> "#{@name}: #{@value()}"
+    value:  -> collectStrings(@values).join(" ")
+    string: -> "#{@name}: #{@value()}"
 
-exports.FunctionNode = class FunctionNode
-  constructor: (@name, @arguments) ->
+  FunctionNode:  class FunctionNode
+    constructor: (@name, @arguments) ->
 
-  argumentsString: -> collectStrings(@arguments).join(",")
-  string: -> "#{@name}(#{@argumentsString()})"
+    argumentsString: -> collectStrings(@arguments).join(",")
+    string: -> "#{@name}(#{@argumentsString()})"
 
-exports.AttributeSelectorNode = class AttributeSelectorNode
-  constructor: (@name, @operator, @value) ->
-  string: -> "#{@name}#{@operator}#{@value.string()}"
+  AttributeSelectorNode:  class AttributeSelectorNode
+    constructor: (@name, @operator, @value) ->
+    string: -> "#{@name}#{@operator}#{@value.string()}"
 
-exports.LiteralNode = class LiteralNode
-  constructor: (@value) ->
-  string: -> @value.toString()
+  LiteralNode:  class LiteralNode
+    constructor: (@value) ->
+    string: -> @value.toString()
+
+window.CssAST = CssAST if window?
+module.exports = CssAST if module?
