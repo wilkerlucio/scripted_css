@@ -50,6 +50,12 @@ suite =
     test.same(css.rules[0].selectors[1].selector, "div")
     test.done()
 
+  "test compound selections": (test) ->
+    css = parser.parse("div#hello.some.thing, other {}")
+    test.same(css.rules[0].selectors[0].selector, "div#hello.some.thing")
+    test.same(css.rules[0].selectors[1].selector, "other")
+    test.done()
+
   "test it should mix correctly multiple and compound": (test) ->
     css = parser.parse("#menu body, ul > li {}")
     test.same(css.rules[0].selectors[0].selector, "#menu")

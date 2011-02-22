@@ -66,6 +66,7 @@ grammar =
 
   SelectorName: [
     o "*"
+    o "SELECTOR"
     o "RegularIdentifier"
     o "SelectorContext RegularIdentifier",                 -> $1 + $2
   ]
@@ -153,7 +154,8 @@ grammar =
   ]
 
   UrlArgItem: [
-    o "IDENTIFIER"
+    o "RegularIdentifier"
+    o "SELECTOR"
     o "/"
     o "."
     o ":"
