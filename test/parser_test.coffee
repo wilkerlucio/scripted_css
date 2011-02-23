@@ -130,6 +130,12 @@ suite =
     test.same(css.rules[0].attributes[0].value(), "#fff")
     test.done()
 
+  "test attributes hash": (test) ->
+    css = parser.parse("body {background: #fff; display: none; background: #000;}")
+    test.same(css.rules[0].attributesHash["background"].value(), "#000")
+    test.same(css.rules[0].attributesHash["display"].value(), "none")
+    test.done()
+
   "test multiple values": (test) ->
     css = parser.parse("body {background: #fff; color: #000;}")
     test.same(css.rules[0].attributes[0].name, "background")
