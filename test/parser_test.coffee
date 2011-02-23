@@ -146,6 +146,7 @@ suite =
   "test string value": (test) ->
     css = parser.parse("body {font-family: 'Times New Roman';}")
     test.same(css.rules[0].attributes[0].value(), "'Times New Roman'")
+    test.same(css.rules[0].attributes[0].values[0].content(), "Times New Roman")
     test.done()
 
   "test 3 digit hex number value": (test) ->

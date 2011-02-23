@@ -130,6 +130,11 @@ CssAST =
     constructor: (@value) ->
     string: -> @value.toString()
 
+  StringNode: class StringNode
+    constructor: (@value) ->
+    content: -> @value.substr(1, @value.length - 2)
+    string: -> @value.toString()
+
   MultiLiteral: class MultiLiteral
     constructor: (@literals, @separator) ->
     string: -> collectStrings(@literals).join(@separator)

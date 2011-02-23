@@ -132,7 +132,7 @@ grammar =
 
   Value: [
     o "IDENTIFIER",                                        -> new LiteralNode($1)
-    o "STRING",                                            -> new LiteralNode($1)
+    o "STRING",                                            -> new StringNode($1)
     o "HEXNUMBER",                                         -> new LiteralNode($1)
     o "UNITNUMBER",                                        -> new LiteralNode($1)
     o "NUMBER",                                            -> new LiteralNode($1)
@@ -148,7 +148,7 @@ grammar =
   ]
 
   UrlArg: [
-    o "STRING"
+    o "STRING",                                            -> new StringNode($1).content()
     o "UrlArgItem"
     o "UrlArg UrlArgItem",                                 -> $1 + $2
   ]
