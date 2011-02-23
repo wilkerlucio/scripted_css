@@ -144,6 +144,13 @@ suite =
     test.same(css.rules[0].attributes[1].value(), "#000")
     test.done()
 
+  "test unit value": (test) ->
+    css = parser.parse("body {margin: 10px;}")
+    test.same(css.rules[0].attributes[0].value(), "10px")
+    test.same(css.rules[0].attributes[0].values[0].number, 10)
+    test.same(css.rules[0].attributes[0].values[0].unit, "px")
+    test.done()
+
   "test identifier value": (test) ->
     css = parser.parse("body {background: white;}")
     test.same(css.rules[0].attributes[0].value(), "white")

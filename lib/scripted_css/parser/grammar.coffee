@@ -134,7 +134,7 @@ grammar =
     o "IDENTIFIER",                                        -> new LiteralNode($1)
     o "STRING",                                            -> new StringNode($1)
     o "HEXNUMBER",                                         -> new LiteralNode($1)
-    o "UNITNUMBER",                                        -> new LiteralNode($1)
+    o "UNITNUMBER",                                        -> new UnitNumberNode($1)
     o "NUMBER",                                            -> new LiteralNode($1)
     o "/",                                                 -> new LiteralNode($1)
     o "*",                                                 -> new LiteralNode($1)

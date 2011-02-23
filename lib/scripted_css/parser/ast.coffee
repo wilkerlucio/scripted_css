@@ -144,6 +144,13 @@ CssAST =
     content: -> @value.substr(1, @value.length - 2)
     string: -> @value.toString()
 
+  UnitNumberNode: class UnitNumberNode
+    constructor: (@value) ->
+      [@value, @number, @unit] = value.match(/(.+?)([a-zA-Z%]+)/)
+      @number = parseFloat(@number)
+
+    string: -> @value.toString()
+
   MultiLiteral: class MultiLiteral
     constructor: (@literals, @separator) ->
     string: -> collectStrings(@literals).join(@separator)
