@@ -22,8 +22,8 @@ lexer =
   rules: [
     ["url",                                               "return 'URLIDENTIFIER';"]
     ["#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})\\b",               "return 'HEXNUMBER'"]
-    ["-?\\d+(\\.\\d+)?(%|in|cm|mm|em|ex|pt|pc|px)",       "return 'UNITNUMBER'"]
-    ["-?\\.\\d+(%|in|cm|mm|em|ex|pt|pc|px)",              "return 'UNITNUMBER'"]
+    ["-?\\d+(\\.\\d+)?(%|in|cm|mm|em|ex|pt|pc|px|ms|s)",  "return 'UNITNUMBER'"]
+    ["-?\\.\\d+(%|in|cm|mm|em|ex|pt|pc|px|ms|s)",         "return 'UNITNUMBER'"]
     ["-?\\d+(\\.\\d+)?",                                  "return 'NUMBER'"]
     ["-?\\.\\d+",                                         "return 'NUMBER'"]
     ["[.#]?[a-zA-Z_-][a-zA-Z0-9_-]*[.#][a-zA-Z0-9.#_-]+", "return 'SELECTOR';"]
