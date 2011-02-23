@@ -56,6 +56,7 @@ CssAST =
   RuleNode: class RuleNode
     constructor: (@selectors, @attributes) ->
 
+    addAttribute: (attribute) -> @attributes.push(attribute)
     selectorsString:  -> collectStrings(@selectors).join(" , ")
     attributesString: -> collectStrings(@attributes).join("; ")
     string:           -> "#{@selectorsString()} { #{@attributesString()} }"

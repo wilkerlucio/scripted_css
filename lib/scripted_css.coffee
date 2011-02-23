@@ -20,15 +20,6 @@
 
 (($) ->
   window.ScriptedCss =
-    bind: (event, callback) ->
-      @eventList ?= {}
-      @eventList[event] ?= []
-      @eventList[event].push(callback)
-
-    trigger: (event, args...) ->
-      callbacks = @eventList?[event] || []
-      callback.apply(this, args) for callback in callbacks
-
     start: ->
       originalDisplay = $(document.body).css("display")
       $(document.body).css(display: "none")
@@ -58,6 +49,23 @@
           ScriptedCss.addStyle(css.string())
 
       callback()
+
+    # observable methods
+    bind: (event, callback) ->
+      @eventList ?= {}
+      @eventList[event] ?= []
+      @eventList[event].push(callback)
+
+    trigger: (event, args...) ->
+      callbacks = @eventList?[event] || []
+      callback.apply(this, args) for callback in callbacks
+
+    # AST generation helpers
+    createAttribute: (name, values) ->
+      values = [values] unless $.isArray(values)
+      values = (new CssAST.LiteralNode(value) for value in values)
+
+      new CssAST.AttributeNode(name, values)
 
   $ -> ScriptedCss.start()
 )(jQuery)
