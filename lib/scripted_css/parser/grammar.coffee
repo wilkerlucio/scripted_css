@@ -148,7 +148,7 @@ grammar =
   ]
 
   UrlArg: [
-    o "STRING",                                            -> new StringNode($1).content()
+    o "STRING",                                            -> new StringNode($1).text
     o "UrlArgItem"
     o "UrlArg UrlArgItem",                                 -> $1 + $2
   ]

@@ -141,7 +141,8 @@ CssAST =
 
   StringNode: class StringNode
     constructor: (@value) ->
-    content: -> @value.substr(1, @value.length - 2)
+      @text = @value.substr(1, @value.length - 2)
+
     string: -> @value.toString()
 
   UnitNumberNode: class UnitNumberNode
