@@ -73,7 +73,7 @@ task 'build', 'build scripted css', (options) ->
     output += source + "\n"
 
   yui.compile output, (compressed) ->
-    fs.writeFile "dist/scripted_css.js", compressed
+    fs.writeFileSync "dist/scripted_css.js", compressed
     console.log "Compiled ScriptedCss to dist/scripted_css.js"
 
 task 'dev:compile', 'compile files for development', (options) ->
@@ -82,14 +82,9 @@ task 'dev:compile', 'compile files for development', (options) ->
   compile = (file) ->
     source = fs.readFileSync(path.join("lib", file)).toString()
     source = CoffeeScript.compile(source) if path.extname(file) == ".coffee"
-
     dirname = path.dirname(file)
     outputPath = path.join("js", dirname, path.basename(file, path.extname(file)) + ".js")
-    try
-      fs.mkdirSync(dirname, 0755)
-    catch error
-
-    fs.writeFile(outputPath, source)
+    fs.writeFileSync(outputPath, source)
     console.log("Compiled #{outputPath}")
 
   for file in scriptFiles
@@ -102,5 +97,5 @@ task 'compile:parser', 'compile the css parser', (options) ->
   ast          = CoffeeScript.compile astSource
   ast          += "\nScriptedCss.CssParser.yy = CssAST;"
 
-  fs.writeFile "lib/scripted_css/css_parser.js", parserSource + ast
+  fs.writeFileSync "lib/scripted_css/css_parser.js", parserSource + ast
   console.log "Compiled parser to lib/scripted_css/css_parser.js"
