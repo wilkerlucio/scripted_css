@@ -49,6 +49,29 @@ CssAST =
 
       this
 
+    parts: ->
+      parts = []
+      i = 0
+
+      while chunk = @selector.slice(i)
+        part = chunk.match(/[#.]?[^#.]+/)[0]
+        parts.push(part)
+        i += part.length
+
+      parts
+
+    weight: ->
+      weight = 0
+
+      for part in @parts()
+        switch part.charAt(0)
+          when "#" then weight += 100
+          when "." then weight += 10
+          else weight += 1
+
+      weight += @next.weight() if @next?
+      weight
+
     nextString:      -> if @next then " #{@nextRule} #{@next.string()}" else ""
     attributeString: -> if @attributes then "[#{@attributes.string()}]" else ""
     metaString:      -> if @meta then @meta.string() else ""
