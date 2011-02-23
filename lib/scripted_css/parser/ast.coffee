@@ -54,9 +54,17 @@ CssAST =
     string: -> (rule.string() for rule in @rules).join("\n")
 
   RuleNode: class RuleNode
-    constructor: (@selectors, @attributes) ->
+    constructor: (@selectors, attributes) ->
+      @attributes     = []
+      @attributesHash = {}
 
-    addAttribute: (attribute) -> @attributes.push(attribute)
+      for attribute in attributes
+        @addAttribute(attribute)
+
+    addAttribute: (attribute) ->
+      @attributes.push(attribute)
+      @attributesHash[attribute.name] = attribute
+
     selectorsString:  -> collectStrings(@selectors).join(" , ")
     attributesString: -> collectStrings(@attributes).join("; ")
     string:           -> "#{@selectorsString()} { #{@attributesString()} }"
