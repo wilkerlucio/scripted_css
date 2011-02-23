@@ -23,6 +23,34 @@ collectStrings = (list) -> (item.string() for item in list)
 CssAST =
   RulesNode: class RulesNode
     constructor: (@rules) ->
+      @metaRules    = []
+      @elementRules = []
+      @attributes   = {}
+
+      @index()
+
+    index: ->
+      meta = {}
+
+      for rule in @rules
+        if rule.selectors?
+          rule.meta = meta
+          @indexRule(rule)
+        else
+          meta[rule.name] = rule.value
+          @metaRules.push(rule)
+
+    indexRule: (rule) ->
+      for attribute in rule.attributes
+        attribute.rule = rule
+
+        @attributes[attribute.name] ?= []
+        @attributes[attribute.name].push(attribute)
+
+      @elementRules.push(rule)
+
+    attribute: (name) -> @attributes[name] || []
+
     string: -> (rule.string() for rule in @rules).join("\n")
 
   RuleNode: class RuleNode
