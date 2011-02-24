@@ -30,17 +30,18 @@ CssAST =
       @index()
 
     index: ->
-      meta = {}
+      @meta = {}
 
       for rule in @rules
-        if rule.selectors?
-          rule.meta = meta
+        if rule.selector?
           @indexRule(rule)
         else
-          meta[rule.name] = rule.value
+          @meta[rule.name] = rule.value
           @metaRules.push(rule)
 
     indexRule: (rule) ->
+      rule.meta = @meta
+
       for attribute in rule.attributes
         attribute.rule = rule
 
@@ -54,7 +55,7 @@ CssAST =
     string: -> (rule.string() for rule in @rules).join("\n")
 
   RuleNode: class RuleNode
-    constructor: (@selectors, attributes) ->
+    constructor: (@selector, attributes) ->
       @attributes     = []
       @attributesHash = {}
 
@@ -65,9 +66,8 @@ CssAST =
       @attributes.push(attribute)
       @attributesHash[attribute.name] = attribute
 
-    selectorsString:  -> collectStrings(@selectors).join(" , ")
     attributesString: -> collectStrings(@attributes).join("; ")
-    string:           -> "#{@selectorsString()} { #{@attributesString()} }"
+    string:           -> "#{@selector.string()} { #{@attributesString()} }"
 
   MetaNode: class MetaNode
     constructor: (@name, @value) ->

@@ -35,13 +35,13 @@ grammar =
   ]
 
   Rules: [
-    o "Rule",                                              -> [$1]
+    o "Rule",                                              -> $1
     o "Rules Rule",                                        -> $1.concat $2
   ]
 
   Rule: [
-    o "Selectors { Attributes }",                          -> new RuleNode($1, $3)
-    o "@ RegularIdentifier Value",                         -> new MetaNode($2, $3.string())
+    o "Selectors { Attributes }",                          -> new RuleNode(selector, $3) for selector in $1
+    o "@ RegularIdentifier Value",                         -> [new MetaNode($2, $3.string())]
   ]
 
   Selectors: [

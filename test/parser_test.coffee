@@ -31,43 +31,42 @@ suite =
 
   "test it parsing simple selector": (test) ->
     css = parser.parse("body {}")
-    test.same(css.rules[0].selectors[0].selector, "body")
+    test.same(css.rules[0].selector.string(), "body")
     test.done()
 
   "test parsing id selector": (test) ->
     css = parser.parse("#body {}")
-    test.same(css.rules[0].selectors[0].selector, "#body")
+    test.same(css.rules[0].selector.string(), "#body")
     test.done()
 
   "test parsing class selector": (test) ->
     css = parser.parse(".body {}")
-    test.same(css.rules[0].selectors[0].selector, ".body")
+    test.same(css.rules[0].selector.string(), ".body")
     test.done()
 
   "test it parsing multiple selectors": (test) ->
-    css = parser.parse("body, div {}")
-    test.same(css.rules[0].selectors[0].selector, "body")
-    test.same(css.rules[0].selectors[1].selector, "div")
+    css = parser.parse("body, div { background: black }")
+    test.same(css.rules[0].selector.string(), "body")
+    test.same(css.rules[1].selector.string(), "div")
+    test.same(css.rules[0].attributesString(), "background: black")
+    test.same(css.rules[1].attributesString(), "background: black")
     test.done()
 
   "test compound selections": (test) ->
     css = parser.parse("div#hello.some.thing, other {}")
-    test.same(css.rules[0].selectors[0].selector, "div#hello.some.thing")
-    test.same(css.rules[0].selectors[1].selector, "other")
+    test.same(css.rules[0].selector.string(), "div#hello.some.thing")
+    test.same(css.rules[1].selector.string(), "other")
     test.done()
 
   "test it should mix correctly multiple and compound": (test) ->
     css = parser.parse("#menu body, ul > li {}")
-    test.same(css.rules[0].selectors[0].selector, "#menu")
+    test.same(css.rules[0].selector.selector, "#menu")
+    test.same(css.rules[0].selector.next.selector, "body")
+    test.same(css.rules[0].selector.nextRule, " ")
 
-    test.same(css.rules[0].selectors[0].next.selector, "body")
-    test.same(css.rules[0].selectors[0].nextRule, " ")
-
-
-    test.same(css.rules[0].selectors[1].selector, "ul")
-
-    test.same(css.rules[0].selectors[1].next.selector, "li")
-    test.same(css.rules[0].selectors[1].nextRule, ">")
+    test.same(css.rules[1].selector.selector, "ul")
+    test.same(css.rules[1].selector.next.selector, "li")
+    test.same(css.rules[1].selector.nextRule, ">")
     test.done()
 
   "test it parsing compound rules": (test) ->
@@ -75,9 +74,9 @@ suite =
 
     for sep in separators
       css = parser.parse("body #{sep} div {}")
-      test.same(css.rules[0].selectors[0].selector, "body")
-      test.same(css.rules[0].selectors[0].next.selector, "div")
-      test.same(css.rules[0].selectors[0].nextRule, sep)
+      test.same(css.rules[0].selector.selector, "body")
+      test.same(css.rules[0].selector.next.selector, "div")
+      test.same(css.rules[0].selector.nextRule, sep)
 
     test.done()
 
@@ -86,18 +85,18 @@ suite =
 
     for sep in separators
       css = parser.parse("body #{sep} div #{sep} p {}")
-      test.same(css.rules[0].selectors[0].selector, "body")
-      test.same(css.rules[0].selectors[0].next.selector, "div")
-      test.same(css.rules[0].selectors[0].nextRule, sep)
-      test.same(css.rules[0].selectors[0].next.next.selector, "p")
-      test.same(css.rules[0].selectors[0].next.nextRule, sep)
+      test.same(css.rules[0].selector.selector, "body")
+      test.same(css.rules[0].selector.next.selector, "div")
+      test.same(css.rules[0].selector.nextRule, sep)
+      test.same(css.rules[0].selector.next.next.selector, "p")
+      test.same(css.rules[0].selector.next.nextRule, sep)
 
     test.done()
 
   "test it split multiple rules": (test) ->
     css = parser.parse("body, div {}")
-    test.same(css.rules[0].selectors[0].selector, "body")
-    test.same(css.rules[0].selectors[1].selector, "div")
+    test.same(css.rules[0].selector.selector, "body")
+    test.same(css.rules[1].selector.selector, "div")
     test.done()
 
   "test it parsing attribute selectors": (test) ->
@@ -105,23 +104,23 @@ suite =
 
     for op in operators
       css = parser.parse("input[type#{op}text] {}")
-      attr = css.rules[0].selectors[0].attributes
-      test.same(attr.name,     "type")
-      test.same(attr.operator, op)
-      test.same(attr.value.value,    "text")
+      attr = css.rules[0].selector.attributes
+      test.same(attr.name,        "type")
+      test.same(attr.operator,    op)
+      test.same(attr.value.value, "text")
 
     test.done()
 
   "test it parsing simple metaselector": (test) ->
     css = parser.parse("body:before {}")
-    test.same(css.rules[0].selectors[0].selector, "body")
-    test.same(css.rules[0].selectors[0].meta.string(), ":before")
+    test.same(css.rules[0].selector.selector, "body")
+    test.same(css.rules[0].selector.meta.string(), ":before")
     test.done()
 
   "test it parsing metaselector": (test) ->
     css = parser.parse("body::slot(a) {}")
-    test.same(css.rules[0].selectors[0].selector, "body")
-    test.same(css.rules[0].selectors[0].meta.string(), "::slot(a)")
+    test.same(css.rules[0].selector.selector, "body")
+    test.same(css.rules[0].selector.meta.string(), "::slot(a)")
     test.done()
 
   "test simple attribute": (test) ->
