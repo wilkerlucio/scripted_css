@@ -28,6 +28,7 @@ scriptFiles = [
   "scripted_css/css_parser.js",
   "scripted_css/modules.coffee"
   "scripted_css/modules/border-radius.coffee"
+  "scripted_css/modules/template_layout.coffee"
   "scripted_css/modules/transition.coffee"
 ]
 

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>ScriptedCSS: Template Layout Module</title>
+		<script type="text/scripted-css">
+			#container {
+				display: ".aaa." / 80px
+								 "....." / 20px
+								 ".bcd." / 30px
+								 ".bc.." / 20px
+								 ".bce."
+								 "....." / 20px
+								 ".fff."
+									* 90px 500px 60px *;
+			}
+		</script>
+		<script type="text/javascript" src="../vendor/jquery-1.5.min.js"></script>
+		<!-- <script type="text/javascript" src="../dist/scripted_css.js"></script> -->
+		<script type="text/javascript" src="../js/scripted_css.js"></script>
+		<script type="text/javascript" src="../js/scripted_css/css_parser.js"></script>
+		<script type="text/javascript" src="../js/scripted_css/modules.js"></script>
+		<script type="text/javascript" src="../js/scripted_css/modules/template_layout.js"></script>
+	</head>
+	<body>
+		<div id="container">
+			<div id="top">top</div>
+			<div id="menu">menu</div>
+			<div id="content">content</div>
+			<div id="banner">banner</div>
+			<div id="other">other</div>
+			<div class="footer">footer</div>
+		</div>
+	</body>
+</html>
