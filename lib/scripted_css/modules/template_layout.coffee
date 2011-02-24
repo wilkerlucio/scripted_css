@@ -21,7 +21,7 @@
 class TemplateRenderer
   constructor: (rule) ->
     try
-      @table = TemplateLayoutParser.parse(rule.attributesHash["display"].values)
+      [@table, @matrix, @columns, @rows] = TemplateLayoutParser.parse(rule.attributesHash["display"].values)
     catch error
       console.error "Error parsing selector '#{rule.selectorsString()}': #{error}"
 
@@ -43,7 +43,7 @@ TemplateLayoutParser =
     @parseValues()
     @parseMatrix()
 
-    @table
+    [@table, @matrix, @columns, @rows]
 
   parseValues: ->
     @matrix    = []
