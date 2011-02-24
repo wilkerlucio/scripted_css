@@ -38,6 +38,8 @@
       document.head.appendChild(css)
 
     loadStyles: (callback) ->
+      self = this
+
       $("script[type='text/scripted-css']").each ->
         if this.src
           # TODO: load style
@@ -45,9 +47,12 @@
           source = this.innerHTML
           css    = ScriptedCss.CssParser.parse(source)
 
+          self.documentStyle ?= css
+
           ScriptedCss.trigger("scriptLoaded", css)
           ScriptedCss.addStyle(css.string())
 
+      ScriptedCss.trigger("cssReady", @documentStyle)
       callback()
 
     # observable methods
