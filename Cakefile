@@ -26,6 +26,7 @@ yui          = require "./vendor/yui-compressor/index.js"
 scriptFiles = [
   "scripted_css.coffee",
   "scripted_css/css_parser.js",
+  "scripted_css/jquery.coffee",
   "scripted_css/modules.coffee"
   "scripted_css/modules/border-radius.coffee"
   "scripted_css/modules/template_layout.coffee"
