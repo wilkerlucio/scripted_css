@@ -139,6 +139,7 @@ grammar =
     o "/",                                                 -> new LiteralNode($1)
     o "*",                                                 -> new LiteralNode($1)
     o "!",                                                 -> new LiteralNode($1)
+    o "IMPORTANT",                                         -> new ImportantNode()
     o "Function"
   ]
 

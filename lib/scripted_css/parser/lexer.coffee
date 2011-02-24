@@ -22,6 +22,7 @@ lexer =
   rules: [
     ["url",                                               "return 'URLIDENTIFIER';"]
     ["#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})\\b",               "return 'HEXNUMBER'"]
+    ["[!]important\\b",                                   "return 'IMPORTANT'"]
     ["-?\\d+(\\.\\d+)?(%|in|cm|mm|em|ex|pt|pc|px|ms|s)",  "return 'UNITNUMBER'"]
     ["-?\\.\\d+(%|in|cm|mm|em|ex|pt|pc|px|ms|s)",         "return 'UNITNUMBER'"]
     ["-?\\d+(\\.\\d+)?",                                  "return 'NUMBER'"]
