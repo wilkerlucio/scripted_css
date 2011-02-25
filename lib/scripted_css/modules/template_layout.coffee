@@ -50,14 +50,18 @@
     parseElements: ->
       el = $(@rule.selector.string())
 
-      @table = $('<table>', css: {width: "100%", height: "100%"}, "cellspacing": 0, "cellpadding": 0)
+      if el[0].tagName == "BODY"
+        $("html").css(overflow: "hidden")
+        el.css(overflow: "hidden")
+
+      @table = $('<table>', css: {width: "100%", height: "100%", margin: "0", padding: "0", border: "0"}, "cellspacing": 0, "cellpadding": 0)
       @cells = {}
 
       for row in @table_matrix
         rowElement = $("<tr>")
 
         for cell in row
-          css = $.extend({"vertical-align": "top"}, @attributesForPosition(cell.position))
+          css = $.extend({"vertical-align": "top", margin: "0", padding: "0", border: "0"}, @attributesForPosition(cell.position))
 
           cellElement = $("<td>", css: css, colspan: cell.cols, rowspan: cell.rows)
           rowElement.append(cellElement)
@@ -112,8 +116,12 @@
 
       if parent[0].tagName == "BODY"
         parent.withCss {display: "none"}, =>
-          width  = $(document).width()
-          height = $(document).height()
+          if document.documentElement
+            width  = document.documentElement.clientWidth
+            height = document.documentElement.clientHeight
+          else
+            width  = $(document).width()
+            height = $(document).height()
       else
         parent.withCss {display: "block"}, =>
           width  = @table.parent().innerWidth()
