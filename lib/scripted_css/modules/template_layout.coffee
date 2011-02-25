@@ -191,7 +191,7 @@
 
     parseRow: (values) ->
       i   = 1
-      row = values[0].text.split('')
+      row = values[0].text.replace(/\s+/g, '').split('')
 
       @matrix.push(row)
       @biggerRow = Math.max(row.length, @biggerRow)
