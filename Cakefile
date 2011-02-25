@@ -97,6 +97,7 @@ task 'compile:parser', 'compile the css parser', (options) ->
   astSource    = fs.readFileSync("./lib/scripted_css/parser/ast.coffee").toString()
   parser       = require "./lib/scripted_css/parser"
   parserSource = parser.generate(moduleName: "ScriptedCss.CssParser")
+  parserSource = parserSource.replace("last_column: lstack[lstack.length-1].last_column,", "last_column: lstack[lstack.length-1].last_column") # hack to fix parser for IE
   ast          = CoffeeScript.compile astSource
   ast          += CoffeeScript.compile fs.readFileSync("./lib/scripted_css/parser/parser_configuration.coffee").toString()
 
