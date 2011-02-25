@@ -149,7 +149,7 @@
 
   class ScriptedCss.Modules.TemplateLayout
     constructor: ->
-      ScriptedCss.bind 'cssReady', (css) => @parseCss(css)
+      ScriptedCss.bind 'afterCallback', (css) => @parseCss(css)
 
     parseCss: (css) ->
       for attr in css.attribute("display")

@@ -54,6 +54,7 @@
 
       ScriptedCss.trigger("cssReady", @documentStyle)
       callback()
+      ScriptedCss.trigger("afterCallback", @documentStyle)
 
     # observable methods
     bind: (event, callback) ->
