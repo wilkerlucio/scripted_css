@@ -22,9 +22,130 @@
   class TemplateRenderer
     constructor: (@rule) ->
       try
-        [@table, @matrix, @columns, @rows] = TemplateLayoutParser.parse(@rule.attributesHash["display"].values)
+        [@table_matrix, @matrix, @columns, @rows] = TemplateLayoutParser.parse(@rule.attributesHash["display"].values)
       catch error
-        console.error "Error parsing selector '#{@rule.selectorsString()}': #{error}"
+        console.error "Error parsing selector '#{@rule.selector.string()}': #{error}"
+
+      if @table_matrix
+        @collectItems()
+        @parseElements()
+        @resize()
+
+        $(window).bind "resize", => @resize()
+
+    collectItems: ->
+      render = this
+      el     = $(@rule.selector.string())
+      @items = {}
+
+      el.children().each ->
+        self = $(this)
+        position = self.realCss("position")
+        self.css(display: "none")
+        self.remove()
+
+        render.items[position] ?= []
+        render.items[position].push(self)
+
+    parseElements: ->
+      el = $(@rule.selector.string())
+
+      @table = $('<table>', css: {width: "100%", height: "100%"}, "cellspacing": 0, "cellpadding": 0)
+      @cells = {}
+
+      for row in @table_matrix
+        rowElement = $("<tr>")
+
+        for cell in row
+          css = $.extend({"vertical-align": "top"}, @attributesForPosition(cell.position))
+
+          cellElement = $("<td>", css: css, colspan: cell.cols, rowspan: cell.rows)
+          rowElement.append(cellElement)
+
+          @cells[cell.position] = cellElement
+          cell.element = cellElement
+
+          continue if cell.position == "."
+
+          for item in (@items[cell.position] || [])
+            item.css(display: "")
+            cellElement.append(item)
+
+        @table.append(rowElement)
+
+      el.append(@table)
+
+    resize: ->
+      [starWidth, starHeight] = @calculateStarSize()
+
+      x = 0
+      y = 0
+
+      for row in @table_matrix
+        x = 0
+
+        for cell in row
+          element = cell.element
+          width   = @calculateSize(cell.width, starWidth)
+          height  = @calculateSize(cell.height, starHeight)
+
+          element.css(width: width + "px", height: height + "px")
+
+          x += cell.cols
+
+    calculateSize: (sizes, star) ->
+      sum = 0
+
+      for size in sizes
+        return null if size == "auto"
+
+        if size == "*"
+          sum += star
+          continue
+        sum += parseFloat(size)
+
+      sum
+
+    calculateStarSize: ->
+      parent = @table.parent()
+      [width, height] = [0, 0]
+
+      if parent[0].tagName == "BODY"
+        parent.withCss {display: "none"}, =>
+          width  = $(document).width()
+          height = $(document).height()
+      else
+        parent.withCss {display: "block"}, =>
+          width  = @table.parent().innerWidth()
+          height = @table.parent().innerHeight()
+
+      [@starSizeFor(@columns, width), @starSizeFor(@rows, height)]
+
+    starSizeFor: (items, available) ->
+      starCount = 0
+
+      for item in items
+        continue if item == "auto"
+
+        if item == "*"
+          starCount += 1
+          continue
+
+        available -= parseFloat(item)
+
+      available / (starCount || 1)
+
+    attributesForPosition: (position) ->
+      el = $(@rule.selector.string())[0]
+      rules = ScriptedCss.documentStyle.rulesForElement(el)
+
+      for rule in rules
+        meta = rule.selector.meta
+
+        if meta and meta.value.arguments and meta.value.name == "slot" and meta.value.arguments[0].string() == position
+          return rule.cssAttributes()
+
+      {}
 
   class ScriptedCss.Modules.TemplateLayout
     constructor: ->
@@ -116,7 +237,7 @@
           [width, height] = [[@columns[x]], [@rows[y]]]
 
           if current == "."
-            row.push(position: '.', width: width, height: height)
+            row.push(position: '.', width: width, height: height, cols: 1, rows: 1)
             continue
 
           for id in history

@@ -14,6 +14,10 @@
 									* 90px 500px 60px *;
 			}
 
+			#container::slot(a) { background: #f00 }
+			#container::slot(c) { background: #00f }
+			#container::slot(.) { background: #eee }
+
 			#top     { position: a; }
 			#menu    { position: b; }
 			#content { position: c; }
@@ -23,9 +27,9 @@
 			#container .footer { position: f; }
 		</script>
 		<script type="text/javascript" src="../vendor/jquery-1.5.min.js"></script>
-		<!-- <script type="text/javascript" src="../dist/scripted_css.js"></script> -->
 		<script type="text/javascript" src="../js/scripted_css.js"></script>
 		<script type="text/javascript" src="../js/scripted_css/css_parser.js"></script>
+		<script type="text/javascript" src="../js/scripted_css/jquery.js"></script>
 		<script type="text/javascript" src="../js/scripted_css/modules.js"></script>
 		<script type="text/javascript" src="../js/scripted_css/modules/template_layout.js"></script>
 	</head>
