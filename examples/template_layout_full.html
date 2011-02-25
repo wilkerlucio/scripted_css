@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>ScriptedCSS: Template Layout Module - Full Screen</title>
+		<script type="text/scripted-css">
+			body {
+				margin: 0;
+				padding: 0;
+				display: "a		 a		a		a		 a" / 80px
+								 ".		 .		.		.		 ." / 20px
+								 "b		 .		c		.		 d" / 30px
+								 "b		 .		c		.		 ." / 20px
+								 "b		 .		c		.		 e" / *
+								 ".		 .		.		.		 ." / 20px
+								 "f		 f		f		f		 f" / 30px
+									90px 20px *		20px 80px;
+			}
+
+			body::slot(a) { background: #f00 }
+			body::slot(c) { background: #00f }
+			body::slot(f) { background: #0f0; vertical-align: middle; }
+			body::slot(.) { background: #000 }
+
+			#top     { position: a; }
+			#menu    { position: b; }
+			#content { position: c; }
+			#banner  { position: d; }
+			#other   { position: e; }
+
+			body .footer { position: f; }
+		</script>
+		<script type="text/javascript" src="../vendor/jquery-1.5.min.js"></script>
+		<script type="text/javascript" src="../js/scripted_css.js"></script>
+		<script type="text/javascript" src="../js/scripted_css/css_parser.js"></script>
+		<script type="text/javascript" src="../js/scripted_css/jquery.js"></script>
+		<script type="text/javascript" src="../js/scripted_css/modules.js"></script>
+		<script type="text/javascript" src="../js/scripted_css/modules/template_layout.js"></script>
+	</head>
+	<body>
+		<div id="top">top</div>
+		<div id="menu">menu</div>
+		<div id="content"><p>content</p></div>
+		<div id="banner">banner</div>
+		<div id="other">other</div>
+		<div class="footer">footer</div>
+	</body>
+</html>
