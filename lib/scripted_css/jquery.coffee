@@ -22,4 +22,14 @@
   $.fn.realCss = (attribute) ->
     return "" unless this[0]
     ScriptedCss.documentStyle.attributeForElement(this[0], attribute)
+
+  $.fn.withCss = (css, block) ->
+    originals = {}
+
+    for p, v of css
+      originals[p] = $(this).css(p)
+
+    $(this).css(css)
+    block()
+    $(this).css(originals)
 )(jQuery)
