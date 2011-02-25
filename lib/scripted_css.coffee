@@ -30,12 +30,16 @@
       @loadStyles ->
         $(document.body).css(display: originalDisplay)
 
-    addStyle: (style) ->
+    addStyle: (styleText) ->
       css = document.createElement("style")
       css.type = "text/css"
-      css.innerHTML = style
 
-      document.head.appendChild(css)
+      if css.styleSheet
+        css.styleSheet.cssText = styleText
+      else
+        css.innerHTML = styleText
+
+      $("head").append(css)
 
     loadStyles: (callback) ->
       self = this
