@@ -180,6 +180,8 @@ grammar =
   ArgListValue: [
     o "Value"
     o "MultiArg",                                          -> new MultiLiteral($1, " ")
+    o ".",                                                 -> new LiteralNode($1)
+    o "@",                                                 -> new LiteralNode($1)
   ]
 
   MultiArg: [
