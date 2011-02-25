@@ -22,19 +22,21 @@ collectStrings = (list) -> (item.string() for item in list)
 
 CssAST =
   RulesNode: class RulesNode
-    constructor: (@rules) ->
+    constructor: (rules) ->
+      @rules        = []
       @metaRules    = []
       @elementRules = {}
 
-      @index()
+      @index(rules)
 
-    index: ->
+    index: (rules) ->
       @meta = {}
 
-      for rule in @rules
+      for rule in rules
         if rule.selector?
-          @indexRule(rule)
+          @rules.push(rule) if @indexRule(rule)
         else
+          @rules.push(rule)
           @meta[rule.name] = rule.value
           @metaRules.push(rule)
 
@@ -44,9 +46,11 @@ CssAST =
       if @elementRules[rule.selector.string()]
         @elementRules[rule.selector.string()].meta = @meta
         @elementRules[rule.selector.string()].mergeAttributes(rule.attributes)
+        false
       else
         rule.meta = @meta
         @elementRules[rule.selector.string()] = rule
+        true
 
     indexAttributesAndSelectors: ->
       @attributes    = {}
@@ -113,6 +117,14 @@ CssAST =
       @attributesHash[attribute.name] = attribute
 
     mergeAttributes: (attributes) -> @addAttribute(attribute) for attribute in attributes
+
+    cssAttributes: ->
+      hash = {}
+
+      for name, attr of @attributesHash
+        hash[name] = attr.value()
+
+      hash
 
     attributesString: -> collectStrings(@attributes).join("; ")
     string:           -> "#{@selector.string()} { #{@attributesString()} }"
