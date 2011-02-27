@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Compiling CSS Source</title>
+		<title>Parsing CSS Source</title>
 		<script type="text/javascript">
 			ScriptedCss = {};
 		</script>
-		<script type="text/javascript" src="../lib/scripted_css/css_parser.js"></script>
+		<script type="text/javascript" src="../js/scripted_css/css_parser.js"></script>
 		<script type="text/javascript">
 			window.onload = function() {
 				var button = document.getElementById("compile-input");
@@ -25,7 +25,7 @@
 		</script>
 	</head>
 	<body>
-		Type text on input below, click on compile and the result will be in your browser console.<br />
+		Type text on input below, click on the button and the result will be in your browser console.<br />
 		<textarea id="input-css" style="width: 500px; height: 400px;"></textarea><br />
 		<button type="button" id="compile-input">Parse CSS</button>
 	</body>
