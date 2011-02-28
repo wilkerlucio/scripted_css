@@ -64,25 +64,17 @@
 	<body>
 		<div id="source-title">Input here</div>
 		<textarea id="source-area">
-body {
-	margin: 0;
-	padding: 0;
-	display: "a.b.c" / 20px
-					 "def.g" / *
-					 * 100px * 10px *;
-}
+/*
+Welcome to try ScriptedCss parser
 
-body::slot(e) { vertical-align: middle; text-align: center; }
+Here you can type your CSS and see how it will be parsed. But remember, CSS re-writing is just one feature, in real cases (see some examples from menu at left) we can do a lot more than this.
 
-#source-title { position: a; }
-#source-area  { position: d; }
-#button-area  { position: e; }
-#tokens-title { position: b; }
-#tokens-area  { position: f; }
-#output-title { position: c; }
-#output-area  { position: g; }
-
-textarea { width: 100%; height: 100%; }
+This comment (and all others) will be simple ignored at output.
+*/
+textarea { width: 100%; }
+.rounded { border-radius: 10px; } /* the border-radius will be expanded to browser-specific syntaxes */
+body { margin: 0 } /* here it will be also expanded to each real value */
+textarea { height: 100%; } /* here is a repeated selector, it will be merged with previous definition */
 		</textarea>
 
 		<div id="button-area"><button type="button" id="compile-input">Parse CSS &raquo;</button></div>
