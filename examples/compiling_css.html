@@ -34,12 +34,18 @@
 				$("#compile-input").click(function() {
 					var source = $("#source-area").val();
 					var tokens = ScriptedCss.CssParser.Lexer.tokenize(source);
-					var css = ScriptedCss.CssParser.parse(source);
+					var output;
 
-					ScriptedCss.trigger("scriptLoaded", css);
-					ScriptedCss.trigger("cssReady", css);
+					try {
+						var css = ScriptedCss.CssParser.parse(source);
 
-					var output = css.string();
+						ScriptedCss.trigger("scriptLoaded", css);
+						ScriptedCss.trigger("cssReady", css);
+
+						output = css.string();
+					} catch(error) {
+						output = error;
+					}
 
 					var tokenString = "";
 
