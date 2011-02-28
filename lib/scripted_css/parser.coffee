@@ -22,13 +22,14 @@
 
 ast     = require "#{__dirname}/parser/ast"
 grammar = require "#{__dirname}/parser/grammar"
-lexer   = require "#{__dirname}/parser/lexer"
+Lexer   = require "#{__dirname}/parser/lexer"
 
 parser = new Parser(
   bnf:         grammar
   startSymbol: "Root"
 )
 
+parser.lexer = Lexer.integrator
 parser.yy = ast
 
 module.exports = parser

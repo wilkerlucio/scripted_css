@@ -47,21 +47,16 @@ grammar =
 
   Selectors: [
     o "Selector",                                        -> [$1]
-    o "Selectors SELECTOR_OPERATOR Selector",            -> $1[$1.length - 1].nestSelector($2, " "); $1
+    o "Selectors SELECTOR_OPERATOR Selector",            -> $1[$1.length - 1].nestSelector($3, $2); $1
     o "Selectors , Selector",                            -> $1.concat $3
   ]
 
   Selector: [
-    o "SelectorName",                                    -> new SelectorNode($1)
-    o "SelectorName [ AttributeSelector ]",              -> new SelectorNode($1, $3)
-    o "SelectorName [ AttributeSelector ] MetaSelector", -> new SelectorNode($1, $3, $5)
-    o "SelectorName MetaSelector",                       -> new SelectorNode($1, null, $2)
+    o "IDENTIFIER",                                    -> new SelectorNode($1)
+    o "IDENTIFIER [ AttributeSelector ]",              -> new SelectorNode($1, $3)
+    o "IDENTIFIER [ AttributeSelector ] MetaSelector", -> new SelectorNode($1, $3, $5)
+    o "IDENTIFIER MetaSelector",                       -> new SelectorNode($1, null, $2)
     o "MetaSelector",                                    -> new SelectorNode("*", null, $1)
-  ]
-
-  SelectorName: [
-    o "*"
-    o "IDENTIFIER"
   ]
 
   AttributeSelector: [
@@ -70,11 +65,11 @@ grammar =
 
   AttributeSelectorOperator: [
     o "="
-    o "~ =",                                             -> $1 + $2
-    o "| =",                                             -> $1 + $2
-    o "^ =",                                             -> $1 + $2
-    o "$ =",                                             -> $1 + $2
-    o "* =",                                             -> $1 + $2
+    o "~="
+    o "|="
+    o "^="
+    o "$="
+    o "*="
   ]
 
   MetaSelector: [
@@ -142,9 +137,8 @@ grammar =
 
   ArgListValue: [
     o "Value"
+    o "IDENTIFIER = Value",                              -> new NamedArgumentNode($1, $3)
     o "MultiArg",                                        -> new MultiLiteral($1, " ")
-    o ".",                                               -> new LiteralNode($1)
-    o "@",                                               -> new LiteralNode($1)
   ]
 
   MultiArg: [

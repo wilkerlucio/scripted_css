@@ -19,6 +19,7 @@
 # THE SOFTWARE.
 
 parser = require "scripted_css/parser"
+lexer  = require "scripted_css/parser/lexer"
 AST    = require "scripted_css/parser/ast"
 
 suite =

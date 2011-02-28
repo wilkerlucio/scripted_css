@@ -20,16 +20,16 @@
 
 IDENTIFIER = /^[a-zA-Z_-][a-zA-Z0-9_-]*/
 METAID     = /^@([a-zA-Z_-][a-zA-Z0-9_-]*)/
-SELECTOR   = /^[.#]?[a-zA-Z_-]([a-zA-Z0-9.#_-]*[a-zA-Z0-9_-])?/
+SELECTOR   = /^([*]|[.#]?[a-zA-Z_-]([a-zA-Z0-9.#_-]*[a-zA-Z0-9_-])?)/
 ATTRID     = /^[*]?[a-zA-Z_-][a-zA-Z0-9_-]*/
 NEWLINE    = /^\n/
 WHITESPACE = /^[^\n\S]+/
 NUMBER     = /^-?(\d+(\.\d+)?|\.\d+)/
-UNITNUMBER = /^-?(\d+(\.\d+)?|\.\d+)(%|in|cm|mm|em|ex|pt|pc|px|ms|s)\b/
+UNITNUMBER = /^-?(\d+(\.\d+)?|\.\d+)(%|(in|cm|mm|em|ex|pt|pc|px|ms|s)\b)/
 HEXNUMBER  = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})\b/
 STRING     = /^(?:"([^"]*)"|'([^']*)')/
 
-COMMENT    = /^\/\*(.|\n)*?\*\//m
+COMMENT    = /^\/\*(.|\n)*?\*\//
 
 OPERATORS  = /// ^ (
   ?: ::
@@ -38,7 +38,7 @@ OPERATORS  = /// ^ (
 
 Lexer =
   tokenize: (code) ->
-    code     = code.replace(/\r\n|\r/, "\n")
+    code     = code.replace(/\r\n|\r/g, "\n")
 
     @code   = code
     @line   = 0
@@ -78,6 +78,12 @@ Lexer =
         return input.length
 
     if @scope == "SELECTOR"
+      if match = /^\[/.exec @chunk
+        @token "[", "["
+        @scope = "SELECTOR_ATTRIBUTE"
+
+        return 1
+
       if match = /^\s*([+>~])\s*/.exec @chunk
         [input, operator] = match
         @token("SELECTOR_OPERATOR", operator)
@@ -89,6 +95,13 @@ Lexer =
         @token("SELECTOR_OPERATOR", ' ')
 
         return space.length
+
+    if @scope == "SELECTOR_ATTRIBUTE"
+      if match = /^\]/.exec @chunk
+        @token "]", "]"
+        @scope = "SELECTOR"
+
+        return 1
 
     if @scope == "ATTRIBUTE_NAME"
       if match = ATTRID.exec @chunk
@@ -176,7 +189,11 @@ Lexer =
     if input then input.length else 0
 
   literalToken: ->
-    value = @chunk.charAt(0)
+    if match = OPERATORS.exec @chunk
+      [value] = match
+    else
+      value = @chunk.charAt(0)
+
     @token(value, value)
 
     if @scope == "SELECTOR" and value == ","
@@ -194,10 +211,39 @@ Lexer =
     if value == "}"
       @scope = "INITIAL"
 
-    1
+    value.length
 
   token: (tag, value) ->
     @tokens.push([tag, value, @line])
+
+Lexer.integrator =
+  lex: ->
+    [tag, @yytext, @yylineno] = @tokens[@pos++] or ['']
+
+    @yylloc =
+      first_line: @yylineno
+      last_line:  @yylineno + 1
+
+    @yyleng = @yytext.length if @yytext
+
+    tag
+
+  setInput: (@input) ->
+    @tokens = Lexer.tokenize(@input)
+    @lines = @input.split(/\r\n|\n|\r/)
+    @yylineno = @yyleng = 0
+    @yylloc = {first_line:1,first_column:0,last_line:1,last_column:0}
+    @pos = 0
+
+  upcomingInput: ->
+    "ERRO"
+
+  prevText: (tokens = 5) ->
+    pos = Math.max(@pos - tokens, 0)
+    (t[1] for t in @tokens.slice(pos, @pos)).join(" ")
+
+  showPosition: ->
+    @lines[@yylineno]
 
 if window?
   window.ScriptedCss.Parser.Lexer = Lexer

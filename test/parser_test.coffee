@@ -18,20 +18,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-parserObj = require "scripted_css/parser"
-lexer     = require "scripted_css/parser/lexer"
-ast       = require "scripted_css/parser/ast"
-fs        = require "fs"
-
-parser =
-  parse: (input) ->
-    parserObj.parse(lexer.tokenize(input))
+parser = require "scripted_css/parser"
+lexer  = require "scripted_css/parser/lexer"
+ast    = require "scripted_css/parser/ast"
+fs     = require "fs"
 
 suite =
   "test it parsing metadata": (test) ->
     css = parser.parse("@media screen")
     test.same(css.rules[0].name, "media")
-    test.same(css.rules[0].value, "screen")
+    test.same(css.rules[0].value.string(), "screen")
     test.done()
 
   "test it parsing simple selector": (test) ->
@@ -224,7 +220,7 @@ suite =
   "test url function": (test) ->
     css = parser.parse("body {background: url(../testing/file.png)}")
     test.same(css.rules[0].attributes[0].values[0].name, "url")
-    test.same(css.rules[0].attributes[0].values[0].argumentsString(), "../testing/file.png")
+    test.same(css.rules[0].attributes[0].values[0].argumentsString(), "'../testing/file.png'")
     test.done()
 
   "test full complex attribute": (test) ->

@@ -63,6 +63,23 @@ suite["test lexing selectors"] = (test) ->
   ])
   test.done()
 
+suite["test some chain"] = (test) ->
+  tokens = Lexer.tokenize("* html .clearfix{height:1%;}")
+  test.same(tokens, [
+    ["IDENTIFIER", "*", 0]
+    ["SELECTOR_OPERATOR", " ", 0]
+    ["IDENTIFIER", "html", 0]
+    ["SELECTOR_OPERATOR", " ", 0]
+    ["IDENTIFIER", ".clearfix", 0]
+    ["{", "{", 0]
+    ["IDENTIFIER", "height", 0]
+    [":", ":", 0]
+    ["UNITNUMBER", "1%", 0]
+    [";", ";", 0]
+    ["}", "}", 0]
+  ])
+  test.done()
+
 separators = [' ', '+', ">", "~"]
 
 for sep in separators
@@ -81,11 +98,39 @@ for sep in separators
       test.done()
   )()
 
+for operator in ["=", "~=", "|=", "^=", "$=", "*="]
+  (->
+    op = operator
+
+    suite["test lexing selector attributes #{op}"] = (test) ->
+      tokens = Lexer.tokenize("input[type#{op}text] {}")
+      test.same(tokens, [
+        ["IDENTIFIER", "input", 0]
+        ["[", "[", 0]
+        ["IDENTIFIER", "type", 0]
+        [op, op, 0]
+        ["IDENTIFIER", "text", 0]
+        ["]", "]", 0]
+        ["{", "{", 0]
+        ["}", "}", 0]
+      ])
+      test.done()
+  )()
+
 suite["test lexing meta selector without params"] = (test) ->
   tokens = Lexer.tokenize("input:focus")
   test.same(tokens, [
     ["IDENTIFIER", "input", 0]
     [":", ":", 0]
+    ["IDENTIFIER", "focus", 0]
+  ])
+  test.done()
+
+suite["test lexing meta selector with double colons"] = (test) ->
+  tokens = Lexer.tokenize("input::focus")
+  test.same(tokens, [
+    ["IDENTIFIER", "input", 0]
+    ["::", "::", 0]
     ["IDENTIFIER", "focus", 0]
   ])
   test.done()
@@ -142,6 +187,20 @@ suite["test lexing urls"] = (test) ->
   ])
   test.done()
 
+suite["test lexing number units"] = (test) ->
+  tokens = Lexer.tokenize("{ margin: 50% 100pxx; }")
+  test.same(tokens, [
+    ["{", "{", 0]
+    ["IDENTIFIER", "margin", 0]
+    [":", ":", 0]
+    ["UNITNUMBER", "50%", 0]
+    ["NUMBER", "100", 0]
+    ["IDENTIFIER", "pxx", 0]
+    [";", ";", 0]
+    ["}", "}", 0]
+  ])
+  test.done()
+
 suite["test lexing !important"] = (test) ->
   tokens = Lexer.tokenize("{ margin: 5px !important}")
   test.same(tokens, [
@@ -154,7 +213,7 @@ suite["test lexing !important"] = (test) ->
   ])
   test.done()
 
-suite["text lexing complex function names"] = (test) ->
+suite["test lexing complex function names"] = (test) ->
   tokens = Lexer.tokenize("{filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#f4f4f4',endColorstr='#ececec');}")
   test.same(tokens, [
     ["{", "{", 0]
@@ -177,6 +236,35 @@ suite["text lexing complex function names"] = (test) ->
     [";", ";", 0]
     ["}", "}", 0]
   ])
+  test.done()
+
+suite["test lexing a multiline thing"] = (test) ->
+  css = "
+    body {\n
+      color: #333;\n
+      background: #f6f6f6 url(../images/background.png);\n
+    }
+  "
+
+  tokens = Lexer.tokenize(css)
+  test.same(tokens, [
+    ["IDENTIFIER", "body", 0]
+    ["{", "{", 0]
+    ["IDENTIFIER", "color", 1]
+    [":", ":", 1]
+    ["HEXNUMBER", "#333", 1]
+    [";", ";", 1]
+    ["IDENTIFIER", "background", 2]
+    [":", ":", 2]
+    ["HEXNUMBER", "#f6f6f6", 2]
+    ["IDENTIFIER", "url", 2]
+    ["(", "(", 2]
+    ["STRING", "'../images/background.png'", 2]
+    [")", ")", 2]
+    [";", ";", 2]
+    ["}", "}", 3]
+  ])
+
   test.done()
 
 global.testWrapper(suite)
