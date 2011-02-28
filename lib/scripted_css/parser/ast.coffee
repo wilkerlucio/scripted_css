@@ -271,6 +271,11 @@ CssAST =
 
   FunctionNode: class FunctionNode
     constructor: (@name, @arguments) ->
+      @namedArguments = {}
+
+      for arg in @arguments
+        if arg.namedArg
+          @namedArguments[arg.name] = arg.value
 
     argumentsString: -> collectStrings(@arguments).join(",")
     string: -> "#{@name}(#{@argumentsString()})"
@@ -299,6 +304,11 @@ CssAST =
   MultiLiteral: class MultiLiteral
     constructor: (@literals, @separator) ->
     string: -> collectStrings(@literals).join(@separator)
+
+  NamedArgumentNode: class NamedArgumentNode
+    constructor: (@name, @value) ->
+      @namedArg = true
+    string: -> "#{@name}=#{@value.string()}"
 
   ImportantNode: class ImportantNode
     constructor: ->
