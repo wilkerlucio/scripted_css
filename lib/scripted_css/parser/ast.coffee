@@ -20,6 +20,8 @@
 
 collectStrings = (list) -> (item.string() for item in list)
 
+Array.prototype.isArray = -> true
+
 CssAST =
   RulesNode: class RulesNode
     constructor: (rules) ->
@@ -115,7 +117,7 @@ CssAST =
 
       hash
 
-    string:           -> "#{@selector.string()} { #{@attributes.string()} }"
+    string:           -> "#{@selector.string()} #{@attributes.string()}"
 
   AttributeSet: class AttributeSet
     @expansions: {}
@@ -150,10 +152,12 @@ CssAST =
       else
         @hash[name] || null
 
-    string: -> collectStrings(@items).join("; ")
+    string: -> "{ " + collectStrings(@items).join("; ") + " }"
 
   MetaNode: class MetaNode
     constructor: (@name, @value) ->
+      if @value.isArray
+        @value = new AttributeSet(this, @value)
     string: -> "@#{@name} #{@value.string()}"
 
   SelectorNode: class SelectorNode

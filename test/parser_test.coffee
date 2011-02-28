@@ -33,12 +33,12 @@ suite =
   "test it parsing complex metadata": (test) ->
     css = parser.parse("@font-face { font-family: 'scarface'; src: url(scarface-webfont.eot); src: local('scarface'), url('scarface-webfont.ttf') format('truetype'); }")
     test.same(css.rules[0].name, "font-face")
-    test.same(css.rules[0].value[0].name, "font-family")
-    test.same(css.rules[0].value[0].value(), "'scarface'")
-    test.same(css.rules[0].value[1].name, "src")
-    test.same(css.rules[0].value[1].value(), "url('scarface-webfont.eot')")
-    test.same(css.rules[0].value[2].name, "src")
-    test.same(css.rules[0].value[2].value(), "local('scarface'), url('scarface-webfont.ttf') format('truetype')")
+    test.same(css.rules[0].value.items[0].name, "font-family")
+    test.same(css.rules[0].value.items[0].value(), "'scarface'")
+    test.same(css.rules[0].value.items[1].name, "src")
+    test.same(css.rules[0].value.items[1].value(), "url('scarface-webfont.eot')")
+    test.same(css.rules[0].value.items[2].name, "src")
+    test.same(css.rules[0].value.items[2].value(), "local('scarface'), url('scarface-webfont.ttf') format('truetype')")
     test.done()
 
   "test it parsing simple selector": (test) ->
@@ -60,8 +60,8 @@ suite =
     css = parser.parse("body, div { background: black }")
     test.same(css.rules[0].selector.string(), "body")
     test.same(css.rules[1].selector.string(), "div")
-    test.same(css.rules[0].attributes.string(), "background: black")
-    test.same(css.rules[1].attributes.string(), "background: black")
+    test.same(css.rules[0].attributes.string(), "{ background: black }")
+    test.same(css.rules[1].attributes.string(), "{ background: black }")
     test.done()
 
   "test compound selections": (test) ->
