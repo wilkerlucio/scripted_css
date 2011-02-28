@@ -45,7 +45,7 @@ CssAST =
     indexRule: (rule) ->
       if @elementRules[rule.selector.string()]
         @elementRules[rule.selector.string()].meta = @meta
-        @elementRules[rule.selector.string()].mergeAttributes(rule.attributes)
+        @elementRules[rule.selector.string()].attributes.merge(rule.attributes)
         false
       else
         rule.meta = @meta
@@ -62,7 +62,7 @@ CssAST =
           @selectorIndex[indexItem] ?= []
           @selectorIndex[indexItem].push(rule)
 
-        for name, attribute of rule.attributesHash
+        for name, attribute of rule.attributes.hash
           @attributes[attribute.name] ?= []
           @attributes[attribute.name].push(attribute)
 
@@ -92,7 +92,7 @@ CssAST =
       value = [new AttributeNode(attribute, []), 0]
 
       for rule in rules
-        attr = rule.attributesHash[attribute]
+        attr = rule.attributes.hash[attribute]
         if attr
           weight = attr.weight()
           value = [attr, weight] if weight > value[1]
@@ -105,33 +105,56 @@ CssAST =
 
   RuleNode: class RuleNode
     constructor: (@selector, attributes) ->
-      @attributes     = []
-      @attributesHash = {}
-
-      for attribute in attributes
-        @addAttribute(attribute)
-
-    addAttribute: (attribute) ->
-      attribute.rule = this
-      @attributes.push(attribute)
-      @attributesHash[attribute.name] = attribute
-
-    mergeAttributes: (attributes) -> @addAttribute(attribute) for attribute in attributes
+      @attributes = new AttributeSet(this, attributes)
 
     cssAttributes: ->
       hash = {}
 
-      for name, attr of @attributesHash
+      for name, attr of @attributes.hash
         hash[name] = attr.value()
 
       hash
 
-    attributesString: -> collectStrings(@attributes).join("; ")
-    string:           -> "#{@selector.string()} { #{@attributesString()} }"
+    string:           -> "#{@selector.string()} { #{@attributes.string()} }"
+
+  AttributeSet: class AttributeSet
+    @expansions: {}
+    @registerExpansion: (property, expansion) -> @expansions[property] = expansion
+
+    expansion: (name) ->
+      AttributeSet.expansions[name]
+
+    constructor: (@owner, attributes) ->
+      @attributeSet = true # for detection
+      @items        = []
+      @hash         = {}
+      @merge(attributes)
+
+    merge: (attributes) ->
+      if attributes.attributeSet
+        @merge(attributes.items)
+      else
+        @add(attribute) for attribute in attributes
+
+    add: (attribute) ->
+      if @expansion(attribute.name)
+        @merge(@expansion(attribute.name).explode(attribute))
+      else
+        attribute.rule = @owner
+        @items.push(attribute)
+        @hash[attribute.name] = attribute
+
+    get: (name) ->
+      if @expansion(name)
+        @expansion(name).implode(this, name)
+      else
+        @hash[name] || null
+
+    string: -> collectStrings(@items).join("; ")
 
   MetaNode: class MetaNode
     constructor: (@name, @value) ->
-    string: -> "@#{@name} #{@value}"
+    string: -> "@#{@name} #{@value.string()}"
 
   SelectorNode: class SelectorNode
     constructor: (@selector, @attributes = null, @meta = null) ->

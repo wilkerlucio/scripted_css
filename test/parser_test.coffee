@@ -60,8 +60,8 @@ suite =
     css = parser.parse("body, div { background: black }")
     test.same(css.rules[0].selector.string(), "body")
     test.same(css.rules[1].selector.string(), "div")
-    test.same(css.rules[0].attributesString(), "background: black")
-    test.same(css.rules[1].attributesString(), "background: black")
+    test.same(css.rules[0].attributes.string(), "background: black")
+    test.same(css.rules[1].attributes.string(), "background: black")
     test.done()
 
   "test compound selections": (test) ->
@@ -150,99 +150,99 @@ suite =
 
   "test simple attribute": (test) ->
     css = parser.parse("body {background: #fff}")
-    test.same(css.rules[0].attributes[0].name, "background")
-    test.same(css.rules[0].attributes[0].value(), "#fff")
+    test.same(css.rules[0].attributes.items[0].name, "background")
+    test.same(css.rules[0].attributes.items[0].value(), "#fff")
     test.done()
 
   "test attributes hash": (test) ->
     css = parser.parse("body {background: #fff; display: none; background: #000;}")
-    test.same(css.rules[0].attributesHash["background"].value(), "#000")
-    test.same(css.rules[0].attributesHash["display"].value(), "none")
+    test.same(css.rules[0].attributes.hash["background"].value(), "#000")
+    test.same(css.rules[0].attributes.hash["display"].value(), "none")
     test.done()
 
   "test multiple values": (test) ->
     css = parser.parse("body {background: #fff; color: #000;}")
-    test.same(css.rules[0].attributes[0].name, "background")
-    test.same(css.rules[0].attributes[0].value(), "#fff")
-    test.same(css.rules[0].attributes[1].name, "color")
-    test.same(css.rules[0].attributes[1].value(), "#000")
+    test.same(css.rules[0].attributes.items[0].name, "background")
+    test.same(css.rules[0].attributes.items[0].value(), "#fff")
+    test.same(css.rules[0].attributes.items[1].name, "color")
+    test.same(css.rules[0].attributes.items[1].value(), "#000")
     test.done()
 
   "test unit value": (test) ->
     css = parser.parse("body {margin: 10px;}")
-    test.same(css.rules[0].attributes[0].value(), "10px")
-    test.same(css.rules[0].attributes[0].values[0].number, 10)
-    test.same(css.rules[0].attributes[0].values[0].unit, "px")
+    test.same(css.rules[0].attributes.items[0].value(), "10px")
+    test.same(css.rules[0].attributes.items[0].values[0].number, 10)
+    test.same(css.rules[0].attributes.items[0].values[0].unit, "px")
     test.done()
 
   "test identifier value": (test) ->
     css = parser.parse("body {background: white;}")
-    test.same(css.rules[0].attributes[0].value(), "white")
+    test.same(css.rules[0].attributes.items[0].value(), "white")
     test.done()
 
   "test string value": (test) ->
     css = parser.parse("body {font-family: 'Times New Roman';}")
-    test.same(css.rules[0].attributes[0].value(), "'Times New Roman'")
-    test.same(css.rules[0].attributes[0].values[0].text, "Times New Roman")
+    test.same(css.rules[0].attributes.items[0].value(), "'Times New Roman'")
+    test.same(css.rules[0].attributes.items[0].values[0].text, "Times New Roman")
     test.done()
 
   "test 3 digit hex number value": (test) ->
     css = parser.parse("body {color: #f00;}")
-    test.same(css.rules[0].attributes[0].value(), "#f00")
+    test.same(css.rules[0].attributes.items[0].value(), "#f00")
     test.done()
 
   "test 6 digit hex number value": (test) ->
     css = parser.parse("body {color: #f00f12;}")
-    test.same(css.rules[0].attributes[0].value(), "#f00f12")
+    test.same(css.rules[0].attributes.items[0].value(), "#f00f12")
     test.done()
 
   "test number value": (test) ->
     css = parser.parse("body {margin: 0;}")
-    test.same(css.rules[0].attributes[0].value(), "0")
+    test.same(css.rules[0].attributes.items[0].value(), "0")
     test.done()
 
   "test unit number value": (test) ->
     css = parser.parse("body {margin: 10px;}")
-    test.same(css.rules[0].attributes[0].value(), "10px")
+    test.same(css.rules[0].attributes.items[0].value(), "10px")
     test.done()
 
   "test function value": (test) ->
     css = parser.parse("body {margin: minmax(100px, 200px);}")
-    test.same(css.rules[0].attributes[0].values[0].name, "minmax")
-    test.same(css.rules[0].attributes[0].values[0].argumentsString(), "100px,200px")
+    test.same(css.rules[0].attributes.items[0].values[0].name, "minmax")
+    test.same(css.rules[0].attributes.items[0].values[0].argumentsString(), "100px,200px")
     test.done()
 
   "test function with multi-item params": (test) ->
     css = parser.parse("body {background: gradient(linear, left top, left bottom);}")
-    test.same(css.rules[0].attributes[0].values[0].name, "gradient")
-    test.same(css.rules[0].attributes[0].values[0].arguments[0].string(), "linear")
-    test.same(css.rules[0].attributes[0].values[0].arguments[1].string(), "left top")
-    test.same(css.rules[0].attributes[0].values[0].arguments[2].string(), "left bottom")
+    test.same(css.rules[0].attributes.items[0].values[0].name, "gradient")
+    test.same(css.rules[0].attributes.items[0].values[0].arguments[0].string(), "linear")
+    test.same(css.rules[0].attributes.items[0].values[0].arguments[1].string(), "left top")
+    test.same(css.rules[0].attributes.items[0].values[0].arguments[2].string(), "left bottom")
     test.done()
 
   "test IE filter function": (test) ->
     css = parser.parse("body {filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#f4f4f4',endColorstr='#ececec');}")
-    test.same(css.rules[0].attributes[0].values[0].name, "progid:DXImageTransform.Microsoft.gradient")
-    test.same(css.rules[0].attributes[0].values[0].namedArguments["GradientType"].string(), "0")
-    test.same(css.rules[0].attributes[0].values[0].namedArguments["startColorstr"].string(), "'#f4f4f4'")
-    test.same(css.rules[0].attributes[0].values[0].namedArguments["endColorstr"].string(), "'#ececec'")
+    test.same(css.rules[0].attributes.items[0].values[0].name, "progid:DXImageTransform.Microsoft.gradient")
+    test.same(css.rules[0].attributes.items[0].values[0].namedArguments["GradientType"].string(), "0")
+    test.same(css.rules[0].attributes.items[0].values[0].namedArguments["startColorstr"].string(), "'#f4f4f4'")
+    test.same(css.rules[0].attributes.items[0].values[0].namedArguments["endColorstr"].string(), "'#ececec'")
     test.done()
 
   "test url function": (test) ->
     css = parser.parse("body {background: url(../testing/file.png)}")
-    test.same(css.rules[0].attributes[0].values[0].name, "url")
-    test.same(css.rules[0].attributes[0].values[0].argumentsString(), "'../testing/file.png'")
+    test.same(css.rules[0].attributes.items[0].values[0].name, "url")
+    test.same(css.rules[0].attributes.items[0].values[0].argumentsString(), "'../testing/file.png'")
     test.done()
 
   "test full complex attribute": (test) ->
     css = parser.parse("body {display: 'aaa' / 20px 'bcc' 100px * minmax(80px, 120px);}")
-    test.same(css.rules[0].attributes[0].value(), "'aaa' / 20px 'bcc' 100px * minmax(80px,120px)")
+    test.same(css.rules[0].attributes.items[0].value(), "'aaa' / 20px 'bcc' 100px * minmax(80px,120px)")
     test.done()
 
   "test multi-item value": (test) ->
     css = parser.parse("body {display: a, b, c d;}")
-    test.same(css.rules[0].attributes[0].values[0].string(), "a, b, c")
-    test.same(css.rules[0].attributes[0].values[1].string(), "d")
+    test.same(css.rules[0].attributes.items[0].values[0].string(), "a, b, c")
+    test.same(css.rules[0].attributes.items[0].values[1].string(), "d")
     test.done()
 
   "test selector generating string": (test) ->

@@ -25,7 +25,7 @@ class ScriptedCss.Modules.BorderRadius
   parseCss: (css) ->
     # TODO: parse individual edges
     for attr in css.attribute("border-radius")
-      attr.rule.addAttribute(ScriptedCss.createAttribute("-moz-border-radius", attr.value()))
-      attr.rule.addAttribute(ScriptedCss.createAttribute("-webkit-border-radius", attr.value()))
+      attr.rule.attributes.add(ScriptedCss.createAttribute("-moz-border-radius", attr.value()))
+      attr.rule.attributes.add(ScriptedCss.createAttribute("-webkit-border-radius", attr.value()))
 
 ScriptedCss.Modules.register(ScriptedCss.Modules.BorderRadius)

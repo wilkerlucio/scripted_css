@@ -39,9 +39,9 @@ suite =
   "test merging rules attributes": (test) ->
     css = parser.parse("body {background: #000; display: block} body {display: inline; color: #fff}")
     test.same(css.attribute("display").length, 1)
-    test.same(css.elementRules["body"].attributesHash["background"].value(), "#000")
-    test.same(css.elementRules["body"].attributesHash["display"].value(), "inline")
-    test.same(css.elementRules["body"].attributesHash["color"].value(), "#fff")
+    test.same(css.elementRules["body"].attributes.get("background").value(), "#000")
+    test.same(css.elementRules["body"].attributes.get("display").value(), "inline")
+    test.same(css.elementRules["body"].attributes.get("color").value(), "#fff")
     test.done()
 
   "test selector index": (test) ->
