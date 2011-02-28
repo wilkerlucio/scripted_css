@@ -18,4 +18,5 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-ScriptedCss.CssParser.yy = CssAST
+ScriptedCss.CssParser.lexer = ScriptedCss.CssParser.Lexer.integrator
+ScriptedCss.CssParser.yy    = CssAST

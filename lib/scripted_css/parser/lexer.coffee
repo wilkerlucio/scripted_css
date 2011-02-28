@@ -246,6 +246,6 @@ Lexer.integrator =
     @lines[@yylineno]
 
 if window?
-  window.ScriptedCss.Parser.Lexer = Lexer
+  window.ScriptedCss.CssParser.Lexer = Lexer
 if module?
   module.exports = Lexer
