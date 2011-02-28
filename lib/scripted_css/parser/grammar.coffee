@@ -31,6 +31,7 @@ o = (patternString, action, options) ->
 
 grammar =
   Root: [
+    ["",      "$$ = new yy.RulesNode([]); return $$"]
     ["Rules", "$$ = new yy.RulesNode($1); return $$"]
   ]
 
