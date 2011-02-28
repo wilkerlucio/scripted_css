@@ -34,14 +34,19 @@
 				$("#compile-input").click(function() {
 					var source = $("#source-area").val();
 					var tokens = ScriptedCss.CssParser.Lexer.tokenize(source);
-					var output = ScriptedCss.CssParser.parse(source).string();
+					var css = ScriptedCss.CssParser.parse(source);
+
+					ScriptedCss.trigger("scriptLoaded", css);
+					ScriptedCss.trigger("cssReady", css);
+
+					var output = css.string();
 
 					var tokenString = "";
 
 					for (var i = 0; i < tokens.length; i++) {
 						var token = tokens[i];
 
-						tokenString += "[" + token[0] + ", '" + token[1] + "']\n";
+						tokenString += "[" + token[0] + ", " + token[1] + "]\n";
 					}
 
 					$("#tokens-area").val(tokenString);
