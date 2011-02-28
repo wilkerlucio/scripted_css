@@ -90,11 +90,12 @@ Lexer =
 
         return input.length
 
-      if match = /^(\s+)[^,{]/.exec @chunk
+      if match = /^(\s+)/.exec @chunk
         [input, space] = match
-        @token("SELECTOR_OPERATOR", ' ')
+        unless @chunk.charAt(input.length).match(/^[,{]/)
+          @token("SELECTOR_OPERATOR", ' ')
 
-        return space.length
+          return space.length
 
     if @scope == "SELECTOR_ATTRIBUTE"
       if match = /^\]/.exec @chunk

@@ -80,6 +80,19 @@ suite["test some chain"] = (test) ->
   ])
   test.done()
 
+suite["some tabs"] = (test) ->
+  tokens = Lexer.tokenize("\t\t\t#top     { position: a; }")
+  test.same(tokens, [
+    ["IDENTIFIER", "#top", 0]
+    ["{", "{", 0]
+    ["IDENTIFIER", "position", 0]
+    [":", ":", 0]
+    ["IDENTIFIER", "a", 0]
+    [";", ";", 0]
+    ["}", "}", 0]
+  ])
+  test.done()
+
 separators = [' ', '+', ">", "~"]
 
 for sep in separators
