@@ -153,7 +153,7 @@ Lexer =
 
   whitespaceToken: ->
     return 0 unless match = WHITESPACE.exec @chunk
-    [input] = @chunk
+    [input] = match
 
     input.length
 
