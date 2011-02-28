@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>ScriptedCSS: Template Layout Module</title>
+		<script type="text/scripted-css">
+			#container {
+				display: ".aa." / 80px
+								 "...." / 20px
+								 ".bc."
+									* 90px 500px *;
+			}
+
+			#container::slot(a) { background: #f00 }
+			#container::slot(b) { background: #00f }
+
+			#top     { position: a; }
+			#menu    { position: b; }
+			#content { position: c; }
+
+			.infoblock {
+				display: "aa" "bc";
+				width: 200px;
+				margin-left: 20px;
+		 }
+
+		 .infoblock .header { position: a; text-align: center }
+		 .infoblock .left { position: b; }
+		 .infoblock .right { position: c; }
+
+		 .infoblock::slot(a) { background: #eee; }
+		 .infoblock::slot(b) { background: #0f0; }
+		 .infoblock::slot(c) { background: #ddd; }
+
+		</script>
+		<script type="text/javascript" src="../vendor/jquery-1.5.min.js"></script>
+		<script type="text/javascript" src="../js/scripted_css.js"></script>
+		<script type="text/javascript" src="../js/scripted_css/css_parser.js"></script>
+		<script type="text/javascript" src="../js/scripted_css/jquery.js"></script>
+		<script type="text/javascript" src="../js/scripted_css/modules.js"></script>
+		<script type="text/javascript" src="../js/scripted_css/modules/template_layout.js"></script>
+	</head>
+	<body>
+		<div id="container">
+			<div id="top">top</div>
+			<div id="menu">menu</div>
+			<div id="content">
+				Some content
+				<div class="infoblock">
+					<div class="header">Some header</div>
+					<div class="left">Left Info</div>
+					<div class="right">Right Info</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
