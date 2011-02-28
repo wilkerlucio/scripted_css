@@ -18,48 +18,188 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-lexer =
-  rules: [
-    ["url",                                               "return 'URLIDENTIFIER';"]
-    ["#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})\\b",               "return 'HEXNUMBER'"]
-    ["[!]important\\b",                                   "return 'IMPORTANT'"]
-    ["-?\\d+(\\.\\d+)?(%|in|cm|mm|em|ex|pt|pc|px|ms|s)",  "return 'UNITNUMBER'"]
-    ["-?\\.\\d+(%|in|cm|mm|em|ex|pt|pc|px|ms|s)",         "return 'UNITNUMBER'"]
-    ["-?\\d+(\\.\\d+)?",                                  "return 'NUMBER'"]
-    ["-?\\.\\d+",                                         "return 'NUMBER'"]
-    ["[.#]?[a-zA-Z_-][a-zA-Z0-9_-]*[.#][a-zA-Z0-9.#_-]+", "return 'SELECTOR';"]
-    ["[a-zA-Z_-][a-zA-Z0-9_-]*",                          "return 'IDENTIFIER';"]
-    ["(\"[^\"]*\"|'[^']*')",                              "return 'STRING';"]
-    ["\\s+",                                              "/* skip whitespaces */"]
-    ["\\/\\*.*?\\*\\/",                                   "/* skip comments */"]
-    ["\\@",                                               "return '@';"]
-    ["\\$",                                               "return '$';"]
-    ["\\+",                                               "return '+';"]
-    ["\\{",                                               "return '{';"]
-    ["\\}",                                               "return '}';"]
-    ["\\(",                                               "return '(';"]
-    ["\\)",                                               "return ')';"]
-    ["\\[",                                               "return '[';"]
-    ["\\]",                                               "return ']';"]
-    ["\\<",                                               "return '<';"]
-    ["\\>",                                               "return '>';"]
-    ["\\^",                                               "return '^';"]
-    ["\\?",                                               "return '?';"]
-    ["\\&",                                               "return '&';"]
-    ["\\!",                                               "return '!';"]
-    ["\\~",                                               "return '~';"]
-    ["=",                                                 "return '=';"]
-    ["\\-",                                               "return '-';"]
-    ["\\|",                                               "return '|';"]
-    ["\\#",                                               "return '#';"]
-    ["\\.",                                               "return '.';"]
-    ["::",                                                "return '::';"]
-    [":",                                                 "return ':';"]
-    [";",                                                 "return ';';"]
-    ["\\*",                                               "return '*';"]
-    ["\\\\",                                              "return '\';"]
-    ["\\/",                                               "return '/';"]
-    [",",                                                 "return ',';"]
-  ]
+IDENTIFIER = /^[a-zA-Z_-][a-zA-Z0-9_-]*/
+METAID     = /^@([a-zA-Z_-][a-zA-Z0-9_-]*)/
+SELECTOR   = /^[.#]?[a-zA-Z_-]([a-zA-Z0-9.#_-]*[a-zA-Z0-9_-])?/
+ATTRID     = /^[*]?[a-zA-Z_-][a-zA-Z0-9_-]*/
+NEWLINE    = /^\n/
+WHITESPACE = /^[^\n\S]+/
+NUMBER     = /^-?(\d+(\.\d+)?|\.\d+)/
+UNITNUMBER = /^-?(\d+(\.\d+)?|\.\d+)(%|in|cm|mm|em|ex|pt|pc|px|ms|s)\b/
+HEXNUMBER  = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})\b/
+STRING     = /^(?:"([^"]*)"|'([^']*)')/
 
-module.exports = lexer
+COMMENT    = /^\/\*(.|\n)*?\*\//m
+
+OPERATORS  = /// ^ (
+  ?: ::
+   | [~|^$*]=
+) ///
+
+Lexer =
+  tokenize: (code) ->
+    code     = code.replace(/\r\n|\r/, "\n")
+
+    @code   = code
+    @line   = 0
+    @tokens = []
+    @i      = 0
+    @scope  = 'INITIAL'
+
+    while @chunk = code.slice(@i)
+      @i += @specialToken()    or
+            @identifierToken() or
+            @commentToken()    or
+            @whitespaceToken() or
+            @newlineToken()    or
+            @stringToken()     or
+            @numberToken()     or
+            @literalToken()
+
+    @tokens
+
+  # CSS has some different rules for identifiers depending on context
+  # this specialToken handles some of special cases needed
+  specialToken: ->
+    if @scope == "INITIAL" or @scope == "SELECTOR"
+      if match = METAID.exec @chunk
+        [input, id] = match
+        @token("@", "@")
+        @token("IDENTIFIER", id)
+        @scope = "METASELECTOR"
+
+        return input.length
+
+      if match = SELECTOR.exec @chunk
+        [input] = match
+        @scope  = "SELECTOR"
+        @token("IDENTIFIER", input)
+
+        return input.length
+
+    if @scope == "SELECTOR"
+      if match = /^\s*([+>~])\s*/.exec @chunk
+        [input, operator] = match
+        @token("SELECTOR_OPERATOR", operator)
+
+        return input.length
+
+      if match = /^(\s+)[^,{]/.exec @chunk
+        [input, space] = match
+        @token("SELECTOR_OPERATOR", ' ')
+
+        return space.length
+
+    if @scope == "ATTRIBUTE_NAME"
+      if match = ATTRID.exec @chunk
+        [input] = match
+        @token("IDENTIFIER", input)
+        return input.length
+
+    if @scope == "ATTRIBUTE_VALUE"
+      if match = /^url\s*\(\s*([^'"].+?)\s*\)/.exec @chunk
+        [input, value] = match
+        @token("IDENTIFIER", "url")
+        @token("(", "(")
+        @token("STRING", "'#{value}'")
+        @token(")", ")")
+
+        return input.length
+
+      if match = /^[!]important\b/.exec @chunk
+        [input] = match
+        @token("IMPORTANT", input)
+
+        return input.length
+
+      if match = /^[a-zA-Z_-]([a-zA-Z0-9:._-]*[a-zA-Z0-9])?/.exec @chunk
+        [input] = match
+        @token("IDENTIFIER", input)
+
+        return input.length
+
+    return 0
+
+  identifierToken: ->
+    return 0 unless match = IDENTIFIER.exec @chunk
+    [input] = match
+
+    @token("IDENTIFIER", input)
+
+    input.length
+
+  commentToken: ->
+    return 0 unless match = COMMENT.exec @chunk
+    [input] = match
+
+    lines = input.split("\n")
+    @line += lines.length - 1
+
+    input.length
+
+  whitespaceToken: ->
+    return 0 unless match = WHITESPACE.exec @chunk
+    [input] = @chunk
+
+    input.length
+
+  newlineToken: ->
+    return 0 unless match = NEWLINE.exec @chunk
+    [input] = match
+
+    @line += 1
+
+    input.length
+
+  stringToken: ->
+    return 0 unless match = STRING.exec @chunk
+    [input] = match
+
+    string = input
+    @token("STRING", string)
+
+    input.length
+
+  numberToken: ->
+    input = null
+
+    if match = HEXNUMBER.exec @chunk
+      [input] = match
+      @token("HEXNUMBER", input)
+    else if match = UNITNUMBER.exec @chunk
+      [input] = match
+      @token("UNITNUMBER", input)
+    else if match = NUMBER.exec @chunk
+      [input] = match
+      @token("NUMBER", input)
+
+    if input then input.length else 0
+
+  literalToken: ->
+    value = @chunk.charAt(0)
+    @token(value, value)
+
+    if @scope == "SELECTOR" and value == ","
+      @scope = "INITIAL"
+
+    if @scope == "ATTRIBUTE_NAME" and value == ":"
+      @scope = "ATTRIBUTE_VALUE"
+
+    if @scope == "ATTRIBUTE_VALUE" and value == ";"
+      @scope = "ATTRIBUTE_NAME"
+
+    if value == "{"
+      @scope = "ATTRIBUTE_NAME"
+
+    if value == "}"
+      @scope = "INITIAL"
+
+    1
+
+  token: (tag, value) ->
+    @tokens.push([tag, value, @line])
+
+if window?
+  window.ScriptedCss.Parser.Lexer = Lexer
+if module?
+  module.exports = Lexer

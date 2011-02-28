@@ -18,9 +18,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-parser = require "scripted_css/parser"
-ast    = require "scripted_css/parser/ast"
-fs     = require "fs"
+parserObj = require "scripted_css/parser"
+lexer     = require "scripted_css/parser/lexer"
+ast       = require "scripted_css/parser/ast"
+fs        = require "fs"
+
+parser =
+  parse: (input) ->
+    parserObj.parse(lexer.tokenize(input))
 
 suite =
   "test it parsing metadata": (test) ->
@@ -123,6 +128,19 @@ suite =
     test.same(css.rules[0].selector.meta.string(), "::slot(a)")
     test.done()
 
+  "test it parsing meta selector without tag": (test) ->
+    css = parser.parse(":focus {}")
+    test.same(css.rules[0].selector.selector, "*")
+    test.same(css.rules[0].selector.meta.string(), ":focus")
+    test.done()
+
+  "test it parsing selector with a meta selector as nested one": (test) ->
+    css = parser.parse("body :focus {}")
+    test.same(css.rules[0].selector.selector, "body")
+    test.same(css.rules[0].selector.next.selector, "*")
+    test.same(css.rules[0].selector.next.meta.string(), ":focus")
+    test.done()
+
   "test simple attribute": (test) ->
     css = parser.parse("body {background: #fff}")
     test.same(css.rules[0].attributes[0].name, "background")
@@ -196,13 +214,12 @@ suite =
     test.done()
 
   "test IE filter function": (test) ->
-    # css = parser.parse("body {filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#f4f4f4',endColorstr='#ececec');}")
-    # test.same(css.rules[0].attributes[0].values[0].name, "progid:DXImageTransform.Microsoft.gradient")
-    # test.same(css.rules[0].attributes[0].values[0].arguments[0].string(), "GradientType=0")
-    # test.same(css.rules[0].attributes[0].values[0].arguments[0].string(), "startColorstr='#f4f4f4'")
-    # test.same(css.rules[0].attributes[0].values[0].arguments[0].string(), "endColorstr='#ececec'")
+    css = parser.parse("body {filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#f4f4f4',endColorstr='#ececec');}")
+    test.same(css.rules[0].attributes[0].values[0].name, "progid:DXImageTransform.Microsoft.gradient")
+    test.same(css.rules[0].attributes[0].values[0].namedArguments["GradientType"].string(), "0")
+    test.same(css.rules[0].attributes[0].values[0].namedArguments["startColorstr"].string(), "'#f4f4f4'")
+    test.same(css.rules[0].attributes[0].values[0].namedArguments["endColorstr"].string(), "'#ececec'")
     test.done()
-
 
   "test url function": (test) ->
     css = parser.parse("body {background: url(../testing/file.png)}")

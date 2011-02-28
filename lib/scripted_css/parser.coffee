@@ -25,7 +25,6 @@ grammar = require "#{__dirname}/parser/grammar"
 lexer   = require "#{__dirname}/parser/lexer"
 
 parser = new Parser(
-  lex:         lexer
   bnf:         grammar
   startSymbol: "Root"
 )
