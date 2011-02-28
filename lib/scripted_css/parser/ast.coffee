@@ -69,7 +69,7 @@ CssAST =
     rulesForElement: (element) ->
       rules           = []
       rulesHash       = {}
-      relativeIndexes = []
+      relativeIndexes = ["*"]
 
       elementClasses = if element.className then element.className.split(" ") else []
       elementClasses = ("." + klass for klass in elementClasses)
@@ -220,7 +220,7 @@ CssAST =
             return false unless hasClass
             break
           else
-            return false unless part.toUpperCase() == elementTag
+            return false unless part == "*" or part.toUpperCase() == elementTag
 
       true
 
