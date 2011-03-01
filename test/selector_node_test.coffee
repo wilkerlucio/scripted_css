@@ -18,39 +18,31 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-{SelectorNode} = require "scripted_css/parser/ast"
+SelectorNode = CssAST.SelectorNode
 
-suite =
-  "test spliting selector parts": (test) ->
-    selector = new SelectorNode("div#id.name.other")
-    test.same(selector.parts(), ["div", "#id", ".name", ".other"])
-    test.done()
+module "Selector Node"
 
-  "test calculating selector weight use 1 for tag selection": (test) ->
-    selector = new SelectorNode("div")
-    test.same(selector.weight(), 1)
-    test.done()
+test "test spliting selector parts", ->
+  selector = new SelectorNode("div#id.name.other")
+  same(selector.parts(), ["div", "#id", ".name", ".other"])
 
-  "test calculating selector weight use 10 for class selection": (test) ->
-    selector = new SelectorNode(".something")
-    test.same(selector.weight(), 10)
-    test.done()
+test "test calculating selector weight use 1 for tag selection", ->
+  selector = new SelectorNode("div")
+  same(selector.weight(), 1)
 
-  "test calculating selector weight use 100 for id selection": (test) ->
-    selector = new SelectorNode("#menu")
-    test.same(selector.weight(), 100)
-    test.done()
+test "test calculating selector weight use 10 for class selection", ->
+  selector = new SelectorNode(".something")
+  same(selector.weight(), 10)
 
-  "test calculating selector weight accumulate items": (test) ->
-    selector = new SelectorNode("div.name.other")
-    test.same(selector.weight(), 21)
-    test.done()
+test "test calculating selector weight use 100 for id selection", ->
+  selector = new SelectorNode("#menu")
+  same(selector.weight(), 100)
 
-  "test calculating selector weight accumulate nested items": (test) ->
-    selector = new SelectorNode("#menu")
-    selector.nestSelector(new SelectorNode("div.name.other"))
-    test.same(selector.weight(), 121)
-    test.done()
+test "test calculating selector weight accumulate items", ->
+  selector = new SelectorNode("div.name.other")
+  same(selector.weight(), 21)
 
-global.testWrapper(suite)
-module.exports = suite
+test "test calculating selector weight accumulate nested items", ->
+  selector = new SelectorNode("#menu")
+  selector.nestSelector(new SelectorNode("div.name.other"))
+  same(selector.weight(), 121)

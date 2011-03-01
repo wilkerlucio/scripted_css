@@ -18,29 +18,27 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-Lexer = require("scripted_css/parser/lexer")
+Lexer = ScriptedCss.CssParser.Lexer
 
-suite = {}
+module "Lexer"
 
-suite["test simple identifier"] = (test) ->
+test "test simple identifier", ->
   tokens = Lexer.tokenize("body")
-  test.same(tokens, [["IDENTIFIER", "body", 0]])
-  test.done()
+  same(tokens, [["IDENTIFIER", "body", 0]], "")
 
-suite["test skip comments"] = (test) ->
+test "test skip comments", ->
   tokens = Lexer.tokenize("
     /* some comment * here */\n
     @media screen
   ")
 
-  test.same(tokens, [
+  same(tokens, [
     ["@", "@", 1]
     ["IDENTIFIER", "media", 1]
     ["IDENTIFIER", "screen", 1]
   ])
-  test.done()
 
-suite["test skip multiline comments"] = (test) ->
+test "test skip multiline comments", ->
   tokens = Lexer.tokenize("
     /*\n
       some multiline\n
@@ -49,23 +47,21 @@ suite["test skip multiline comments"] = (test) ->
     */\n
     @media screen
   ")
-  test.same(tokens, [
+  same(tokens, [
     ["@", "@", 5]
     ["IDENTIFIER", "media", 5]
     ["IDENTIFIER", "screen", 5]
   ])
-  test.done()
 
-suite["test lexing selectors"] = (test) ->
+test "test lexing selectors", ->
   tokens = Lexer.tokenize("div.some#id")
-  test.same(tokens, [
+  same(tokens, [
     ["IDENTIFIER", "div.some#id", 0]
   ])
-  test.done()
 
-suite["test some chain"] = (test) ->
+test "test some chain", ->
   tokens = Lexer.tokenize("* html .clearfix{height:1%;}")
-  test.same(tokens, [
+  same(tokens, [
     ["IDENTIFIER", "*", 0]
     ["SELECTOR_OPERATOR", " ", 0]
     ["IDENTIFIER", "html", 0]
@@ -78,11 +74,10 @@ suite["test some chain"] = (test) ->
     [";", ";", 0]
     ["}", "}", 0]
   ])
-  test.done()
 
-suite["some tabs"] = (test) ->
+test "some tabs", ->
   tokens = Lexer.tokenize("\t\t\t#top     { position: a; }")
-  test.same(tokens, [
+  same(tokens, [
     ["IDENTIFIER", "#top", 0]
     ["{", "{", 0]
     ["IDENTIFIER", "position", 0]
@@ -91,7 +86,6 @@ suite["some tabs"] = (test) ->
     [";", ";", 0]
     ["}", "}", 0]
   ])
-  test.done()
 
 separators = [' ', '+', ">", "~"]
 
@@ -99,25 +93,23 @@ for sep in separators
   (->
     separator = sep
 
-    suite["test lexing selector '#{separator}' separator"] = (test) ->
+    test "test lexing selector '#{separator}' separator", ->
       tokens = Lexer.tokenize("body #{separator} div , p")
-      test.same(tokens[0][0], "IDENTIFIER")
-      test.same(tokens[1][0], "SELECTOR_OPERATOR")
-      test.same(tokens[1][1], separator)
-      test.same(tokens[2][0], "IDENTIFIER")
-      test.same(tokens[3][0], ",")
-      test.same(tokens[4][0], "IDENTIFIER")
-
-      test.done()
+      same(tokens[0][0], "IDENTIFIER")
+      same(tokens[1][0], "SELECTOR_OPERATOR")
+      same(tokens[1][1], separator)
+      same(tokens[2][0], "IDENTIFIER")
+      same(tokens[3][0], ",")
+      same(tokens[4][0], "IDENTIFIER")
   )()
 
 for operator in ["=", "~=", "|=", "^=", "$=", "*="]
   (->
     op = operator
 
-    suite["test lexing selector attributes #{op}"] = (test) ->
+    test "test lexing selector attributes #{op}", ->
       tokens = Lexer.tokenize("input[type#{op}text] {}")
-      test.same(tokens, [
+      same(tokens, [
         ["IDENTIFIER", "input", 0]
         ["[", "[", 0]
         ["IDENTIFIER", "type", 0]
@@ -127,30 +119,27 @@ for operator in ["=", "~=", "|=", "^=", "$=", "*="]
         ["{", "{", 0]
         ["}", "}", 0]
       ])
-      test.done()
   )()
 
-suite["test lexing meta selector without params"] = (test) ->
+test "test lexing meta selector without params", ->
   tokens = Lexer.tokenize("input:focus")
-  test.same(tokens, [
+  same(tokens, [
     ["IDENTIFIER", "input", 0]
     [":", ":", 0]
     ["IDENTIFIER", "focus", 0]
   ])
-  test.done()
 
-suite["test lexing meta selector with double colons"] = (test) ->
+test "test lexing meta selector with double colons", ->
   tokens = Lexer.tokenize("input::focus")
-  test.same(tokens, [
+  same(tokens, [
     ["IDENTIFIER", "input", 0]
     ["::", "::", 0]
     ["IDENTIFIER", "focus", 0]
   ])
-  test.done()
 
-suite["test lexing meta selector with params"] = (test) ->
+test "test lexing meta selector with params", ->
   tokens = Lexer.tokenize("field:custom(some , things) div")
-  test.same(tokens, [
+  same(tokens, [
     ["IDENTIFIER", "field", 0]
     [":", ":", 0]
     ["IDENTIFIER", "custom", 0]
@@ -162,33 +151,30 @@ suite["test lexing meta selector with params"] = (test) ->
     ["SELECTOR_OPERATOR", " ", 0]
     ["IDENTIFIER", "div", 0]
   ])
-  test.done()
 
-suite["test lexing basic attribute"] = (test) ->
+test "test lexing basic attribute", ->
   tokens = Lexer.tokenize("{ margin-top: 10px }")
-  test.same(tokens, [
+  same(tokens, [
     ["{", "{", 0]
     ["IDENTIFIER", "margin-top", 0]
     [":", ":", 0]
     ["UNITNUMBER", "10px", 0]
     ["}", "}", 0]
   ])
-  test.done()
 
-suite["test lexing IE7 hack attribute"] = (test) ->
+test "test lexing IE7 hack attribute", ->
   tokens = Lexer.tokenize("{ *margin-top: 10px }")
-  test.same(tokens, [
+  same(tokens, [
     ["{", "{", 0]
     ["IDENTIFIER", "*margin-top", 0]
     [":", ":", 0]
     ["UNITNUMBER", "10px", 0]
     ["}", "}", 0]
   ])
-  test.done()
 
-suite["test lexing urls"] = (test) ->
+test "test lexing urls", ->
   tokens = Lexer.tokenize("{ background: url ( ../some_crazy/url.gif?id=5 ) }")
-  test.same(tokens, [
+  same(tokens, [
     ["{", "{", 0]
     ["IDENTIFIER", "background", 0]
     [":", ":", 0]
@@ -198,11 +184,10 @@ suite["test lexing urls"] = (test) ->
     [")", ")", 0]
     ["}", "}", 0]
   ])
-  test.done()
 
-suite["test lexing number units"] = (test) ->
+test "test lexing number units", ->
   tokens = Lexer.tokenize("{ margin: 50% 100pxx; }")
-  test.same(tokens, [
+  same(tokens, [
     ["{", "{", 0]
     ["IDENTIFIER", "margin", 0]
     [":", ":", 0]
@@ -212,11 +197,10 @@ suite["test lexing number units"] = (test) ->
     [";", ";", 0]
     ["}", "}", 0]
   ])
-  test.done()
 
-suite["test lexing !important"] = (test) ->
+test "test lexing !important", ->
   tokens = Lexer.tokenize("{ margin: 5px !important}")
-  test.same(tokens, [
+  same(tokens, [
     ["{", "{", 0]
     ["IDENTIFIER", "margin", 0]
     [":", ":", 0]
@@ -224,11 +208,10 @@ suite["test lexing !important"] = (test) ->
     ["IMPORTANT", "!important", 0]
     ["}", "}", 0]
   ])
-  test.done()
 
-suite["test lexing complex function names"] = (test) ->
+test "test lexing complex function names", ->
   tokens = Lexer.tokenize("{filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#f4f4f4',endColorstr='#ececec');}")
-  test.same(tokens, [
+  same(tokens, [
     ["{", "{", 0]
     ["IDENTIFIER", "filter", 0]
     [":", ":", 0]
@@ -249,18 +232,16 @@ suite["test lexing complex function names"] = (test) ->
     [";", ";", 0]
     ["}", "}", 0]
   ])
-  test.done()
 
-suite["test lexing a multiline thing"] = (test) ->
+test "test lexing a multiline thing", ->
   css = "
     body {\n
       color: #333;\n
       background: #f6f6f6 url(../images/background.png);\n
     }
   "
-
   tokens = Lexer.tokenize(css)
-  test.same(tokens, [
+  same(tokens, [
     ["IDENTIFIER", "body", 0]
     ["{", "{", 0]
     ["IDENTIFIER", "color", 1]
@@ -277,8 +258,3 @@ suite["test lexing a multiline thing"] = (test) ->
     [";", ";", 2]
     ["}", "}", 3]
   ])
-
-  test.done()
-
-global.testWrapper(suite)
-module.exports = suite

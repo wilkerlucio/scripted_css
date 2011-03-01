@@ -20,7 +20,11 @@
 
 (($) ->
   window.ScriptedCss =
+    autoStart: true
+
     start: ->
+      return unless ScriptedCss.autoStart
+
       originalDisplay = $(document.body).css("display")
       $(document.body).css(display: "none")
 

@@ -18,257 +18,230 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-parser = require "scripted_css/parser"
-lexer  = require "scripted_css/parser/lexer"
-ast    = require "scripted_css/parser/ast"
-fs     = require "fs"
+parser = ScriptedCss.CssParser
+ast    = CssAST
 
-suite =
-  "test it parsing metadata": (test) ->
-    css = parser.parse("@media screen")
-    test.same(css.rules[0].name, "media")
-    test.same(css.rules[0].value.string(), "screen")
-    test.done()
+module "Parser"
 
-  "test it parsing complex metadata": (test) ->
-    css = parser.parse("@font-face { font-family: 'scarface'; src: url(scarface-webfont.eot); src: local('scarface'), url('scarface-webfont.ttf') format('truetype'); }")
-    test.same(css.rules[0].name, "font-face")
-    test.same(css.rules[0].value.items[0].name, "font-family")
-    test.same(css.rules[0].value.items[0].value(), "'scarface'")
-    test.same(css.rules[0].value.items[1].name, "src")
-    test.same(css.rules[0].value.items[1].value(), "url('scarface-webfont.eot')")
-    test.same(css.rules[0].value.items[2].name, "src")
-    test.same(css.rules[0].value.items[2].value(), "local('scarface'), url('scarface-webfont.ttf') format('truetype')")
-    test.done()
+test "test it parsing metadata", ->
+  css = parser.parse("@media screen")
+  same(css.rules[0].name, "media")
+  same(css.rules[0].value.string(), "screen")
 
-  "test it parsing simple selector": (test) ->
-    css = parser.parse("body {}")
-    test.same(css.rules[0].selector.string(), "body")
-    test.done()
+test "test it parsing complex metadata", ->
+  css = parser.parse("@font-face { font-family: 'scarface'; src: url(scarface-webfont.eot); src: local('scarface'), url('scarface-webfont.ttf') format('truetype'); }")
+  same(css.rules[0].name, "font-face")
+  same(css.rules[0].value.items[0].name, "font-family")
+  same(css.rules[0].value.items[0].value(), "'scarface'")
+  same(css.rules[0].value.items[1].name, "src")
+  same(css.rules[0].value.items[1].value(), "url('scarface-webfont.eot')")
+  same(css.rules[0].value.items[2].name, "src")
+  same(css.rules[0].value.items[2].value(), "local('scarface'), url('scarface-webfont.ttf') format('truetype')")
 
-  "test parsing id selector": (test) ->
-    css = parser.parse("#body {}")
-    test.same(css.rules[0].selector.string(), "#body")
-    test.done()
+test "test it parsing simple selector", ->
+  css = parser.parse("body {}")
+  same(css.rules[0].selector.string(), "body")
 
-  "test parsing class selector": (test) ->
-    css = parser.parse(".body {}")
-    test.same(css.rules[0].selector.string(), ".body")
-    test.done()
+test "test parsing id selector", ->
+  css = parser.parse("#body {}")
+  same(css.rules[0].selector.string(), "#body")
 
-  "test it parsing multiple selectors": (test) ->
-    css = parser.parse("body, div { background: black }")
-    test.same(css.rules[0].selector.string(), "body")
-    test.same(css.rules[1].selector.string(), "div")
-    test.same(css.rules[0].attributes.string(), "{ background: black }")
-    test.same(css.rules[1].attributes.string(), "{ background: black }")
-    test.done()
+test "test parsing class selector", ->
+  css = parser.parse(".body {}")
+  same(css.rules[0].selector.string(), ".body")
 
-  "test compound selections": (test) ->
-    css = parser.parse("div#hello.some.thing, other {}")
-    test.same(css.rules[0].selector.string(), "div#hello.some.thing")
-    test.same(css.rules[1].selector.string(), "other")
-    test.done()
+test "test it parsing multiple selectors", ->
+  css = parser.parse("body, div { background: black }")
+  same(css.rules[0].selector.string(), "body")
+  same(css.rules[1].selector.string(), "div")
+  same(css.rules[0].attributes.string(), "{ background: black }")
+  same(css.rules[1].attributes.string(), "{ background: black }")
 
-  "test it should mix correctly multiple and compound": (test) ->
-    css = parser.parse("#menu body, ul > li {}")
-    test.same(css.rules[0].selector.selector, "#menu")
-    test.same(css.rules[0].selector.next.selector, "body")
-    test.same(css.rules[0].selector.nextRule, " ")
+test "test compound selections", ->
+  css = parser.parse("div#hello.some.thing, other {}")
+  same(css.rules[0].selector.string(), "div#hello.some.thing")
+  same(css.rules[1].selector.string(), "other")
 
-    test.same(css.rules[1].selector.selector, "ul")
-    test.same(css.rules[1].selector.next.selector, "li")
-    test.same(css.rules[1].selector.nextRule, ">")
-    test.done()
+test "test it should mix correctly multiple and compound", ->
+  css = parser.parse("#menu body, ul > li {}")
+  same(css.rules[0].selector.selector, "#menu")
+  same(css.rules[0].selector.next.selector, "body")
+  same(css.rules[0].selector.nextRule, " ")
 
-  "test it parsing compound rules": (test) ->
-    separators = [" ", ">", "+", "~"]
+  same(css.rules[1].selector.selector, "ul")
+  same(css.rules[1].selector.next.selector, "li")
+  same(css.rules[1].selector.nextRule, ">")
 
-    for sep in separators
-      css = parser.parse("body #{sep} div {}")
-      test.same(css.rules[0].selector.selector, "body")
-      test.same(css.rules[0].selector.next.selector, "div")
-      test.same(css.rules[0].selector.nextRule, sep)
+test "test it parsing compound rules", ->
+  separators = [" ", ">", "+", "~"]
 
-    test.done()
+  for sep in separators
+    css = parser.parse("body #{sep} div {}")
+    same(css.rules[0].selector.selector, "body")
+    same(css.rules[0].selector.next.selector, "div")
+    same(css.rules[0].selector.nextRule, sep)
 
-  "test it parsing compound multiple": (test) ->
-    separators = [">", "+", "~"]
 
-    for sep in separators
-      css = parser.parse("body #{sep} div #{sep} p {}")
-      test.same(css.rules[0].selector.selector, "body")
-      test.same(css.rules[0].selector.next.selector, "div")
-      test.same(css.rules[0].selector.nextRule, sep)
-      test.same(css.rules[0].selector.next.next.selector, "p")
-      test.same(css.rules[0].selector.next.nextRule, sep)
+test "test it parsing compound multiple", ->
+  separators = [">", "+", "~"]
 
-    test.done()
+  for sep in separators
+    css = parser.parse("body #{sep} div #{sep} p {}")
+    same(css.rules[0].selector.selector, "body")
+    same(css.rules[0].selector.next.selector, "div")
+    same(css.rules[0].selector.nextRule, sep)
+    same(css.rules[0].selector.next.next.selector, "p")
+    same(css.rules[0].selector.next.nextRule, sep)
 
-  "test it split multiple rules": (test) ->
-    css = parser.parse("body, div {}")
-    test.same(css.rules[0].selector.selector, "body")
-    test.same(css.rules[1].selector.selector, "div")
-    test.done()
 
-  "test it parsing attribute selectors": (test) ->
-    operators = ["=", "~=", "|=", "^=", "$=", "*="]
+test "test it split multiple rules", ->
+  css = parser.parse("body, div {}")
+  same(css.rules[0].selector.selector, "body")
+  same(css.rules[1].selector.selector, "div")
 
-    for op in operators
-      css = parser.parse("input[type#{op}text] {}")
-      attr = css.rules[0].selector.attributes
-      test.same(attr.name,        "type")
-      test.same(attr.operator,    op)
-      test.same(attr.value.value, "text")
+test "test it parsing attribute selectors", ->
+  operators = ["=", "~=", "|=", "^=", "$=", "*="]
 
-    test.done()
+  for op in operators
+    css = parser.parse("input[type#{op}text] {}")
+    attr = css.rules[0].selector.attributes
+    same(attr.name,        "type")
+    same(attr.operator,    op)
+    same(attr.value.value, "text")
 
-  "test it parsing simple metaselector": (test) ->
-    css = parser.parse("body:before {}")
-    test.same(css.rules[0].selector.selector, "body")
-    test.same(css.rules[0].selector.meta.string(), ":before")
-    test.done()
 
-  "test it parsing metaselector": (test) ->
-    css = parser.parse("body::slot(a) {}")
-    test.same(css.rules[0].selector.selector, "body")
-    test.same(css.rules[0].selector.meta.string(), "::slot(a)")
-    test.done()
+test "test it parsing simple metaselector", ->
+  css = parser.parse("body:before {}")
+  same(css.rules[0].selector.selector, "body")
+  same(css.rules[0].selector.meta.string(), ":before")
 
-  "test it parsing meta selector without tag": (test) ->
-    css = parser.parse(":focus {}")
-    test.same(css.rules[0].selector.selector, "*")
-    test.same(css.rules[0].selector.meta.string(), ":focus")
-    test.done()
+test "test it parsing metaselector", ->
+  css = parser.parse("body::slot(a) {}")
+  same(css.rules[0].selector.selector, "body")
+  same(css.rules[0].selector.meta.string(), "::slot(a)")
 
-  "test it parsing selector with a meta selector as nested one": (test) ->
-    css = parser.parse("body :focus {}")
-    test.same(css.rules[0].selector.selector, "body")
-    test.same(css.rules[0].selector.next.selector, "*")
-    test.same(css.rules[0].selector.next.meta.string(), ":focus")
-    test.done()
+test "test it parsing meta selector without tag", ->
+  css = parser.parse(":focus {}")
+  same(css.rules[0].selector.selector, "*")
+  same(css.rules[0].selector.meta.string(), ":focus")
 
-  "test simple attribute": (test) ->
-    css = parser.parse("body {background: #fff}")
-    test.same(css.rules[0].attributes.items[0].name, "background")
-    test.same(css.rules[0].attributes.items[0].value(), "#fff")
-    test.done()
+test "test it parsing selector with a meta selector as nested one", ->
+  css = parser.parse("body :focus {}")
+  same(css.rules[0].selector.selector, "body")
+  same(css.rules[0].selector.next.selector, "*")
+  same(css.rules[0].selector.next.meta.string(), ":focus")
 
-  "test attributes hash": (test) ->
-    css = parser.parse("body {background: #fff; display: none; background: #000;}")
-    test.same(css.rules[0].attributes.hash["background"].value(), "#000")
-    test.same(css.rules[0].attributes.hash["display"].value(), "none")
-    test.done()
+test "test simple attribute", ->
+  css = parser.parse("body {background: #fff}")
+  same(css.rules[0].attributes.items[0].name, "background")
+  same(css.rules[0].attributes.items[0].value(), "#fff")
 
-  "test multiple values": (test) ->
-    css = parser.parse("body {background: #fff; color: #000;}")
-    test.same(css.rules[0].attributes.items[0].name, "background")
-    test.same(css.rules[0].attributes.items[0].value(), "#fff")
-    test.same(css.rules[0].attributes.items[1].name, "color")
-    test.same(css.rules[0].attributes.items[1].value(), "#000")
-    test.done()
+test "test attributes hash", ->
+  css = parser.parse("body {background: #fff; display: none; background: #000;}")
+  same(css.rules[0].attributes.hash["background"].value(), "#000")
+  same(css.rules[0].attributes.hash["display"].value(), "none")
 
-  "test unit value": (test) ->
-    css = parser.parse("body {margin: 10px;}")
-    test.same(css.rules[0].attributes.items[0].value(), "10px")
-    test.same(css.rules[0].attributes.items[0].values[0].number, 10)
-    test.same(css.rules[0].attributes.items[0].values[0].unit, "px")
-    test.done()
+test "test multiple values", ->
+  css = parser.parse("body {background: #fff; color: #000;}")
+  same(css.rules[0].attributes.items[0].name, "background")
+  same(css.rules[0].attributes.items[0].value(), "#fff")
+  same(css.rules[0].attributes.items[1].name, "color")
+  same(css.rules[0].attributes.items[1].value(), "#000")
 
-  "test identifier value": (test) ->
-    css = parser.parse("body {background: white;}")
-    test.same(css.rules[0].attributes.items[0].value(), "white")
-    test.done()
+test "test unit value", ->
+  css = parser.parse("body {margin: 10px;}")
+  same(css.rules[0].attributes.items[0].value(), "10px")
+  same(css.rules[0].attributes.items[0].values[0].number, 10)
+  same(css.rules[0].attributes.items[0].values[0].unit, "px")
 
-  "test string value": (test) ->
-    css = parser.parse("body {font-family: 'Times New Roman';}")
-    test.same(css.rules[0].attributes.items[0].value(), "'Times New Roman'")
-    test.same(css.rules[0].attributes.items[0].values[0].text, "Times New Roman")
-    test.done()
+test "test identifier value", ->
+  css = parser.parse("body {background: white;}")
+  same(css.rules[0].attributes.items[0].value(), "white")
 
-  "test 3 digit hex number value": (test) ->
-    css = parser.parse("body {color: #f00;}")
-    test.same(css.rules[0].attributes.items[0].value(), "#f00")
-    test.done()
+test "test string value", ->
+  css = parser.parse("body {font-family: 'Times New Roman';}")
+  same(css.rules[0].attributes.items[0].value(), "'Times New Roman'")
+  same(css.rules[0].attributes.items[0].values[0].text, "Times New Roman")
 
-  "test 6 digit hex number value": (test) ->
-    css = parser.parse("body {color: #f00f12;}")
-    test.same(css.rules[0].attributes.items[0].value(), "#f00f12")
-    test.done()
+test "test 3 digit hex number value", ->
+  css = parser.parse("body {color: #f00;}")
+  same(css.rules[0].attributes.items[0].value(), "#f00")
 
-  "test number value": (test) ->
-    css = parser.parse("body {margin: 0;}")
-    test.same(css.rules[0].attributes.items[0].value(), "0")
-    test.done()
+test "test 6 digit hex number value", ->
+  css = parser.parse("body {color: #f00f12;}")
+  same(css.rules[0].attributes.items[0].value(), "#f00f12")
 
-  "test unit number value": (test) ->
-    css = parser.parse("body {margin: 10px;}")
-    test.same(css.rules[0].attributes.items[0].value(), "10px")
-    test.done()
+test "test number value", ->
+  css = parser.parse("body {margin: 0;}")
+  same(css.rules[0].attributes.items[0].value(), "0")
 
-  "test function value": (test) ->
-    css = parser.parse("body {margin: minmax(100px, 200px);}")
-    test.same(css.rules[0].attributes.items[0].values[0].name, "minmax")
-    test.same(css.rules[0].attributes.items[0].values[0].argumentsString(), "100px,200px")
-    test.done()
+test "test unit number value", ->
+  css = parser.parse("body {margin: 10px;}")
+  same(css.rules[0].attributes.items[0].value(), "10px")
 
-  "test function with multi-item params": (test) ->
-    css = parser.parse("body {background: gradient(linear, left top, left bottom);}")
-    test.same(css.rules[0].attributes.items[0].values[0].name, "gradient")
-    test.same(css.rules[0].attributes.items[0].values[0].arguments[0].string(), "linear")
-    test.same(css.rules[0].attributes.items[0].values[0].arguments[1].string(), "left top")
-    test.same(css.rules[0].attributes.items[0].values[0].arguments[2].string(), "left bottom")
-    test.done()
+test "test function value", ->
+  css = parser.parse("body {margin: minmax(100px, 200px);}")
+  same(css.rules[0].attributes.items[0].values[0].name, "minmax")
+  same(css.rules[0].attributes.items[0].values[0].argumentsString(), "100px,200px")
 
-  "test IE filter function": (test) ->
-    css = parser.parse("body {filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#f4f4f4',endColorstr='#ececec');}")
-    test.same(css.rules[0].attributes.items[0].values[0].name, "progid:DXImageTransform.Microsoft.gradient")
-    test.same(css.rules[0].attributes.items[0].values[0].namedArguments["GradientType"].string(), "0")
-    test.same(css.rules[0].attributes.items[0].values[0].namedArguments["startColorstr"].string(), "'#f4f4f4'")
-    test.same(css.rules[0].attributes.items[0].values[0].namedArguments["endColorstr"].string(), "'#ececec'")
-    test.done()
+test "test function with multi-item params", ->
+  css = parser.parse("body {background: gradient(linear, left top, left bottom);}")
+  same(css.rules[0].attributes.items[0].values[0].name, "gradient")
+  same(css.rules[0].attributes.items[0].values[0].arguments[0].string(), "linear")
+  same(css.rules[0].attributes.items[0].values[0].arguments[1].string(), "left top")
+  same(css.rules[0].attributes.items[0].values[0].arguments[2].string(), "left bottom")
 
-  "test url function": (test) ->
-    css = parser.parse("body {background: url(../testing/file.png)}")
-    test.same(css.rules[0].attributes.items[0].values[0].name, "url")
-    test.same(css.rules[0].attributes.items[0].values[0].argumentsString(), "'../testing/file.png'")
-    test.done()
+test "test IE filter function", ->
+  css = parser.parse("body {filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#f4f4f4',endColorstr='#ececec');}")
+  same(css.rules[0].attributes.items[0].values[0].name, "progid:DXImageTransform.Microsoft.gradient")
+  same(css.rules[0].attributes.items[0].values[0].namedArguments["GradientType"].string(), "0")
+  same(css.rules[0].attributes.items[0].values[0].namedArguments["startColorstr"].string(), "'#f4f4f4'")
+  same(css.rules[0].attributes.items[0].values[0].namedArguments["endColorstr"].string(), "'#ececec'")
 
-  "test full complex attribute": (test) ->
-    css = parser.parse("body {display: 'aaa' / 20px 'bcc' 100px * minmax(80px, 120px);}")
-    test.same(css.rules[0].attributes.items[0].value(), "'aaa' / 20px 'bcc' 100px * minmax(80px,120px)")
-    test.done()
+test "test url function", ->
+  css = parser.parse("body {background: url(../testing/file.png)}")
+  same(css.rules[0].attributes.items[0].values[0].name, "url")
+  same(css.rules[0].attributes.items[0].values[0].argumentsString(), "'../testing/file.png'")
 
-  "test multi-item value": (test) ->
-    css = parser.parse("body {display: a, b, c d;}")
-    test.same(css.rules[0].attributes.items[0].values[0].string(), "a, b, c")
-    test.same(css.rules[0].attributes.items[0].values[1].string(), "d")
-    test.done()
+test "test full complex attribute", ->
+  css = parser.parse("body {display: 'aaa' / 20px 'bcc' 100px * minmax(80px, 120px);}")
+  same(css.rules[0].attributes.items[0].value(), "'aaa' / 20px 'bcc' 100px * minmax(80px,120px)")
 
-  "test selector generating string": (test) ->
-    selector = new ast.SelectorNode("body")
-    selector.nestSelector(
-      new ast.SelectorNode(
-        "p",
-        new ast.AttributeSelectorNode("type", "=", new ast.LiteralNode("text")),
-        new ast.MetaSelectorNode(new ast.LiteralNode("before"), ":")
-      ),
-      ">")
+test "test multi-item value", ->
+  css = parser.parse("body {display: a, b, c d;}")
+  same(css.rules[0].attributes.items[0].values[0].string(), "a, b, c")
+  same(css.rules[0].attributes.items[0].values[1].string(), "d")
 
-    test.same(selector.string(), "body > p[type=text]:before")
-    test.done()
+test "test selector generating string", ->
+  selector = new ast.SelectorNode("body")
+  selector.nestSelector(
+    new ast.SelectorNode(
+      "p",
+      new ast.AttributeSelectorNode("type", "=", new ast.LiteralNode("text")),
+      new ast.MetaSelectorNode(new ast.LiteralNode("before"), ":")
+    ),
+    ">")
 
-  "test compiling a full sized css": (test) ->
-    fixturesDir = "#{__dirname}/fixtures/css_examples"
+  same(selector.string(), "body > p[type=text]:before")
 
-    fs.readdir fixturesDir, (err, files) ->
-      for file in files
-        filePath = "#{fixturesDir}/#{file}"
-        fileContent = fs.readFileSync(filePath).toString()
-
-        parser.parse(fileContent)
-
-      test.done()
-
-global.testWrapper(suite)
-module.exports = suite
+# uses to much time
+# asyncTest "test compiling a full sized css", ->
+#   examples = [
+#     "coffeescript_docs.css"
+#     "docco.css"
+#     "github_common.css"
+#   ]
+#
+#   total = examples.length
+#
+#   for example in examples
+#     path = "fixtures/css_examples/#{example}"
+#
+#     $.ajax
+#       url:      path
+#       dataType: "text"
+#       success:  (content) ->
+#         parser.parse(content)
+#       complete: ->
+#         total -= 1
+#         start() if total == 0

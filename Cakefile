@@ -18,10 +18,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-fs           = require "fs"
-path         = require "path"
-CoffeeScript = require "coffee-script"
-yui          = require "./vendor/yui-compressor/index.js"
+fs            = require "fs"
+path          = require "path"
+CoffeeScript  = require "coffee-script"
+yui           = require "./vendor/yui-compressor/index.js"
+child_process = require 'child_process'
 
 scriptFiles = [
   "scripted_css.coffee",
@@ -34,34 +35,6 @@ scriptFiles = [
   "scripted_css/modules/template_layout.coffee"
   "scripted_css/modules/transition.coffee"
 ]
-
-task 'test', 'run tests', (options) ->
-  require.paths.unshift(__dirname + "/vendor")
-  require.paths.unshift(__dirname + "/lib")
-  require.paths.unshift(__dirname)
-
-  child_process   = require('child_process')
-  testrunner      = require("async_testing")
-
-  process.chdir(__dirname)
-
-  setupTests = (tester) ->
-    (test) ->
-      test.done = test.finish
-      test.same = test.deepEqual
-      tester(test)
-
-  global.testWrapper = (suite) ->
-    testrunner.wrapTests(suite, setupTests)
-
-  # test runner method
-  runTests = ->
-    child_process.exec 'find test | grep "_test\.coffee$"', (error, stdout, stderr) ->
-      files = stdout.trim().split("\n")
-      testrunner.run files, process.ARGV, -> process.exit(0)
-
-  # setup database
-  runTests()
 
 task 'build', 'build scripted css', (options) ->
   invoke 'compile:parser'
@@ -77,30 +50,23 @@ task 'build', 'build scripted css', (options) ->
     source = compile(file)
     output += source + "\n"
 
+  fs.writeFileSync "dist/scripted_css.js", output
+  console.log "Compiled ScriptedCss to dist/scripted_css.js"
+
   yui.compile output, (compressed) ->
-    fs.writeFileSync "dist/scripted_css.js", compressed
-    console.log "Compiled ScriptedCss to dist/scripted_css.js"
+    fs.writeFileSync "dist/scripted_css.min.js", compressed
+    console.log "Compiled ScriptedCss minified to dist/scripted_css.min.js"
 
 task 'dev:compile', 'compile files for development', (options) ->
-  invoke 'compile:parser'
+  invoke 'build'
 
-  output = ""
-
-  compile = (file) ->
-    source = fs.readFileSync(path.join("lib", file)).toString()
-    source = CoffeeScript.compile(source) if path.extname(file) == ".coffee"
-    dirname = path.dirname(file)
-    outputPath = path.join("js", dirname, path.basename(file, path.extname(file)) + ".js")
-    fs.writeFileSync(outputPath, source)
-    output += source
-    console.log("Compiled #{outputPath}")
-
-  for file in scriptFiles
-    compile(file)
-
-  yui.compile output, (compressed) ->
-    fs.writeFileSync "dist/scripted_css.js", compressed
-    console.log "Compiled ScriptedCss to dist/scripted_css.js"
+  child_process.exec 'find test | grep "_test\.coffee$"', (error, stdout, stderr) ->
+    testFiles = stdout.trim().split("\n")
+    for file in testFiles
+      source = CoffeeScript.compile(fs.readFileSync(file).toString())
+      outputPath = path.join(path.dirname(file), path.basename(file, ".coffee") + ".js")
+      fs.writeFileSync(outputPath, source)
+      console.log "Compiled test file #{outputPath}"
 
 task 'compile:parser', 'compile the css parser', (options) ->
   lexSource    = fs.readFileSync("./lib/scripted_css/parser/lexer.coffee").toString()

@@ -18,42 +18,34 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-parser = require "scripted_css/parser"
-lexer  = require "scripted_css/parser/lexer"
-AST    = require "scripted_css/parser/ast"
+parser = ScriptedCss.CssParser
+AST    = CssAST
 
-suite =
-  "test spliting meta things from real rules": (test) ->
-    css = parser.parse("@media screen body { background: red; } @media print body { background: white } p { color: #000 }")
-    test.equal(css.metaRules.length, 2)
-    test.done()
+module "Rule Node"
 
-  "test indexing attributes": (test) ->
-    css = parser.parse("body {background: #000; display: block} div {display: \"aa\" \"bc\";}")
-    test.equal(css.attribute("display").length, 2)
-    test.same(css.attribute("display")[0].value(), "block")
-    test.equal(css.attribute("background").length, 1)
-    test.equal(css.attribute("font").length, 0)
-    test.done()
+test "test spliting meta things from real rules", ->
+  css = parser.parse("@media screen body { background: red; } @media print body { background: white } p { color: #000 }")
+  equals(css.metaRules.length, 2)
 
-  "test merging rules attributes": (test) ->
-    css = parser.parse("body {background: #000; display: block} body {display: inline; color: #fff}")
-    test.same(css.attribute("display").length, 1)
-    test.same(css.elementRules["body"].attributes.get("background").value(), "#000")
-    test.same(css.elementRules["body"].attributes.get("display").value(), "inline")
-    test.same(css.elementRules["body"].attributes.get("color").value(), "#fff")
-    test.done()
+test "test indexing attributes", ->
+  css = parser.parse("body {background: #000; display: block} div {display: \"aa\" \"bc\";}")
+  equals(css.attribute("display").length, 2)
+  same(css.attribute("display")[0].value(), "block")
+  equals(css.attribute("background").length, 1)
+  equals(css.attribute("font").length, 0)
 
-  "test selector index": (test) ->
-    css = parser.parse("body div {background: #000; display: block} p.test {} .test.other {} #header {} div:nth-child(2) {display: block}")
-    test.same(css.selectorIndex["DIV"][0].selector.string(), "body div")
-    test.same(css.selectorIndex["DIV"][1].selector.string(), "div:nth-child(2)")
-    test.same(css.selectorIndex[".test"][0].selector.string(), "p.test")
-    test.same(css.selectorIndex[".test"][1].selector.string(), ".test.other")
-    test.same(css.selectorIndex[".other"][0].selector.string(), ".test.other")
-    test.same(css.selectorIndex["#header"][0].selector.string(), "#header")
-    test.done()
+test "test merging rules attributes", ->
+  css = parser.parse("body {background: #000; display: block} body {display: inline; color: #fff}")
+  same(css.attribute("display").length, 1)
+  same(css.elementRules["body"].attributes.get("background").value(), "#000")
+  same(css.elementRules["body"].attributes.get("display").value(), "inline")
+  same(css.elementRules["body"].attributes.get("color").value(), "#fff")
 
-
-global.testWrapper(suite)
-module.exports = suite
+test "test selector index", ->
+  css = parser.parse("body div {background: #000; display: block} p.test {} .test.other {} #header {} div:nth-child(2) {display: block}")
+  same(css.selectorIndex["DIV"][0].selector.string(), "body div")
+  same(css.selectorIndex["DIV"][1].selector.string(), "div:nth-child(2)")
+  same(css.selectorIndex[".test"][0].selector.string(), "p.test")
+  same(css.selectorIndex[".test"][1].selector.string(), ".test.other")
+  same(css.selectorIndex[".other"][0].selector.string(), ".test.other")
+  same(css.selectorIndex["#header"][0].selector.string(), "#header")
