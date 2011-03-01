@@ -30,6 +30,8 @@
 		</script>
 
 		<script type="text/javascript">
+			last_css = null
+
 			$(function() {
 				$("#compile-input").click(function() {
 					var source = $("#source-area").val();
@@ -41,6 +43,8 @@
 
 						ScriptedCss.trigger("scriptLoaded", css);
 						ScriptedCss.trigger("cssReady", css);
+
+						last_css = css;
 
 						output = css.string();
 					} catch(error) {
@@ -68,6 +72,7 @@
 Welcome to try ScriptedCss parser
 
 Here you can type your CSS and see how it will be parsed. But remember, CSS re-writing is just one feature, in real cases (see some examples from menu at left) we can do a lot more than this.
+If you wanna walk on parser by yourself, we set the variable last_css with last parsed CSS here, so, you can use it at your console
 
 This comment (and all others) will be simple ignored at output.
 */
