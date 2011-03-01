@@ -25,6 +25,7 @@ Array.prototype.isArray = -> true
 CssAST =
   RulesNode: class RulesNode
     constructor: (rules) ->
+      @type         = "RULES"
       @rules        = []
       @metaRules    = []
       @elementRules = {}
@@ -107,6 +108,7 @@ CssAST =
 
   RuleNode: class RuleNode
     constructor: (@selector, attributes) ->
+      @type = "RULE"
       @attributes = new AttributeSet(this, attributes)
 
     cssAttributes: ->
@@ -127,13 +129,13 @@ CssAST =
       AttributeSet.expansions[name]
 
     constructor: (@owner, attributes) ->
-      @attributeSet = true # for detection
+      @type = "ATTRIBUTE_SET"
       @items        = []
       @hash         = {}
       @merge(attributes)
 
     merge: (attributes) ->
-      if attributes.attributeSet
+      if attributes.type == "ATTRIBUTE_SET"
         @merge(attributes.items)
       else
         @add(attribute) for attribute in attributes
@@ -156,12 +158,15 @@ CssAST =
 
   MetaNode: class MetaNode
     constructor: (@name, @value) ->
+      @type = "META"
+
       if @value.isArray
         @value = new AttributeSet(this, @value)
     string: -> "@#{@name} #{@value.string()}"
 
   SelectorNode: class SelectorNode
     constructor: (@selector, @attributes = null, @meta = null) ->
+      @type   = "SELECTOR"
       @next   = null
       @parent = null
 
@@ -276,11 +281,13 @@ CssAST =
 
   MetaSelectorNode: class MetaSelectorNode
     constructor: (@value, @operator) ->
+      @type = "META_SELECTOR"
 
     string: -> "#{@operator}#{@value.string()}"
 
   AttributeNode: class AttributeNode
     constructor: (@name, @values) ->
+      @type = "ATTRIBUTE"
 
     isImportant: ->
       for value in @values
@@ -298,6 +305,7 @@ CssAST =
 
   FunctionNode: class FunctionNode
     constructor: (@name, @arguments) ->
+      @type = "FUNCTION"
       @namedArguments = {}
 
       for arg in @arguments
@@ -309,36 +317,59 @@ CssAST =
 
   AttributeSelectorNode: class AttributeSelectorNode
     constructor: (@name, @operator, @value) ->
+      @type = "ATTRIBUTE_SELECTOR"
+
     string: -> "#{@name}#{@operator}#{@value.string()}"
 
   LiteralNode: class LiteralNode
     constructor: (@value) ->
+      @type = "LITERAL"
+
     string: -> @value.toString()
 
   StringNode: class StringNode
     constructor: (@value) ->
+      @type = "STRING"
       @text = @value.substr(1, @value.length - 2)
 
     string: -> @value.toString()
 
+  NumberNode: class NumberNode
+    constructor: (@value) ->
+      @type = "NUMBER"
+
+    number: -> parseFloat(@value)
+    string: -> @value.toString()
+
   UnitNumberNode: class UnitNumberNode
     constructor: (@value) ->
+      @type = "UNIT_NUMBER"
+
       [@value, @number, @unit] = value.match(/(.+?)([a-zA-Z%]+)/)
       @number = parseFloat(@number)
 
     string: -> @value.toString()
 
+  HexnumberNode: class HexnumberNode
+    constructor: (@value) ->
+      @type = "HEXNUMBER"
+
+    string: -> @value
+
   MultiLiteral: class MultiLiteral
     constructor: (@literals, @separator) ->
+      @type = "MULTI_LITERAL"
     string: -> collectStrings(@literals).join(@separator)
 
   NamedArgumentNode: class NamedArgumentNode
     constructor: (@name, @value) ->
+      @type = "NAMED_ARGUMENT"
       @namedArg = true
     string: -> "#{@name}=#{@value.string()}"
 
   ImportantNode: class ImportantNode
     constructor: ->
+      @type = "IMPORTANT"
       @important = true
     string: -> "!important"
 

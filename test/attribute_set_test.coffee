@@ -25,7 +25,6 @@ suite =
   "test initializing attributes": (test) ->
     css = parser.parse("body { margin-top: 10px }")
     attributes = css.rules[0].attributes
-    test.same(attributes.attributeSet, true)
     test.same(attributes.items[0].name, "margin-top")
     test.same(attributes.items[0].value(), "10px")
     test.same(attributes.hash["margin-top"].name, "margin-top")
