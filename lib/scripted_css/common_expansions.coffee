@@ -280,6 +280,8 @@
                 style       = v unless style
                 variant     = v unless variant
                 weight      = v unless weight
+              else
+                family = v
 
           i += 1
 

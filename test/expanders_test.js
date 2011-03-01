@@ -74,6 +74,6 @@
   });
   test("expanding font", function() {
     testExpansion("font: italic bold 12px/30px Georgia, serif", [["font-family", "Georgia, serif"], ["font-size", "12px"], ["line-height", "30px"], ["font-style", "italic"], ["font-variant", "normal"], ["font-weight", "bold"]]);
-    return testExpansion("font: 'Courier New', Georgia, serif;", [["font-family", "'Courier New', Georgia, serif"], ["font-size", "medium"], ["font-style", "normal"], ["font-variant", "normal"], ["font-weight", "normal"]]);
+    return testExpansion("font: Courier;", [["font-family", "Courier"], ["font-size", "medium"], ["font-style", "normal"], ["font-variant", "normal"], ["font-weight", "normal"]]);
   });
 }).call(this);

@@ -166,8 +166,8 @@ test "expanding font", ->
     ["font-weight",  "bold"]
   ]
 
-  testExpansion "font: 'Courier New', Georgia, serif;", [
-    ["font-family",  "'Courier New', Georgia, serif"]
+  testExpansion "font: Courier;", [
+    ["font-family",  "Courier"]
     ["font-size",    "medium"]
     ["font-style",   "normal"]
     ["font-variant", "normal"]
