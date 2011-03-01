@@ -30,20 +30,23 @@ CssAST =
       @metaRules    = []
       @elementRules = {}
 
-      @index(rules)
+      @merge(rules)
 
-    index: (rules) ->
-      @meta = {}
+    merge: (rules) ->
+      if rules.type == "RULES"
+        @merge(rules.rules)
+      else
+        @meta = {}
 
-      for rule in rules
-        if rule.selector?
-          @rules.push(rule) if @indexRule(rule)
-        else
-          @rules.push(rule)
-          @meta[rule.name] = rule.value
-          @metaRules.push(rule)
+        for rule in rules
+          if rule.selector?
+            @rules.push(rule) if @indexRule(rule)
+          else
+            @rules.push(rule)
+            @meta[rule.name] = rule.value
+            @metaRules.push(rule)
 
-      @indexAttributesAndSelectors()
+        @indexAttributesAndSelectors()
 
     indexRule: (rule) ->
       if @elementRules[rule.selector.string()]

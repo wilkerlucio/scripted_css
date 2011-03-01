@@ -23,6 +23,8 @@
     autoStart: true
 
     start: ->
+      @documentStyle = new CssAST.RulesNode([])
+
       return unless ScriptedCss.autoStart
 
       originalDisplay = $(document.body).css("display")
@@ -45,17 +47,14 @@
     loadStyles: (callback) ->
       self = this
 
-      $("script[type='text/scripted-css']").each ->
-        if this.src
-          # TODO: load style
-        else
-          source = this.innerHTML
-          css    = ScriptedCss.CssParser.parse(source)
+      $("style[type='text/scripted-css']").each ->
+        source = this.innerHTML
+        css    = ScriptedCss.CssParser.parse(source)
 
-          self.documentStyle ?= css
+        ScriptedCss.trigger("scriptLoaded", css)
+        self.documentStyle.merge(css)
 
-          ScriptedCss.trigger("scriptLoaded", css)
-          ScriptedCss.addStyle(css.string())
+        ScriptedCss.addStyle(css.string())
 
       ScriptedCss.trigger("cssReady", @documentStyle)
       callback()
