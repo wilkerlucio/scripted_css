@@ -20,7 +20,7 @@
 
 module "Common Expansions"
 
-parser    = ScriptedCss.CssParser
+parser = ScriptedCss.CssParser
 
 testExpansion = (attr, expected) ->
   css  = parser.parse "* {#{attr}}"
@@ -45,6 +45,14 @@ test "test expanding background", ->
     ["background-repeat",     "no-repeat"]
   ]
 
+  testExpansion "background: transparent", [
+    ["background-attachment", "scroll"]
+    ["background-color",      "transparent"]
+    ["background-image",      "none"]
+    ["background-position",   "0 0"]
+    ["background-repeat",     "repeat"]
+  ]
+
 test "test imploding background", ->
   testImplosion(
     "background-color: #000; background-image: url('some.png'); background-repeat: repeat-x",
@@ -66,6 +74,24 @@ test "test expanding border", ->
     ["border-left-style",   "solid"]
     ["border-left-width",   "1px"]
   ]
+
+for direction in ["top", "right", "bottom", "left"]
+  (->
+    dir = direction
+
+    test "test expanding border-#{dir}", ->
+      testExpansion "border-#{dir}: 1px solid #000", [
+        ["border-#{dir}-color", "#000"]
+        ["border-#{dir}-style", "solid"]
+        ["border-#{dir}-width", "1px"]
+      ]
+
+      testExpansion "border-#{dir}: none", [
+        ["border-#{dir}-color", ""]
+        ["border-#{dir}-style", "none"]
+        ["border-#{dir}-width", "medium"]
+      ]
+  )()
 
 for attribute in ["margin", "padding"]
   (->
@@ -103,3 +129,47 @@ for attribute in ["margin", "padding"]
         ["#{attr}-left",   "4px"]
       ]
   )()
+
+test "expanding list-style", ->
+  testExpansion "list-style: square inside url('/images/blueball.gif');", [
+    ["list-style-image",    "url('/images/blueball.gif')"]
+    ["list-style-position", "inside"]
+    ["list-style-type",     "square"]
+  ]
+
+  testExpansion "list-style: none;", [
+    ["list-style-image",    "none"]
+    ["list-style-position", "outside"]
+    ["list-style-type",     "none"]
+  ]
+
+test "expanding outline", ->
+  testExpansion "outline: #00ff00 dotted thick", [
+    ["outline-color", "#00ff00"]
+    ["outline-style", "dotted"]
+    ["outline-width", "thick"]
+  ]
+
+  testExpansion "outline: none", [
+    ["outline-color", "invert"]
+    ["outline-style", "none"]
+    ["outline-width", "medium"]
+  ]
+
+test "expanding font", ->
+  testExpansion "font: italic bold 12px/30px Georgia, serif", [
+    ["font-family",  "Georgia, serif"]
+    ["font-size",    "12px"]
+    ["line-height",  "30px"]
+    ["font-style",   "italic"]
+    ["font-variant", "normal"]
+    ["font-weight",  "bold"]
+  ]
+
+  testExpansion "font: 'Courier New', Georgia, serif;", [
+    ["font-family",  "'Courier New', Georgia, serif"]
+    ["font-size",    "medium"]
+    ["font-style",   "normal"]
+    ["font-variant", "normal"]
+    ["font-weight",  "normal"]
+  ]

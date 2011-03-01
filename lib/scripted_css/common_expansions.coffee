@@ -19,11 +19,23 @@
 # THE SOFTWARE.
 
 (($) ->
+  concatImplode = (attributes, property, sulfixes) ->
+    items = []
+
+    for p in sulfixes
+      attr = attributes.get("#{property}-#{p}")
+      items.push(value) for value in attr.values if attr
+
+    new CssAST.AttributeNode(property, items)
+
   window.ScriptedCss.Expanders = Expanders =
     background:
       explode: (attribute) ->
-        attachment = color = image = repeat = null
-        position = []
+        attachment = new CssAST.LiteralNode("scroll")
+        color      = new CssAST.LiteralNode("transparent")
+        image      = new CssAST.LiteralNode("none")
+        repeat     = new CssAST.LiteralNode("repeat")
+        position   = []
 
         for v in attribute.values
           switch v.type
@@ -51,23 +63,19 @@
               else if ScriptedCss.Utils.colors[str]
                 color = v
 
+        position = [new CssAST.NumberNode("0"), new CssAST.NumberNode("0")] if position.length == 0
+
         items = []
-        items.push(new CssAST.AttributeNode("#{attribute.name}-attachment", [attachment]))       if attachment
-        items.push(new CssAST.AttributeNode("#{attribute.name}-color", [color]))                 if color
-        items.push(new CssAST.AttributeNode("#{attribute.name}-image", [image]))                 if image
-        items.push(new CssAST.AttributeNode("#{attribute.name}-position", position.slice(0, 2))) if position.length > 0
-        items.push(new CssAST.AttributeNode("#{attribute.name}-repeat", [repeat]))               if repeat
+        items.push(new CssAST.AttributeNode("#{attribute.name}-attachment", [attachment]))
+        items.push(new CssAST.AttributeNode("#{attribute.name}-color", [color]))
+        items.push(new CssAST.AttributeNode("#{attribute.name}-image", [image]))
+        items.push(new CssAST.AttributeNode("#{attribute.name}-position", position.slice(0, 2)))
+        items.push(new CssAST.AttributeNode("#{attribute.name}-repeat", [repeat]))
 
         items
 
       implode: (attributes, property) ->
-        items = []
-
-        for p in ["color", "image", "repeat", "attachment", "position"]
-          attr = attributes.get("#{property}-#{p}")
-          items.push(value) for value in attr.values if attr
-
-        new CssAST.AttributeNode(property, items)
+        concatImplode attributes, property, ["color", "image", "repeat", "attachment", "position"]
 
     directions:
       explode: (attribute) ->
@@ -132,10 +140,8 @@
       implode: (attributes, property) ->
         new CssAST.AttributeNode(property, [new CssAST.LiteralNode("")])
 
-    borderValue:
-      explode: (attribute) ->
-        color = style = width = null
-
+    line:
+      explode: (attribute, defaults = {}) ->
         for v in attribute.values
           switch v.type
             when "HEXNUMBER"
@@ -161,21 +167,139 @@
                 style = v unless style
                 width = v unless width
 
+        color = new CssAST.LiteralNode(defaults.color || "") unless color
+        style = new CssAST.LiteralNode(defaults.style || "") unless style
+        width = new CssAST.LiteralNode(defaults.width || "") unless width
+
         attributes = []
-        attributes.push(new CssAST.AttributeNode("#{attribute.name}-color", [color])) if color
-        attributes.push(new CssAST.AttributeNode("#{attribute.name}-style", [style])) if style
-        attributes.push(new CssAST.AttributeNode("#{attribute.name}-width", [width])) if width
+        attributes.push(new CssAST.AttributeNode("#{attribute.name}-color", [color]))
+        attributes.push(new CssAST.AttributeNode("#{attribute.name}-style", [style]))
+        attributes.push(new CssAST.AttributeNode("#{attribute.name}-width", [width]))
 
         attributes
 
       implode: (attributes, property) ->
-        items = []
+        concatImplode attributes, property, ["width", "style", "color"]
 
-        for part in ["width", "style", "color"]
-          attr = attributes.get("#{property}-#{part}")
-          items.push(attr.values[0]) if attr
+    borderValue:
+      explode: (attribute) ->
+        Expanders.line.explode(attribute, {width: "medium"})
 
-        new CssAST.AttributeNode(property, items)
+      implode: (attributes, property) ->
+        Expanders.line.implode(attributes, property)
+
+    outline:
+      explode: (attribute) ->
+        Expanders.line.explode(attribute, {color: "invert", style: "none", width: "medium"})
+
+      implode: (attributes, property) ->
+        Expanders.line.implode(attributes, property)
+
+    listStyle:
+      explode: (attribute) ->
+        image = position = type = null
+
+        for v in attribute.values
+          switch v.type
+            when "FUNCTION"
+              image = v
+              break
+            when "LITERAL"
+              str = v.string()
+
+              if ScriptedCss.Utils.listTypes[str]
+                type = v
+              else if ScriptedCss.Utils.listPositions[str]
+                position = v
+              else if str == "inherit" or str == "none"
+                image    = v unless image
+                position = v unless position or str == "none"
+                type     = v unless type
+
+        image    = new CssAST.LiteralNode("none") unless image
+        position = new CssAST.LiteralNode("outside") unless position
+        type     = new CssAST.LiteralNode("disc") unless type
+
+        attributes = []
+        attributes.push(new CssAST.AttributeNode("#{attribute.name}-image", [image]))
+        attributes.push(new CssAST.AttributeNode("#{attribute.name}-position", [position]))
+        attributes.push(new CssAST.AttributeNode("#{attribute.name}-type", [type]))
+
+        attributes
+
+      implode: (attributes, property) ->
+        concatImplode attributes, property, ["type", "position", "image"]
+
+    font:
+      explode: (attribute) ->
+        family = size = line_height = style = variant = weight = null
+
+        i = 0
+        values = attribute.values
+
+        while parts = values.slice(i)
+          console.log(i)
+
+          v = parts[0]
+          break unless v
+
+          switch v.type
+            when "NUMBER"
+              weight = v if ScriptedCss.Utils.fontWeights[v.string()]
+
+              break
+            when "UNIT_NUMBER"
+              size = v
+
+              if parts[1].string() == "/" and parts[2].type == "UNIT_NUMBER"
+                line_height = parts[2]
+                i += 2
+
+              break
+            when "STRING"
+              family = v
+              break
+            when "MULTI_VALUE"
+              family = v
+              break
+            when "LITERAL"
+              str = v.string()
+
+              if ScriptedCss.Utils.fontStyles[str]
+                style = v
+              else if ScriptedCss.Utils.fontSizes[str]
+                size = v
+              else if ScriptedCss.Utils.fontVariants[str]
+                variant = v
+              else if ScriptedCss.Utils.fontWeights[str]
+                weight = v
+              else if str == "inherit"
+                family      = v unless family
+                size        = v unless size
+                line_height = v unless line_height
+                style       = v unless style
+                variant     = v unless variant
+                weight      = v unless weight
+
+          i += 1
+
+        family      = new CssAST.LiteralNode("")       unless family
+        size        = new CssAST.LiteralNode("medium") unless size
+        style       = new CssAST.LiteralNode("normal") unless style
+        variant     = new CssAST.LiteralNode("normal") unless variant
+        weight      = new CssAST.LiteralNode("normal") unless weight
+
+        attributes = []
+        attributes.push(new CssAST.AttributeNode("#{attribute.name}-family", [family]))
+        attributes.push(new CssAST.AttributeNode("#{attribute.name}-size", [size]))
+        attributes.push(new CssAST.AttributeNode("line-height", [line_height])) if line_height
+        attributes.push(new CssAST.AttributeNode("#{attribute.name}-style", [style]))
+        attributes.push(new CssAST.AttributeNode("#{attribute.name}-variant", [variant]))
+        attributes.push(new CssAST.AttributeNode("#{attribute.name}-weight", [weight]))
+
+        attributes
+
+      implode: (attributes, property) ->
 
   CssAST.AttributeSet.registerExpansion "background",    Expanders.background
   CssAST.AttributeSet.registerExpansion "border",        Expanders.simpleDirections
@@ -186,6 +310,9 @@
   CssAST.AttributeSet.registerExpansion "border-color",  Expanders.sulfixDirections
   CssAST.AttributeSet.registerExpansion "border-style",  Expanders.sulfixDirections
   CssAST.AttributeSet.registerExpansion "border-width",  Expanders.sulfixDirections
+  CssAST.AttributeSet.registerExpansion "font",          Expanders.font
+  CssAST.AttributeSet.registerExpansion "list-style",    Expanders.listStyle
   CssAST.AttributeSet.registerExpansion "margin",        Expanders.directions
+  CssAST.AttributeSet.registerExpansion "outline",       Expanders.outline
   CssAST.AttributeSet.registerExpansion "padding",       Expanders.directions
 )(jQuery)

@@ -205,4 +205,56 @@
       "yellowgreen":          "#9acd32"
       "transparent":          true      # special color
 
+    fontSizes:
+      "xx-small": true
+      "x-small":  true
+      "small":    true
+      "medium":   true
+      "large":    true
+      "x-large":  true
+      "xx-large": true
+      "smaller":  true
+      "larger":   true
+
+    fontStyles:
+      "italic":  true
+      "oblique": true
+
+    fontVariants:
+      "small-caps": true
+
+    fontWeights:
+      "bold":    true
+      "bolder":  true
+      "lighter": true
+      "100":     true
+      "200":     true
+      "300":     true
+      "400":     true
+      "500":     true
+      "600":     true
+      "700":     true
+      "800":     true
+      "900":     true
+
+    listTypes:
+      "circle":               true
+      "disc":                 true
+      "square":               true
+      "armenian":             true
+      "decimal":              true
+      "decimal-leading-zero": true
+      "georgian":             true
+      "lower-alpha":          true
+      "lower-greek":          true
+      "lower-latin":          true
+      "lower-roman":          true
+      "upper-alpha":          true
+      "upper-latin":          true
+      "upper-roman":          true
+
+    listPositions:
+      "inside":  true
+      "outside": true
+
 )(jQuery)
