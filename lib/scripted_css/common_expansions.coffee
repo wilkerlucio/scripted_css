@@ -249,8 +249,6 @@
         values = attribute.values
 
         while parts = values.slice(i)
-          console.log(i)
-
           v = parts[0]
           break unless v
 

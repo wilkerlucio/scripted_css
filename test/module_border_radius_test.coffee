@@ -35,7 +35,6 @@ testAddedAttributes = (attr, expected, step = 1) ->
   ScriptedCss.trigger("scriptLoaded", css)
 
   attr = css.rules[0].attributes
-  console.log(attr)
 
   for item, i in expected
     same(attr.items[i + step].name,    item[0])
