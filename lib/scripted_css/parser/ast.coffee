@@ -150,7 +150,9 @@ CssAST =
 
     get: (name) ->
       if @expansion(name)
-        @expansion(name).implode(this, name)
+        attr = @expansion(name).implode(this, name)
+        attr.rule = @owner
+        attr
       else
         @hash[name] || null
 
