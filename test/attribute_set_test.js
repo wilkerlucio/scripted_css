@@ -44,7 +44,6 @@
     same(attributes.hash['expansion-test-right'].value(), "10px");
     same(attributes.hash['expansion-test-bottom'].value(), "10px");
     same(attributes.hash['expansion-test-left'].value(), "10px");
-    same(attributes.get("expansion-test").value(), "10px");
-    return ast.AttributeSet.expansions = {};
+    return same(attributes.get("expansion-test").value(), "10px");
   });
 }).call(this);

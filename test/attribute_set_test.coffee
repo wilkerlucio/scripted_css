@@ -60,5 +60,3 @@ test "test expanding attributes", ->
   same(attributes.hash['expansion-test-bottom'].value(), "10px")
   same(attributes.hash['expansion-test-left'].value(), "10px")
   same(attributes.get("expansion-test").value(), "10px")
-
-  ast.AttributeSet.expansions = {} # reset expansions
