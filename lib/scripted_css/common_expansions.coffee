@@ -29,6 +29,36 @@
     new CssAST.AttributeNode(property, items)
 
   window.ScriptedCss.Expanders = Expanders =
+    helpers:
+      computeDirections: (v) ->
+        comp = null
+
+        switch v.length
+          when 1
+            comp = [v[0], v[0], v[0], v[0]]
+            break
+          when 2
+            comp = [v[0], v[1], v[0], v[1]]
+            break
+          when 3
+            comp = [v[0], v[1], v[2], v[1]]
+            break
+          else
+            comp = [v[0], v[1], v[2], v[3]]
+            break
+
+        comp
+
+      normalizeDirections: (items) ->
+        if items[0].string() == items[1].string() == items[2].string() == items[3].string()
+          items = [items[0]]
+        else if items[0].string() == items[2].string() and items[1].string() == items[3].string()
+          items = [items[0], items[1]]
+        else if items[1].string() == items[3].string()
+          items = [items[0], items[1], items[2]]
+
+        items
+
     background:
       explode: (attribute) ->
         attachment = new CssAST.LiteralNode("scroll")
@@ -80,21 +110,7 @@
     directions:
       explode: (attribute) ->
         v = attribute.values
-        comp = null
-
-        switch v.length
-          when 1
-            comp = [v[0], v[0], v[0], v[0]]
-            break
-          when 2
-            comp = [v[0], v[1], v[0], v[1]]
-            break
-          when 3
-            comp = [v[0], v[1], v[2], v[1]]
-            break
-          else
-            comp = [v[0], v[1], v[2], v[3]]
-            break
+        comp = Expanders.helpers.computeDirections(v)
 
         for dir, i in ["top", "right", "bottom", "left"]
           new CssAST.AttributeNode("#{attribute.name}-#{dir}", [comp[i]])
@@ -106,12 +122,7 @@
           attr = attributes.get("#{property}-#{dir}")?.values[0] || new CssAST.LiteralNode("0")
           items.push(attr)
 
-        if items[0].string() == items[1].string() == items[2].string() == items[3].string()
-          items = [items[0]]
-        else if items[0].string() == items[2].string() and items[1].string() == items[3].string()
-          items = [items[0], items[1]]
-        else if items[1].string() == items[3].string()
-          items = [items[0], items[1], items[2]]
+        items = Expanders.helpers.normalizeDirections(items)
 
         new CssAST.AttributeNode(property, items)
 
@@ -302,6 +313,7 @@
         attributes
 
       implode: (attributes, property) ->
+        new CssAST.AttributeNode(property, [new CssAST.LiteralNode("")])
 
   CssAST.AttributeSet.registerExpansion "background",    Expanders.background
   CssAST.AttributeSet.registerExpansion "border",        Expanders.simpleDirections
