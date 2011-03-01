@@ -27,6 +27,7 @@ scriptFiles = [
   "scripted_css.coffee",
   "scripted_css/css_parser.js",
   "scripted_css/jquery.coffee",
+  "scripted_css/common_expansions.coffee",
   "scripted_css/modules.coffee"
   "scripted_css/modules/border-radius.coffee"
   "scripted_css/modules/template_layout.coffee"
@@ -82,16 +83,23 @@ task 'build', 'build scripted css', (options) ->
 task 'dev:compile', 'compile files for development', (options) ->
   invoke 'compile:parser'
 
+  output = ""
+
   compile = (file) ->
     source = fs.readFileSync(path.join("lib", file)).toString()
     source = CoffeeScript.compile(source) if path.extname(file) == ".coffee"
     dirname = path.dirname(file)
     outputPath = path.join("js", dirname, path.basename(file, path.extname(file)) + ".js")
     fs.writeFileSync(outputPath, source)
+    output += source
     console.log("Compiled #{outputPath}")
 
   for file in scriptFiles
     compile(file)
+
+  yui.compile output, (compressed) ->
+    fs.writeFileSync "dist/scripted_css.js", compressed
+    console.log "Compiled ScriptedCss to dist/scripted_css.js"
 
 task 'compile:parser', 'compile the css parser', (options) ->
   lexSource    = fs.readFileSync("./lib/scripted_css/parser/lexer.coffee").toString()
