@@ -58,6 +58,84 @@
 
         new CssAST.AttributeNode(property, items)
 
-  CssAST.AttributeSet.registerExpansion "margin", Expanders.directions
-  CssAST.AttributeSet.registerExpansion "padding", Expanders.directions
+    simpleDirections:
+      explode: (attribute) ->
+        for dir in ["top", "right", "bottom", "left"]
+          new CssAST.AttributeNode("#{attribute.name}-#{dir}", attribute.values)
+
+      implode: (attributes, property) ->
+        new CssAST.AttributeNode(property, [new CssAST.LiteralNode("")])
+
+    sulfixDirections:
+      explode: (attribute) ->
+        name   = attribute.name.split("-")
+        sulfix = name.pop()
+        name   = name.join("-")
+
+        attr = new CssAST.AttributeNode(name, attribute.values)
+        items = Expanders.directions.explode(attr)
+
+        for item in items
+          item.name = item.name + "-" + sulfix
+
+        items
+
+      implode: (attributes, property) ->
+        new CssAST.AttributeNode(property, [new CssAST.LiteralNode("")])
+
+    borderValue:
+      explode: (attribute) ->
+        color = style = width = null
+
+        for v in attribute.values
+          switch v.type
+            when "HEXNUMBER"
+              color = v
+              break
+            when "NUMBER"
+              width = v
+              break
+            when "UNIT_NUMBER"
+              width = v
+              break
+            when "LITERAL"
+              str = v.string()
+
+              if ScriptedCss.Utils.colors[str]
+                color = v
+              else if ScriptedCss.Utils.borderStyles[str]
+                style = v
+              else if ScriptedCss.Utils.borderWidths[str]
+                width = v
+              else if str == "inherit"
+                color = v unless color
+                style = v unless style
+                width = v unless width
+
+        attributes = []
+        attributes.push(new CssAST.AttributeNode("#{attribute.name}-color", [color])) if color
+        attributes.push(new CssAST.AttributeNode("#{attribute.name}-style", [style])) if style
+        attributes.push(new CssAST.AttributeNode("#{attribute.name}-width", [width])) if width
+
+        attributes
+
+      implode: (attributes, property) ->
+        items = []
+
+        for part in ["width", "style", "color"]
+          attr = attributes.get("#{property}-#{part}")
+          items.push(attr.values[0]) if attr
+
+        new CssAST.AttributeNode(property, items)
+
+  CssAST.AttributeSet.registerExpansion "border",        Expanders.simpleDirections
+  CssAST.AttributeSet.registerExpansion "border-top",    Expanders.borderValue
+  CssAST.AttributeSet.registerExpansion "border-right",  Expanders.borderValue
+  CssAST.AttributeSet.registerExpansion "border-bottom", Expanders.borderValue
+  CssAST.AttributeSet.registerExpansion "border-left",   Expanders.borderValue
+  CssAST.AttributeSet.registerExpansion "border-color",  Expanders.sulfixDirections
+  CssAST.AttributeSet.registerExpansion "border-style",  Expanders.sulfixDirections
+  CssAST.AttributeSet.registerExpansion "border-width",  Expanders.sulfixDirections
+  CssAST.AttributeSet.registerExpansion "margin",        Expanders.directions
+  CssAST.AttributeSet.registerExpansion "padding",       Expanders.directions
 )(jQuery)
