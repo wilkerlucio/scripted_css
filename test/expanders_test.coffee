@@ -30,6 +30,12 @@ testExpansion = (attr, expected) ->
     same(attr.items[i].name,    item[0])
     same(attr.items[i].value(), item[1])
 
+testImplosion = (attrs, expected) ->
+  css  = parser.parse "* {#{attrs}}"
+  attr = css.rules[0].attributes
+
+  same(attr.get(expected[0]).value(), expected[1])
+
 test "test expanding background", ->
   testExpansion "background: #000 url('test.gif') no-repeat fixed center", [
     ["background-attachment", "fixed"]
@@ -38,6 +44,12 @@ test "test expanding background", ->
     ["background-position",   "center"]
     ["background-repeat",     "no-repeat"]
   ]
+
+test "test imploding background", ->
+  testImplosion(
+    "background-color: #000; background-image: url('some.png'); background-repeat: repeat-x",
+    ["background", "#000 url('some.png') repeat-x"]
+  )
 
 test "test expanding border", ->
   testExpansion "border: 1px solid #000", [

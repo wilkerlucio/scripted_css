@@ -60,6 +60,15 @@
 
         items
 
+      implode: (attributes, property) ->
+        items = []
+
+        for p in ["color", "image", "repeat", "attachment", "position"]
+          attr = attributes.get("#{property}-#{p}")
+          items.push(value) for value in attr.values if attr
+
+        new CssAST.AttributeNode(property, items)
+
     directions:
       explode: (attribute) ->
         v = attribute.values
