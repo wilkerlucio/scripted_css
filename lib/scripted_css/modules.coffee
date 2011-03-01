@@ -24,3 +24,4 @@ ScriptedCss.Modules =
 
   register: (module) ->
     @registeredModules.push(module)
+    @modules.push(new module)

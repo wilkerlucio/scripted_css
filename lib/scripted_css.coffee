@@ -28,9 +28,6 @@
       originalDisplay = $(document.body).css("display")
       $(document.body).css(display: "none")
 
-      for module in this.Modules.registeredModules
-        this.Modules.modules.push(new module())
-
       @loadStyles ->
         $(document.body).css(display: originalDisplay)
 
