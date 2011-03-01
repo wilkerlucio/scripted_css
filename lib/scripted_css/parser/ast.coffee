@@ -358,9 +358,9 @@ CssAST =
 
     string: -> @value
 
-  MultiLiteral: class MultiLiteral
+  MultiValue: class MultiValue
     constructor: (@literals, @separator) ->
-      @type = "MULTI_LITERAL"
+      @type = "MULTI_VALUE"
     string: -> collectStrings(@literals).join(@separator)
 
   NamedArgumentNode: class NamedArgumentNode

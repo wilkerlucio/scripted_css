@@ -105,7 +105,7 @@ grammar =
 
   ValueListItem: [
     o "Value"
-    o "ComaListValue",                                 -> new MultiLiteral($1, ", ")
+    o "ComaListValue",                                 -> new MultiValue($1, ", ")
   ]
 
   ComaListValue: [
@@ -140,7 +140,7 @@ grammar =
   ArgListValue: [
     o "Value"
     o "IDENTIFIER = Value",                            -> new NamedArgumentNode($1, $3)
-    o "MultiArg",                                      -> new MultiLiteral($1, " ")
+    o "MultiArg",                                      -> new MultiValue($1, " ")
   ]
 
   MultiArg: [
