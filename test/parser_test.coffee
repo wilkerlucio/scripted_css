@@ -51,11 +51,11 @@ test "test parsing class selector", ->
   same(css.rules[0].selector.string(), ".body")
 
 test "test it parsing multiple selectors", ->
-  css = parser.parse("body, div { background: black }")
+  css = parser.parse("body, div { background-color: black }")
   same(css.rules[0].selector.string(), "body")
   same(css.rules[1].selector.string(), "div")
-  same(css.rules[0].attributes.string(), "{ background: black }")
-  same(css.rules[1].attributes.string(), "{ background: black }")
+  same(css.rules[0].attributes.string(), "{ background-color: black }")
+  same(css.rules[1].attributes.string(), "{ background-color: black }")
 
 test "test compound selections", ->
   css = parser.parse("div#hello.some.thing, other {}")
@@ -132,18 +132,18 @@ test "test it parsing selector with a meta selector as nested one", ->
   same(css.rules[0].selector.next.meta.string(), ":focus")
 
 test "test simple attribute", ->
-  css = parser.parse("body {background: #fff}")
-  same(css.rules[0].attributes.items[0].name, "background")
+  css = parser.parse("body {color: #fff}")
+  same(css.rules[0].attributes.items[0].name, "color")
   same(css.rules[0].attributes.items[0].value(), "#fff")
 
 test "test attributes hash", ->
-  css = parser.parse("body {background: #fff; display: none; background: #000;}")
-  same(css.rules[0].attributes.hash["background"].value(), "#000")
+  css = parser.parse("body {color: #fff; display: none; color: #000;}")
+  same(css.rules[0].attributes.hash["color"].value(), "#000")
   same(css.rules[0].attributes.hash["display"].value(), "none")
 
 test "test multiple values", ->
-  css = parser.parse("body {background: #fff; color: #000;}")
-  same(css.rules[0].attributes.items[0].name, "background")
+  css = parser.parse("body {background-color: #fff; color: #000;}")
+  same(css.rules[0].attributes.items[0].name, "background-color")
   same(css.rules[0].attributes.items[0].value(), "#fff")
   same(css.rules[0].attributes.items[1].name, "color")
   same(css.rules[0].attributes.items[1].value(), "#000")
@@ -155,7 +155,7 @@ test "test unit value", ->
   same(css.rules[0].attributes.items[0].values[0].unit, "px")
 
 test "test identifier value", ->
-  css = parser.parse("body {background: white;}")
+  css = parser.parse("body {color: white;}")
   same(css.rules[0].attributes.items[0].value(), "white")
 
 test "test string value", ->
@@ -185,7 +185,7 @@ test "test function value", ->
   same(css.rules[0].attributes.items[0].values[0].argumentsString(), "100px,200px")
 
 test "test function with multi-item params", ->
-  css = parser.parse("body {background: gradient(linear, left top, left bottom);}")
+  css = parser.parse("body {background-image: gradient(linear, left top, left bottom);}")
   same(css.rules[0].attributes.items[0].values[0].name, "gradient")
   same(css.rules[0].attributes.items[0].values[0].arguments[0].string(), "linear")
   same(css.rules[0].attributes.items[0].values[0].arguments[1].string(), "left top")
@@ -199,7 +199,7 @@ test "test IE filter function", ->
   same(css.rules[0].attributes.items[0].values[0].namedArguments["endColorstr"].string(), "'#ececec'")
 
 test "test url function", ->
-  css = parser.parse("body {background: url(../testing/file.png)}")
+  css = parser.parse("body {background-image: url(../testing/file.png)}")
   same(css.rules[0].attributes.items[0].values[0].name, "url")
   same(css.rules[0].attributes.items[0].values[0].argumentsString(), "'../testing/file.png'")
 

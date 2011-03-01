@@ -5,28 +5,28 @@
   module("Rule Node");
   test("test spliting meta things from real rules", function() {
     var css;
-    css = parser.parse("@media screen body { background: red; } @media print body { background: white } p { color: #000 }");
+    css = parser.parse("@media screen body { background-color: red; } @media print body { background-color: white } p { color: #000 }");
     return equals(css.metaRules.length, 2);
   });
   test("test indexing attributes", function() {
     var css;
-    css = parser.parse("body {background: #000; display: block} div {display: \"aa\" \"bc\";}");
+    css = parser.parse("body {background-color: #000; display: block} div {display: \"aa\" \"bc\";}");
     equals(css.attribute("display").length, 2);
     same(css.attribute("display")[0].value(), "block");
-    equals(css.attribute("background").length, 1);
+    equals(css.attribute("background-color").length, 1);
     return equals(css.attribute("font").length, 0);
   });
   test("test merging rules attributes", function() {
     var css;
-    css = parser.parse("body {background: #000; display: block} body {display: inline; color: #fff}");
+    css = parser.parse("body {background-color: #000; display: block} body {display: inline; color: #fff}");
     same(css.attribute("display").length, 1);
-    same(css.elementRules["body"].attributes.get("background").value(), "#000");
+    same(css.elementRules["body"].attributes.get("background-color").value(), "#000");
     same(css.elementRules["body"].attributes.get("display").value(), "inline");
     return same(css.elementRules["body"].attributes.get("color").value(), "#fff");
   });
   test("test selector index", function() {
     var css;
-    css = parser.parse("body div {background: #000; display: block} p.test {} .test.other {} #header {} div:nth-child(2) {display: block}");
+    css = parser.parse("body div {background-color: #000; display: block} p.test {} .test.other {} #header {} div:nth-child(2) {display: block}");
     same(css.selectorIndex["DIV"][0].selector.string(), "body div");
     same(css.selectorIndex["DIV"][1].selector.string(), "div:nth-child(2)");
     same(css.selectorIndex[".test"][0].selector.string(), "p.test");

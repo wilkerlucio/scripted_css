@@ -20,6 +20,46 @@
 
 (($) ->
   window.ScriptedCss.Expanders = Expanders =
+    background:
+      explode: (attribute) ->
+        attachment = color = image = repeat = null
+        position = []
+
+        for v in attribute.values
+          switch v.type
+            when "HEXNUMBER"
+              color = v
+              break
+            when "NUMBER"
+              position.push(v)
+              break
+            when "UNIT_NUMBER"
+              position.push(v)
+              break
+            when "FUNCTION"
+              image = v
+              break
+            when "LITERAL"
+              str = v.string()
+
+              if ScriptedCss.Utils.backgroundAttachments[str]
+                attachment = v
+              else if ScriptedCss.Utils.backgroundRepeats[str]
+                repeat = v
+              else if ScriptedCss.Utils.backgroundPositions[str]
+                position.push(v)
+              else if ScriptedCss.Utils.colors[str]
+                color = v
+
+        items = []
+        items.push(new CssAST.AttributeNode("#{attribute.name}-attachment", [attachment]))       if attachment
+        items.push(new CssAST.AttributeNode("#{attribute.name}-color", [color]))                 if color
+        items.push(new CssAST.AttributeNode("#{attribute.name}-image", [image]))                 if image
+        items.push(new CssAST.AttributeNode("#{attribute.name}-position", position.slice(0, 2))) if position.length > 0
+        items.push(new CssAST.AttributeNode("#{attribute.name}-repeat", [repeat]))               if repeat
+
+        items
+
     directions:
       explode: (attribute) ->
         v = attribute.values
@@ -128,6 +168,7 @@
 
         new CssAST.AttributeNode(property, items)
 
+  CssAST.AttributeSet.registerExpansion "background",    Expanders.background
   CssAST.AttributeSet.registerExpansion "border",        Expanders.simpleDirections
   CssAST.AttributeSet.registerExpansion "border-top",    Expanders.borderValue
   CssAST.AttributeSet.registerExpansion "border-right",  Expanders.borderValue

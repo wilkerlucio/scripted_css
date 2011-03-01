@@ -20,6 +20,23 @@
 
 (($) ->
   ScriptedCss.Utils =
+    backgroundAttachments:
+      "fixed":  true
+      "scroll": true
+
+    backgroundPositions:
+      "left":   true
+      "center": true
+      "right":  true
+      "top":    true
+      "bottom": true
+
+    backgroundRepeats:
+      "repeat":    true
+      "repeat-x":  true
+      "repeat-y":  true
+      "no-repeat": true
+
     borderStyles:
       "none":   true
       "hidden": true

@@ -37,11 +37,11 @@
   });
   test("test it parsing multiple selectors", function() {
     var css;
-    css = parser.parse("body, div { background: black }");
+    css = parser.parse("body, div { background-color: black }");
     same(css.rules[0].selector.string(), "body");
     same(css.rules[1].selector.string(), "div");
-    same(css.rules[0].attributes.string(), "{ background: black }");
-    return same(css.rules[1].attributes.string(), "{ background: black }");
+    same(css.rules[0].attributes.string(), "{ background-color: black }");
+    return same(css.rules[1].attributes.string(), "{ background-color: black }");
   });
   test("test compound selections", function() {
     var css;
@@ -134,20 +134,20 @@
   });
   test("test simple attribute", function() {
     var css;
-    css = parser.parse("body {background: #fff}");
-    same(css.rules[0].attributes.items[0].name, "background");
+    css = parser.parse("body {color: #fff}");
+    same(css.rules[0].attributes.items[0].name, "color");
     return same(css.rules[0].attributes.items[0].value(), "#fff");
   });
   test("test attributes hash", function() {
     var css;
-    css = parser.parse("body {background: #fff; display: none; background: #000;}");
-    same(css.rules[0].attributes.hash["background"].value(), "#000");
+    css = parser.parse("body {color: #fff; display: none; color: #000;}");
+    same(css.rules[0].attributes.hash["color"].value(), "#000");
     return same(css.rules[0].attributes.hash["display"].value(), "none");
   });
   test("test multiple values", function() {
     var css;
-    css = parser.parse("body {background: #fff; color: #000;}");
-    same(css.rules[0].attributes.items[0].name, "background");
+    css = parser.parse("body {background-color: #fff; color: #000;}");
+    same(css.rules[0].attributes.items[0].name, "background-color");
     same(css.rules[0].attributes.items[0].value(), "#fff");
     same(css.rules[0].attributes.items[1].name, "color");
     return same(css.rules[0].attributes.items[1].value(), "#000");
@@ -161,7 +161,7 @@
   });
   test("test identifier value", function() {
     var css;
-    css = parser.parse("body {background: white;}");
+    css = parser.parse("body {color: white;}");
     return same(css.rules[0].attributes.items[0].value(), "white");
   });
   test("test string value", function() {
@@ -198,7 +198,7 @@
   });
   test("test function with multi-item params", function() {
     var css;
-    css = parser.parse("body {background: gradient(linear, left top, left bottom);}");
+    css = parser.parse("body {background-image: gradient(linear, left top, left bottom);}");
     same(css.rules[0].attributes.items[0].values[0].name, "gradient");
     same(css.rules[0].attributes.items[0].values[0].arguments[0].string(), "linear");
     same(css.rules[0].attributes.items[0].values[0].arguments[1].string(), "left top");
@@ -214,7 +214,7 @@
   });
   test("test url function", function() {
     var css;
-    css = parser.parse("body {background: url(../testing/file.png)}");
+    css = parser.parse("body {background-image: url(../testing/file.png)}");
     same(css.rules[0].attributes.items[0].values[0].name, "url");
     return same(css.rules[0].attributes.items[0].values[0].argumentsString(), "'../testing/file.png'");
   });
