@@ -322,7 +322,7 @@ CssAST =
       @namedArguments = {}
 
       for arg in @arguments
-        if arg.namedArg
+        if arg.type == "NAMED_ARGUMENT"
           @namedArguments[arg.name] = arg.value
 
     argumentsString: -> collectStrings(@arguments).join(",")
@@ -377,7 +377,6 @@ CssAST =
   NamedArgumentNode: class NamedArgumentNode
     constructor: (@name, @value) ->
       @type = "NAMED_ARGUMENT"
-      @namedArg = true
     string: -> "#{@name}=#{@value.string()}"
 
   ImportantNode: class ImportantNode
