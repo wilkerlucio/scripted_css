@@ -246,6 +246,20 @@ Lexer.integrator =
   showPosition: ->
     @lines[@yylineno]
 
+Lexer.expressions =
+  "identifier": IDENTIFIER
+  "metaid":     METAID
+  "selector":   SELECTOR
+  "attrid":     ATTRID
+  "newline":    NEWLINE
+  "whitespace": WHITESPACE
+  "number":     NUMBER
+  "unitnumber": UNITNUMBER
+  "hexnumber":  HEXNUMBER
+  "string":     STRING
+  "comment":    COMMENT
+  "operators":  OPERATORS
+
 if window?
   window.ScriptedCss.CssParser.Lexer = Lexer
 if module?
