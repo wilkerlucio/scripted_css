@@ -27,7 +27,7 @@ class ScriptedCss.Modules.Opacity
       value = parseFloat(attr.values[0].string())
       value = Math.floor(value * 100)
 
-      node = new CssAST.FunctionNode("progid:DXImageTransform.Microsoft.Alpha", [new CssAST.NamedArgumentNode("opacity", new CssAST.NumberNode(value))])
+      node = $n("function", "progid:DXImageTransform.Microsoft.Alpha", [$n("arg", "opacity", $n(value))])
       attr.rule.attributes.addFilter(node)
 
 ScriptedCss.Modules.register(ScriptedCss.Modules.Opacity)

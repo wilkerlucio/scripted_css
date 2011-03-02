@@ -24,20 +24,20 @@ class ScriptedCss.Modules.BorderRadius
 
   parseCss: (css) ->
     for attr in css.attribute("border-top-left-radius")
-      attr.rule.attributes.add(ScriptedCss.createAttribute("-moz-border-radius-topleft", attr.value()))
-      attr.rule.attributes.add(ScriptedCss.createAttribute("-webkit-border-top-left-radius", attr.value()))
+      attr.rule.attributes.add($n("attribute", "-moz-border-radius-topleft", attr.values))
+      attr.rule.attributes.add($n("attribute", "-webkit-border-top-left-radius", attr.values))
 
     for attr in css.attribute("border-top-right-radius")
-      attr.rule.attributes.add(ScriptedCss.createAttribute("-moz-border-radius-topright", attr.value()))
-      attr.rule.attributes.add(ScriptedCss.createAttribute("-webkit-border-top-right-radius", attr.value()))
+      attr.rule.attributes.add($n("attribute", "-moz-border-radius-topright", attr.values))
+      attr.rule.attributes.add($n("attribute", "-webkit-border-top-right-radius", attr.values))
 
     for attr in css.attribute("border-bottom-right-radius")
-      attr.rule.attributes.add(ScriptedCss.createAttribute("-moz-border-radius-bottomright", attr.value()))
-      attr.rule.attributes.add(ScriptedCss.createAttribute("-webkit-border-bottom-right-radius", attr.value()))
+      attr.rule.attributes.add($n("attribute", "-moz-border-radius-bottomright", attr.values))
+      attr.rule.attributes.add($n("attribute", "-webkit-border-bottom-right-radius", attr.values))
 
     for attr in css.attribute("border-bottom-left-radius")
-      attr.rule.attributes.add(ScriptedCss.createAttribute("-moz-border-radius-bottomleft", attr.value()))
-      attr.rule.attributes.add(ScriptedCss.createAttribute("-webkit-border-bottom-left-radius", attr.value()))
+      attr.rule.attributes.add($n("attribute", "-moz-border-radius-bottomleft", attr.values))
+      attr.rule.attributes.add($n("attribute", "-webkit-border-bottom-left-radius", attr.values))
 
 ScriptedCss.Modules.register(ScriptedCss.Modules.BorderRadius)
 CssAST.AttributeSet.registerExpansion "border-radius",

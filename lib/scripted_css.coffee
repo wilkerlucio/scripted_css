@@ -70,12 +70,5 @@
       callbacks = @eventList?[event] || []
       callback.apply(this, args) for callback in callbacks
 
-    # AST generation helpers
-    createAttribute: (name, values) ->
-      values = [values] unless $.isArray(values)
-      values = (new CssAST.LiteralNode(value) for value in values)
-
-      new CssAST.AttributeNode(name, values)
-
   $ -> ScriptedCss.start()
 )(jQuery)
