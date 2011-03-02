@@ -151,6 +151,14 @@ CssAST =
         @items.push(attribute)
         @hash[attribute.name] = attribute
 
+    addFilter: (node) ->
+      filterAttribute = @hash["filter"]
+
+      if filterAttribute
+        filterAttribute.values.push(node)
+      else
+        @add(new AttributeNode("filter", [node]))
+
     get: (name) ->
       if @expansion(name)
         attr = @expansion(name).implode(this, name)
