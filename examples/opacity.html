@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>ScriptedCSS: Opacity Module</title>
+		<style type="text/scripted-css">
+			body { background: #eee; }
+			div { margin-right: 10px; float: left; width: 100px; height: 100px; background: #0c0; }
+			.transparent100 { opacity: 1; }
+			.transparent80  { opacity: .8; }
+			.transparent60  { opacity: .6; }
+			.transparent40  { opacity: .4; }
+			.transparent20  { opacity: .2; }
+			.transparent00  { opacity: 0; }
+		</style>
+		<script type="text/javascript" src="../vendor/jquery-1.5.min.js"></script>
+		<script type="text/javascript" src="../dist/scripted_css.js"></script>
+	</head>
+	<body>
+		<div class="transparent100">100% Opaque</div>
+		<div class="transparent80">80% Opaque</div>
+		<div class="transparent60">60% Opaque</div>
+		<div class="transparent40">40% Opaque</div>
+		<div class="transparent20">20% Opaque</div>
+		<div class="transparent00">00% Opaque</div>
+	</body>
+</html>
