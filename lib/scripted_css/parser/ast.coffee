@@ -23,6 +23,53 @@ collectStrings = (list) -> (item.string() for item in list)
 Array.prototype.isArray = -> true
 
 CssAST =
+  createNode: (args...) ->
+    expressions = ScriptedCss.CssParser.Lexer.expressions
+
+    nodes =
+      "rules":              RulesNode
+      "rule":               RuleNode
+      "attributes":         AttributeSet
+      "meta":               MetaNode
+      "selector":           SelectorNode
+      "meta-selector":      MetaSelectorNode
+      "attribute":          AttributeNode
+      "function":           FunctionNode
+      "attribute-selector": AttributeSelectorNode
+      "string":             StringNode
+      "arg":                NamedArgumentNode
+      "important":          ImportantNode
+      "literal":            LiteralNode
+      "number":             NumberNode
+      "unit":               UnitNumberNode
+      "hex":                HexnumberNode
+      "multi-value":        MultiValue
+
+    type = args.shift()
+
+    if args.length == 0
+      type += "" # ensure its a string
+
+      if type == "!"
+        new ImportantNode()
+      else if type.match(expressions.hexnumber)
+        new HexnumberNode(type)
+      else if type.match(expressions.unitnumber)
+        new UnitNumberNode(type)
+      else if type.match(expressions.number)
+        new NumberNode(type)
+      else
+        new LiteralNode(type)
+    else
+      if nodes[type]
+        args[0] = "'#{args[0]}'" if type == "string"
+
+        new nodes[type](args...)
+      else
+        return new MultiValue(type, args[0]) if type.isArray() and args[0]
+
+        throw "Can't create node for type #{type}"
+
   RulesNode: class RulesNode
     constructor: (rules) ->
       @type         = "RULES"
@@ -386,4 +433,5 @@ CssAST =
     string: -> "!important"
 
 window.CssAST = CssAST if window?
+window.$n = CssAST.createNode if window?
 module.exports = CssAST if module?
