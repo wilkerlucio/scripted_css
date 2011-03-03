@@ -360,6 +360,22 @@ CssAST =
       w += 1000 if @isImportant()
       w
 
+    groupMultiValues: ->
+      groups = []
+      currentGroup = []
+
+      for value in @values
+        if value.type == "MULTI_VALUE"
+          for item in value.literals
+            currentGroup.push(item)
+            groups.push(currentGroup)
+            currentGroup = []
+        else
+          currentGroup.push(value)
+
+      groups.push(currentGroup)
+      groups
+
     value:  -> collectStrings(@values).join(" ")
     string: -> "#{@name}: #{@value()}"
 
