@@ -192,7 +192,9 @@ CssAST =
 
     add: (attribute) ->
       if @expansion(attribute.name)
-        @merge(@expansion(attribute.name).explode(attribute))
+        for expanded in @merge(@expansion(attribute.name).explode(attribute))
+          expanded.important = attribute.important
+          expanded
       else
         attribute.rule = @owner
         @items.push(attribute)
@@ -346,18 +348,20 @@ CssAST =
     string: -> "#{@operator}#{@value.string()}"
 
   AttributeNode: class AttributeNode
-    constructor: (@name, @values) ->
-      @type = "ATTRIBUTE"
+    constructor: (@name, values, @important = false) ->
+      @type      = "ATTRIBUTE"
+      @values    = []
 
-    isImportant: ->
-      for value in @values
-        return true if value.important
-      false
+      for value in values
+        if value.type == "IMPORTANT"
+          @important = true
+        else
+          @values.push(value)
 
     weight: ->
       throw "Can't calculate weight of an deatached attribute" unless @rule
       w = @rule.selector.weight()
-      w += 1000 if @isImportant()
+      w += 1000 if @important
       w
 
     groupMultiValues: ->
@@ -376,8 +380,9 @@ CssAST =
       groups.push(currentGroup)
       groups
 
-    value:  -> collectStrings(@values).join(" ")
-    string: -> "#{@name}: #{@value()}"
+    importantString: -> if @important then " !important" else ""
+    value: (includeImportant = false) -> collectStrings(@values).join(" ") + (if includeImportant then @importantString() else "")
+    string: -> "#{@name}: #{@value(true)}"
 
   FunctionNode: class FunctionNode
     constructor: (@name, @arguments) ->

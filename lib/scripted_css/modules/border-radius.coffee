@@ -24,20 +24,20 @@ class ScriptedCss.Modules.BorderRadius
 
   parseCss: (css) ->
     for attr in css.attribute("border-top-left-radius")
-      attr.rule.attributes.add($n("attribute", "-moz-border-radius-topleft", attr.values))
-      attr.rule.attributes.add($n("attribute", "-webkit-border-top-left-radius", attr.values))
+      attr.rule.attributes.add($n("attribute", "-moz-border-radius-topleft", attr.values, attr.important))
+      attr.rule.attributes.add($n("attribute", "-webkit-border-top-left-radius", attr.values, attr.important))
 
     for attr in css.attribute("border-top-right-radius")
-      attr.rule.attributes.add($n("attribute", "-moz-border-radius-topright", attr.values))
-      attr.rule.attributes.add($n("attribute", "-webkit-border-top-right-radius", attr.values))
+      attr.rule.attributes.add($n("attribute", "-moz-border-radius-topright", attr.values, attr.important))
+      attr.rule.attributes.add($n("attribute", "-webkit-border-top-right-radius", attr.values, attr.important))
 
     for attr in css.attribute("border-bottom-right-radius")
-      attr.rule.attributes.add($n("attribute", "-moz-border-radius-bottomright", attr.values))
-      attr.rule.attributes.add($n("attribute", "-webkit-border-bottom-right-radius", attr.values))
+      attr.rule.attributes.add($n("attribute", "-moz-border-radius-bottomright", attr.values, attr.important))
+      attr.rule.attributes.add($n("attribute", "-webkit-border-bottom-right-radius", attr.values, attr.important))
 
     for attr in css.attribute("border-bottom-left-radius")
-      attr.rule.attributes.add($n("attribute", "-moz-border-radius-bottomleft", attr.values))
-      attr.rule.attributes.add($n("attribute", "-webkit-border-bottom-left-radius", attr.values))
+      attr.rule.attributes.add($n("attribute", "-moz-border-radius-bottomleft", attr.values, attr.important))
+      attr.rule.attributes.add($n("attribute", "-webkit-border-bottom-left-radius", attr.values, attr.important))
 
 ScriptedCss.Modules.register(ScriptedCss.Modules.BorderRadius)
 CssAST.AttributeSet.registerExpansion "border-radius",

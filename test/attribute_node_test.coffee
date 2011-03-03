@@ -40,6 +40,16 @@ test "grouping complex multi-values without expansion", ->
   same(expanded[0][0].string(), "one")
   same(expanded[0][1].string(), "two")
 
+test "it should remove !important but set it as important and append again on string", ->
+  css = parser.parse "body { display: none !important }"
+  attribute = css.rules[0].attributes.items[0]
+
+  same(attribute.values.length, 1)
+  same(attribute.important, true)
+  same(attribute.value(), "none")
+  same(attribute.value(true), "none !important")
+  same(attribute.string(), "display: none !important")
+
 test "calculating weight", ->
   css = parser.parse "body.something { attr: value }"
   same(css.rules[0].attributes.items[0].weight(), 11)
