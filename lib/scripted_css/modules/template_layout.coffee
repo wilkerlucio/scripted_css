@@ -42,7 +42,7 @@
         self = $(this)
         position = self.realCss("position")
         self.css(display: "none")
-        self.remove()
+        self.detach()
 
         render.items[position] ?= []
         render.items[position].push(self)
