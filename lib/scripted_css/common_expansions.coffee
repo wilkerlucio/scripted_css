@@ -49,16 +49,6 @@
 
         comp
 
-      normalizeDirections: (items) ->
-        if items[0].string() == items[1].string() == items[2].string() == items[3].string()
-          items = [items[0]]
-        else if items[0].string() == items[2].string() and items[1].string() == items[3].string()
-          items = [items[0], items[1]]
-        else if items[1].string() == items[3].string()
-          items = [items[0], items[1], items[2]]
-
-        items
-
     background:
       explode: (attribute) ->
         defaults =
