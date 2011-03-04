@@ -82,6 +82,7 @@ parser = new Parser(
     ValueItem: [
       o "DEFINITION",          -> new Macro($1)
       o "IDENTIFIER",          -> new Literal($1)
+      o "NUMBER",              -> new Literal($1)
     ]
 
     Length: [
