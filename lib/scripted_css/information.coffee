@@ -19,7 +19,7 @@
 # THE SOFTWARE.
 
 (($) ->
-  ScriptedCss.Utils =
+  ScriptedCss.Information =
     backgroundAttachments:
       "fixed":  true
       "scroll": true
@@ -224,7 +224,7 @@
       "small-caps": true
 
     fontWeights:
-      "bold":    true
+      "bold":    "700"
       "bolder":  true
       "lighter": true
       "100":     true
