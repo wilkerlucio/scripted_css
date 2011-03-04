@@ -147,13 +147,11 @@ test "quantity many having none", ->
 
 test "quantity optional having the value", ->
   out = parser.parseNodes([$n("a"), $n("b")], "quantityOptional", grammar)
-  console.log(out)
   same(out[0].string(), "a")
   same(out[1].string(), "b")
 
 test "quantity optional not having the value", ->
   out = parser.parseNodes([$n("b")], "quantityOptional", grammar)
-  console.log(out)
   same(out[0], [])
   same(out[1].string(), "b")
 
