@@ -229,11 +229,23 @@
 
     outline:
       explode: (attribute) ->
-        Expanders.line.explode(attribute, {color: "invert", style: "none", width: "medium"})
+        values = ScriptedCss.parseAttributes(attribute.values, "outline")
+        return false unless values and !values.string
+
+        color = values.color || $n("invert")
+        style = values.style || $n("none")
+        width = values.width || $n("medium")
+
+        [
+          $n("attribute", "#{attribute.name}-color", [color])
+          $n("attribute", "#{attribute.name}-style", [style])
+          $n("attribute", "#{attribute.name}-width", [width])
+        ]
 
     listStyle:
       explode: (attribute) ->
         values = ScriptedCss.parseAttributes(attribute.values, "list-style")
+        return false unless values and !values.string
 
         image    = values.image    or $n("none")
         position = values.position or $n("outside")

@@ -260,13 +260,13 @@
     attributeGrammar:
       # font grammar, based on CSS 2.1 specification: http://www.w3.org/TR/2010/WD-CSS2-20101207/fonts.html
       "font-family":
-        value: "[[ <family-name> | <generic-family> ] [, <family-name> | <generic-family> ]*] | inherit"
+        value: "[[ <family-name> | <generic-family> ] [, <family-name> | <generic-family> ]*]"
         return: (v) -> if v.get(1) then [_.flatten([v.get(0)].concat(v.get(1)))] else v.results
 
-      "font-weight": "normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | inherit"
-      "font-style": "normal | italic | oblique | inherit"
-      "font-variant": "normal | small-caps | inherit"
-      "font-size": "<absolute-size> | <relative-size> | <length> | <percentage> | inherit"
+      "font-weight": "normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900"
+      "font-style": "normal | italic | oblique"
+      "font-variant": "normal | small-caps"
+      "font-size": "<absolute-size> | <relative-size> | <length> | <percentage>"
       "font":
         value: "[ [ <font-style> || <font-variant> || <font-weight> ]? <font-size> [ / <line-height> ]? <font-family> ] | caption | icon | menu | message-box | small-caption | status-bar | inherit"
         return: (v) ->
@@ -283,11 +283,11 @@
       "family-name": "<literal> | <string>"
 
       # lists grammar, based on CSS 2.1 specification: http://www.w3.org/TR/2010/WD-CSS2-20101207/generate.html#lists
-      "list-style-type": "disc | circle | square | decimal | decimal-leading-zero | lower-roman | upper-roman | lower-greek | lower-latin | upper-latin | armenian | georgian | lower-alpha | upper-alpha | none | inherit"
-      "list-style-image": "<uri> | none | inherit"
-      "list-style-position": "inside | outside | inherit"
+      "list-style-type": "disc | circle | square | decimal | decimal-leading-zero | lower-roman | upper-roman | lower-greek | lower-latin | upper-latin | armenian | georgian | lower-alpha | upper-alpha | none"
+      "list-style-image": "<uri> | none"
+      "list-style-position": "inside | outside"
       "list-style":
-        value: "inherit | [ <list-style-type> || <list-style-position> || <list-style-image> ]"
+        value: "[ <list-style-type> || <list-style-position> || <list-style-image> ] | inherit"
         return: (v) ->
           return v.results unless v.isList()
           return false unless _.any(v.results)
@@ -296,9 +296,25 @@
           position: v.get(1)
           image:    v.get(2)
 
+      # outline grammar, based on CSS 2.1 specification: http://www.w3.org/TR/2010/WD-CSS2-20101207/ui.html#dynamic-outlines
+      "outline-width": "<border-width>"
+      "outline-style": "<border-style>"
+      "outline-color": "<color> | invert"
+      "outline":
+        value: "[ <outline-color> || <outline-style> || <outline-width> ] | inherit"
+        return: (v) ->
+          return v.results unless v.isList()
+          return false unless _.any(v.results)
+
+          color: v.get(0)
+          style: v.get(1)
+          width: v.get(2)
+
       # common grammar
+      "border-width": "<length> | thin | medium | thick"
+      "border-style": "none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset"
       "absolute-size": "xx-small | x-small | small | medium | large | x-large | xx-large"
-      "line-height": "normal | <number> | <length> | <percentage> | inherit"
+      "line-height": "normal | <number> | <length> | <percentage>"
       "relative-size": "larger | smaller"
 
       # internal grammar
@@ -308,5 +324,10 @@
       "percentage": (nodes) -> @collect nodes, (node) -> node.type == "PERCENT"
       "number": (nodes) -> @collect nodes, (node) -> node.type == "NUMBER"
       "uri": (nodes) -> @collect nodes, (node) -> node.type == "FUNCTION" and node.name == "url"
+      "color": (nodes) -> # color spec following CSS 3 colors draft: http://www.w3.org/TR/2010/PR-css3-color-20101028/
+        @collect nodes, (node) ->
+          (node.type == "HEXNUMBER") or
+          (ScriptedCss.Information.colors[node.string()]) or
+          (node.type == "FUNCTION" and _.include(["rgb", "rgba", "hsl"], node.name))
 
 )(jQuery)
