@@ -32,15 +32,17 @@ o = (patternString, action, options) ->
   [patternString, "$$ = #{action};", options]
 
 parser = new Parser(
+  tokens: 'IDENTIFIER DEFINITION NUMBER || | [ ] { } * ? +'
+
   lex:
     macros:
       id: "[a-zA-Z-][a-zA-Z0-9-]*"
 
     rules: [
       ["\\s+",    "/* skip whitespaces */"]
-      ["<{id}>",  "yytext = yytext.substring(1, yytext.length - 2); return 'DEFINITION'"]
+      ["<{id}>",  "yytext = yytext.substring(1, yytext.length - 1); return 'DEFINITION'"]
       ["{id}",    "return 'IDENTIFIER'"]
-      ["'[^']*'", "yytext = yytext.substring(1, yytext.length - 2); return 'IDENTIFIER'"]
+      ["'[^']*'", "yytext = yytext.substring(1, yytext.length - 1); return 'IDENTIFIER'"]
       ["\\d+",    "return 'NUMBER'"]
       ["\\|\\|",  "return '||';"]
       ["\\|",     "return '|';"]
@@ -54,28 +56,27 @@ parser = new Parser(
       [".",       "return 'IDENTIFIER';"]
     ]
 
-  operators: [
-    ["left", "|"]
-    ["left", "||"]
-  ]
-
   bnf:
     Root: [
       ["e", "return $$"]
     ]
 
     e: [
-      o "e || Value",          -> new Optional($1, $3)
-      o "e | Value",           -> new Or($1, $3)
-      o "e Value",             -> new And($1, $2)
+      o "e || andOr",          -> new Optional($1, $3)
+      o "andOr"
+    ]
+
+    andOr: [
+      o "andOr | Value",       -> new Or($1, $3)
+      o "andOr Value",         -> new And($1, $2)
       o "Value"
     ]
 
     Value: [
       o "ValueItem",           -> new Value($1)
       o "ValueItem Length",    -> new Value($1, $2)
-      o "[ e ]",               -> new Value($1)
-      o "[ e ] Length",        -> new Value($1, $2)
+      o "[ e ]",               -> new Value($2)
+      o "[ e ] Length",        -> new Value($2, $4)
     ]
 
     ValueItem: [

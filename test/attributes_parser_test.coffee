@@ -21,6 +21,8 @@
 parser = ScriptedCss.AttributesParser
 
 grammar =
+  _ignoreList: ["/"]
+
   andOne:
     value: "a b"
 
@@ -32,6 +34,46 @@ grammar =
 
   orOneInverted:
     value: "b | a"
+
+  quantityMany:
+    value: "a* b"
+
+  quantityOptional:
+    value: "a? b"
+
+  groupQuantityMany:
+    value: "a [ b c ]+"
+
+  andOr:
+    value: "a b | c"
+
+  orAnd:
+    value: "a | b c"
+
+  opt:
+    value: "a || b || c"
+
+  optPrecedence:
+    value: "a || b | c"
+
+  optPrecedenceAnd:
+    value: "a || b c"
+
+  customReturn:
+    value: "a b"
+    return: (v) ->
+      first:  v[0]
+      second: v[1]
+
+  withMacro:
+    value: "<andOne>"
+
+  functionValue:
+    value: (nodes, grammar) ->
+      @collect nodes, (node) -> node.type == "FUNCTION" and node.name == "url"
+
+  ignoredValues:
+    value: "one / two"
 
 module "Attributes Parser"
 
@@ -70,3 +112,103 @@ test "or with only invalid items", ->
   out = parser.parseNodes([$n("c"), $n("d")], "orOne", grammar)
   same(out, false)
 
+test "quantity many having one", ->
+  out = parser.parseNodes([$n("a"), $n("b")], "quantityMany", grammar)
+  same(out[0].length, 1)
+  same(out[0][0].string(), "a")
+  same(out[1].string(), "b")
+
+test "quantity many having many", ->
+  out = parser.parseNodes([$n("a"), $n("a"), $n("b")], "quantityMany", grammar)
+  same(out[0].length, 2)
+  same(out[0][0].string(), "a")
+  same(out[0][1].string(), "a")
+  same(out[1].string(), "b")
+
+test "quantity many having none", ->
+  out = parser.parseNodes([$n("b")], "quantityMany", grammar)
+  same(out[0].length, 0)
+  same(out[1].string(), "b")
+
+test "quantity optional having the value", ->
+  out = parser.parseNodes([$n("a"), $n("b")], "quantityOptional", grammar)
+  same(out[0].string(), "a")
+  same(out[1].string(), "b")
+
+test "quantity optional not having the value", ->
+  out = parser.parseNodes([$n("b")], "quantityOptional", grammar)
+  same(out[0], null)
+  same(out[1].string(), "b")
+
+test "group quantity many having one", ->
+  out = parser.parseNodes([$n("a"), $n("b"), $n("c")], "groupQuantityMany", grammar)
+  same(out[0].string(), "a")
+  same(out[1][0][0].string(), "b")
+  same(out[1][0][1].string(), "c")
+
+test "group quantity many having many", ->
+  out = parser.parseNodes([$n("a"), $n("b"), $n("c"), $n("b"), $n("c")], "groupQuantityMany", grammar)
+  same(out[0].string(), "a")
+  same(out[1][0][0].string(), "b")
+  same(out[1][0][1].string(), "c")
+  same(out[1][1][0].string(), "b")
+  same(out[1][1][1].string(), "c")
+
+test "group quantity many having none", ->
+  out = parser.parseNodes([$n("a"), $n("b")], "groupQuantityMany", grammar)
+  same(out, false)
+
+test "andOr", ->
+  out = parser.parseNodes([$n("a"), $n("b"), $n("c")], "andOr", grammar)
+  same(out[0].string(), "a")
+  same(out[1].string(), "b")
+
+test "andOr on second", ->
+  out = parser.parseNodes([$n("a"), $n("x"), $n("c")], "andOr", grammar)
+  same(out.string(), "c")
+
+test "orAnd", ->
+  out = parser.parseNodes([$n("a"), $n("b"), $n("c")], "orAnd", grammar)
+  same(out[0].string(), "a")
+  same(out[1].string(), "c")
+
+test "orAnd on second", ->
+  out = parser.parseNodes([$n("x"), $n("b"), $n("c")], "orAnd", grammar)
+  same(out[0].string(), "b")
+  same(out[1].string(), "c")
+
+test "optional", ->
+  out = parser.parseNodes([$n("a"), $n("x"), $n("c")], "opt", grammar)
+  same(out[0].string(), "a")
+  same(out[1], null)
+  same(out[2].string(), "c")
+
+test "optional precedence", ->
+  out = parser.parseNodes([$n("a"), $n("x"), $n("c")], "optPrecedence", grammar)
+  same(out[0].string(), "a")
+  same(out[1].string(), "c")
+
+test "custom return", ->
+  out = parser.parseNodes([$n("a"), $n("b")], "customReturn", grammar)
+  same(out.first.string(), "a")
+  same(out.second.string(), "b")
+
+test "simple macro", ->
+  out = parser.parseNodes([$n("a"), $n("b")], "withMacro", grammar)
+  same(out[0].string(), "a")
+  same(out[1].string(), "b")
+
+test "value as a function", ->
+  out = parser.parseNodes([$n("function", "url", [$n("string", "hi.png")])], "functionValue", grammar)
+  same(out.type, "FUNCTION")
+  same(out.name, "url")
+  same(out.arguments[0].text, "hi.png")
+
+test "value as a function invalid", ->
+  out = parser.parseNodes([$n("wrong")], "functionValue", grammar)
+  same(out, false)
+
+test "ignoring some return values", ->
+  out = parser.parseNodes([$n("one"), $n("/"), $n("two")], "ignoredValues", grammar)
+  same(out[0].string(), "one")
+  same(out[1].string(), "two")
