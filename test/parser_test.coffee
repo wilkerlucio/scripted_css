@@ -36,7 +36,7 @@ test "test it parsing complex metadata", ->
   same(css.rules[0].value.items[1].name, "src")
   same(css.rules[0].value.items[1].value(), "url('scarface-webfont.eot')")
   same(css.rules[0].value.items[2].name, "src")
-  same(css.rules[0].value.items[2].value(), "local('scarface'), url('scarface-webfont.ttf') format('truetype')")
+  same(css.rules[0].value.items[2].value(), "local('scarface') , url('scarface-webfont.ttf') format('truetype')")
 
 test "test it parsing simple selector", ->
   css = parser.parse("body {}")
@@ -206,11 +206,6 @@ test "test url function", ->
 test "test full complex attribute", ->
   css = parser.parse("body {display: 'aaa' / 20px 'bcc' 100px * minmax(80px, 120px);}")
   same(css.rules[0].attributes.items[0].value(), "'aaa' / 20px 'bcc' 100px * minmax(80px,120px)")
-
-test "test multi-item value", ->
-  css = parser.parse("body {display: a, b, c d;}")
-  same(css.rules[0].attributes.items[0].values[0].string(), "a, b, c")
-  same(css.rules[0].attributes.items[0].values[1].string(), "d")
 
 test "test selector generating string", ->
   selector = new ast.SelectorNode("body")

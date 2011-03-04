@@ -70,7 +70,7 @@ test "test some chain", ->
     ["{", "{", 0]
     ["IDENTIFIER", "height", 0]
     [":", ":", 0]
-    ["UNITNUMBER", "1%", 0]
+    ["PERCENT", "1%", 0]
     [";", ";", 0]
     ["}", "}", 0]
   ])
@@ -191,7 +191,7 @@ test "test lexing number units", ->
     ["{", "{", 0]
     ["IDENTIFIER", "margin", 0]
     [":", ":", 0]
-    ["UNITNUMBER", "50%", 0]
+    ["PERCENT", "50%", 0]
     ["NUMBER", "100", 0]
     ["IDENTIFIER", "pxx", 0]
     [";", ";", 0]

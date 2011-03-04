@@ -105,12 +105,7 @@ grammar =
 
   ValueListItem: [
     o "Value"
-    o "ComaListValue",                                 -> new MultiValue($1, ", ")
-  ]
-
-  ComaListValue: [
-    o "Value , Value",                                 -> [$1, $3]
-    o "ComaListValue , Value",                         -> $1.concat($3)
+    o ",",                                             -> new LiteralNode($1)
   ]
 
   Value: [
@@ -121,8 +116,6 @@ grammar =
     o "NUMBER",                                        -> new NumberNode($1)
     o "/",                                             -> new LiteralNode($1)
     o "*",                                             -> new LiteralNode($1)
-    o ".",                                             -> new LiteralNode($1)
-    o "!",                                             -> new LiteralNode($1)
     o "IMPORTANT",                                     -> new ImportantNode()
     o "Function"
   ]

@@ -364,22 +364,6 @@ CssAST =
       w += 1000 if @important
       w
 
-    groupMultiValues: ->
-      groups = []
-      currentGroup = []
-
-      for value in @values
-        if value.type == "MULTI_VALUE"
-          for item in value.literals
-            currentGroup.push(item)
-            groups.push(currentGroup)
-            currentGroup = []
-        else
-          currentGroup.push(value)
-
-      groups.push(currentGroup)
-      groups
-
     importantString: -> if @important then " !important" else ""
     value: (includeImportant = false) -> collectStrings(@values).join(" ") + (if includeImportant then @importantString() else "")
     string: -> "#{@name}: #{@value(true)}"
