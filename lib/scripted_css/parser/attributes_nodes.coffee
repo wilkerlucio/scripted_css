@@ -42,14 +42,25 @@ window.ScriptedCss.AttributesParser.yy =
       r1 = @v1.parse(nodes, grammar)
       r2 = @v2.parse(nodes, grammar)
 
-      if r1 or r2 then f(r1 || new Null, r2 || new Null) else false
+      f(r1 || new Null, r2 || new Null)
 
   Or: class Or
     constructor: (@v1, @v2) ->
       @type = "OR"
 
     parse: (nodes, grammar) ->
-      @v1.parse(nodes, grammar) or @v2.parse(nodes, grammar)
+      nodesClone = _.clone(nodes)
+      v = @v1.parse(nodes, grammar)
+      return v if @isValid(v)
+      v = @v2.parse(nodesClone, grammar)
+      return v if @isValid(v)
+
+      false
+
+    isValid: (result) ->
+      return result unless _.isArray(result)
+
+      _.any result, (node) -> !node.type or node.type != "NULL"
 
   And: class And
     constructor: (@v1, @v2) ->
@@ -155,8 +166,13 @@ window.ScriptedCss.AttributesParser.helpers =
 
 window.ScriptedCss.AttributesParser.parseNodesInternal = (nodes, ruleName, grammar) ->
   rule  = grammar[ruleName]
+  throw "can't find rule <#{ruleName}>" unless rule
+
   nodes = new ScriptedCss.AttributesParser.yy.NodeValues(nodes) unless nodes.type == "NODEVALUES"
   returnFunction = rule.return || ((v) -> v)
+
+  unless rule.value?
+    rule = {value: rule}
 
   if _.isFunction(rule.value)
     result = rule.value.call(ScriptedCss.AttributesParser.helpers, nodes, grammar)

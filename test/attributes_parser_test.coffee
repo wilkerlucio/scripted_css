@@ -23,6 +23,8 @@ parser = ScriptedCss.AttributesParser
 grammar =
   _ignoreList: ["/"]
 
+  quickEntry: "a b"
+
   andOne:
     value: "a b"
 
@@ -34,6 +36,8 @@ grammar =
 
   orOneInverted:
     value: "b | a"
+
+  orLoss: "[ a b ] | a"
 
   quantityMany:
     value: "a* b"
@@ -75,6 +79,9 @@ grammar =
   ignoredValues:
     value: "one / two"
 
+  complexOptional: "[ a || b || c ]? d"
+  complexOptionalWithOr: "[ a || b ] | c"
+
 module "Attributes Parser"
 
 test "parsing an and list", ->
@@ -111,6 +118,10 @@ test "or with elements inverted", ->
 test "or with only invalid items", ->
   out = parser.parseNodes([$n("c"), $n("d")], "orOne", grammar)
   same(out, false)
+
+test "or don't lose values", ->
+  out = parser.parseNodes([$n("a")], "orLoss", grammar)
+  same(out.string(), "a")
 
 test "quantity many having one", ->
   out = parser.parseNodes([$n("a"), $n("b")], "quantityMany", grammar)
@@ -212,3 +223,45 @@ test "ignoring some return values", ->
   out = parser.parseNodes([$n("one"), $n("/"), $n("two")], "ignoredValues", grammar)
   same(out[0].string(), "one")
   same(out[1].string(), "two")
+
+test "using quick entries", ->
+  out = parser.parseNodes([$n("a"), $n("b")], "quickEntry", grammar)
+  same(out[0].string(), "a")
+  same(out[1].string(), "b")
+
+test "complex optional with all values", ->
+  out = parser.parseNodes([$n("a"), $n("b"), $n("c"), $n("d")], "complexOptional", grammar)
+  same(out[0].string(), "a")
+  same(out[1].string(), "b")
+  same(out[2].string(), "c")
+  same(out[3].string(), "d")
+
+test "complex optional with one missing values", ->
+  out = parser.parseNodes([$n("a"), $n("c"), $n("d")], "complexOptional", grammar)
+  same(out[0].string(), "a")
+  same(out[1], null)
+  same(out[2].string(), "c")
+  same(out[3].string(), "d")
+
+test "complex optional with two missing values", ->
+  out = parser.parseNodes([$n("c"), $n("d")], "complexOptional", grammar)
+  same(out[0], null)
+  same(out[1], null)
+  same(out[2].string(), "c")
+  same(out[3].string(), "d")
+
+test "complex optional with all optional missing", ->
+  out = parser.parseNodes([$n("d")], "complexOptional", grammar)
+  same(out[0], null)
+  same(out[1], null)
+  same(out[2], null)
+  same(out[3].string(), "d")
+
+test "complex optional with or", ->
+  out = parser.parseNodes([$n("a"), $n("b")], "complexOptionalWithOr", grammar)
+  same(out[0].string(), "a")
+  same(out[1].string(), "b")
+
+test "complex optional with or failing on first", ->
+  out = parser.parseNodes([$n("c")], "complexOptionalWithOr", grammar)
+  same(out.string(), "c")
