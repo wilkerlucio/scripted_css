@@ -37,7 +37,7 @@ grammar =
   orOneInverted:
     value: "b | a"
 
-  orLoss: "[ a b ] | a"
+  orLoss: "[ a || a ] | b"
 
   quantityMany:
     value: "a* b"
@@ -121,7 +121,11 @@ test "or with only invalid items", ->
 
 test "or don't lose values", ->
   out = parser.parseNodes([$n("a")], "orLoss", grammar)
-  same(out.string(), "a")
+  same(out[0].string(), "a")
+  same(out[1], null)
+
+  out = parser.parseNodes([$n("b")], "orLoss", grammar)
+  same(out.string(), "b")
 
 test "quantity many having one", ->
   out = parser.parseNodes([$n("a"), $n("b")], "quantityMany", grammar)
@@ -265,3 +269,11 @@ test "complex optional with or", ->
 test "complex optional with or failing on first", ->
   out = parser.parseNodes([$n("c")], "complexOptionalWithOr", grammar)
   same(out.string(), "c")
+
+test "caching quick attributes", ->
+  out = parser.parseNodes([], "quickEntry", grammar)
+  ok(grammar.quickEntry.value, "quick entry was not cached")
+
+test "caching parser", ->
+  out = parser.parseNodes([], "quickEntry", grammar)
+  ok(grammar.andOne.parser, "parser was not cached")

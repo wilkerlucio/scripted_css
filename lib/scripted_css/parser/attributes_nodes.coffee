@@ -49,11 +49,13 @@ window.ScriptedCss.AttributesParser.yy =
       @type = "OR"
 
     parse: (nodes, grammar) ->
-      nodesClone = _.clone(nodes)
+      nodesClone = nodes.clone()
       v = @v1.parse(nodes, grammar)
       return v if @isValid(v)
       v = @v2.parse(nodesClone, grammar)
-      return v if @isValid(v)
+      if @isValid(v)
+        nodes.items = nodesClone.items
+        return v
 
       false
 
@@ -92,7 +94,9 @@ window.ScriptedCss.AttributesParser.yy =
 
     parse: (nodes, grammar) ->
       value = @value
-      ScriptedCss.AttributesParser.helpers.collect nodes, (node) -> node.string() == value
+      v = ScriptedCss.AttributesParser.helpers.collect nodes, (node) -> node.string() == value
+
+      v
 
   Null: class Null
     constructor: -> @type = "NULL"
@@ -124,18 +128,8 @@ window.ScriptedCss.AttributesParser.yy =
 
   NodeValues: class NodeValues
     constructor: (@items) -> @type = "NODEVALUES"
+    clone: -> new NodeValues(@items)
 
-normalizeOutput = (value, ignores) ->
-  if _.isArray(value)
-    list = []
-
-    for item in value
-      continue if _.isFunction(item.string) and _.include(ignores, item.string())
-      list.push(normalizeOutput(item, ignores))
-
-    list
-  else
-    if value.type == "NULL" then null else value
 
 window.ScriptedCss.AttributesParser.helpers =
   collect: (nodes, callback) ->
@@ -164,6 +158,18 @@ window.ScriptedCss.AttributesParser.helpers =
     nodes.items = rest
     result
 
+  normalize: (value, ignores) ->
+    if _.isArray(value)
+      list = []
+
+      for item in value
+        continue if _.isFunction(item.string) and _.include(ignores, item.string())
+        list.push(ScriptedCss.AttributesParser.helpers.normalize(item, ignores))
+
+      list
+    else
+      if value.type == "NULL" then null else value
+
 window.ScriptedCss.AttributesParser.parseNodesInternal = (nodes, ruleName, grammar) ->
   rule  = grammar[ruleName]
   throw "can't find rule <#{ruleName}>" unless rule
@@ -173,6 +179,7 @@ window.ScriptedCss.AttributesParser.parseNodesInternal = (nodes, ruleName, gramm
 
   unless rule.value?
     rule = {value: rule}
+    grammar[ruleName] = rule
 
   if _.isFunction(rule.value)
     result = rule.value.call(ScriptedCss.AttributesParser.helpers, nodes, grammar)
@@ -182,7 +189,7 @@ window.ScriptedCss.AttributesParser.parseNodesInternal = (nodes, ruleName, gramm
 
     result = rule.parser.parse(nodes, grammar)
 
-  if result then returnFunction(result) else false
+  if result then returnFunction.call(ScriptedCss.AttributesParser.helpers, result) else false
 
 window.ScriptedCss.AttributesParser.parseNodes = (nodes, rule, grammar) ->
-  normalizeOutput(ScriptedCss.AttributesParser.parseNodesInternal(nodes, rule, grammar), grammar._ignoreList || [])
+  ScriptedCss.AttributesParser.helpers.normalize(ScriptedCss.AttributesParser.parseNodesInternal(nodes, rule, grammar), grammar._ignoreList || [])
