@@ -109,12 +109,9 @@ window.ScriptedCss.AttributesParser.yy =
         result = value.parse(nodes, grammar)
 
         if result
-          result
+          if @min == 1 then result else [result]
         else
-          if @min == 1
-            false
-          else
-            new Null
+          if @min == 1 then false else [[]]
       else
         results = []
 
@@ -130,6 +127,20 @@ window.ScriptedCss.AttributesParser.yy =
     constructor: (@items) -> @type = "NODEVALUES"
     clone: -> new NodeValues(@items)
 
+  ResultParser: class ResultParser
+    constructor: (results) ->
+      @type = "RESULTPARSER"
+      @results = ScriptedCss.AttributesParser.helpers.normalize(results)
+
+    isList: -> _.isArray(@results)
+    get: (items...) ->
+      current = @results
+
+      until _.isUndefined(i = items.shift())
+        current = current[i]
+        return null unless current
+
+      current
 
 window.ScriptedCss.AttributesParser.helpers =
   collect: (nodes, callback) ->
@@ -175,7 +186,7 @@ window.ScriptedCss.AttributesParser.parseNodesInternal = (nodes, ruleName, gramm
   throw "can't find rule <#{ruleName}>" unless rule
 
   nodes = new ScriptedCss.AttributesParser.yy.NodeValues(nodes) unless nodes.type == "NODEVALUES"
-  returnFunction = rule.return || ((v) -> v)
+  returnFunction = rule.return
 
   unless rule.value?
     rule = {value: rule}
@@ -189,7 +200,15 @@ window.ScriptedCss.AttributesParser.parseNodesInternal = (nodes, ruleName, gramm
 
     result = rule.parser.parse(nodes, grammar)
 
-  if result then returnFunction.call(ScriptedCss.AttributesParser.helpers, result) else false
+  if result
+    if returnFunction
+      result = new ScriptedCss.AttributesParser.yy.ResultParser(result)
+    else
+      returnFunction = (v) -> v
+
+    returnFunction.call(ScriptedCss.AttributesParser.helpers, result)
+  else
+    false
 
 window.ScriptedCss.AttributesParser.parseNodes = (nodes, rule, grammar) ->
   ScriptedCss.AttributesParser.helpers.normalize(ScriptedCss.AttributesParser.parseNodesInternal(nodes, rule, grammar), grammar._ignoreList || [])

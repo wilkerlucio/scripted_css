@@ -66,8 +66,8 @@ grammar =
   customReturn:
     value: "a b"
     return: (v) ->
-      first:  v[0]
-      second: v[1]
+      first:  v.get(0)
+      second: v.get(1)
 
   withMacro:
     value: "<andOne>"
@@ -147,12 +147,14 @@ test "quantity many having none", ->
 
 test "quantity optional having the value", ->
   out = parser.parseNodes([$n("a"), $n("b")], "quantityOptional", grammar)
+  console.log(out)
   same(out[0].string(), "a")
   same(out[1].string(), "b")
 
 test "quantity optional not having the value", ->
   out = parser.parseNodes([$n("b")], "quantityOptional", grammar)
-  same(out[0], null)
+  console.log(out)
+  same(out[0], [])
   same(out[1].string(), "b")
 
 test "group quantity many having one", ->
@@ -235,31 +237,31 @@ test "using quick entries", ->
 
 test "complex optional with all values", ->
   out = parser.parseNodes([$n("a"), $n("b"), $n("c"), $n("d")], "complexOptional", grammar)
-  same(out[0].string(), "a")
-  same(out[1].string(), "b")
-  same(out[2].string(), "c")
-  same(out[3].string(), "d")
+  same(out[0][0].string(), "a")
+  same(out[0][1].string(), "b")
+  same(out[0][2].string(), "c")
+  same(out[1].string(), "d")
 
 test "complex optional with one missing values", ->
   out = parser.parseNodes([$n("a"), $n("c"), $n("d")], "complexOptional", grammar)
-  same(out[0].string(), "a")
-  same(out[1], null)
-  same(out[2].string(), "c")
-  same(out[3].string(), "d")
+  same(out[0][0].string(), "a")
+  same(out[0][1], null)
+  same(out[0][2].string(), "c")
+  same(out[1].string(), "d")
 
 test "complex optional with two missing values", ->
   out = parser.parseNodes([$n("c"), $n("d")], "complexOptional", grammar)
-  same(out[0], null)
-  same(out[1], null)
-  same(out[2].string(), "c")
-  same(out[3].string(), "d")
+  same(out[0][0], null)
+  same(out[0][1], null)
+  same(out[0][2].string(), "c")
+  same(out[1].string(), "d")
 
 test "complex optional with all optional missing", ->
   out = parser.parseNodes([$n("d")], "complexOptional", grammar)
-  same(out[0], null)
-  same(out[1], null)
-  same(out[2], null)
-  same(out[3].string(), "d")
+  same(out[0][0], null)
+  same(out[0][1], null)
+  same(out[0][2], null)
+  same(out[1].string(), "d")
 
 test "complex optional with or", ->
   out = parser.parseNodes([$n("a"), $n("b")], "complexOptionalWithOr", grammar)
