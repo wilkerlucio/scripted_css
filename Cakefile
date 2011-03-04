@@ -27,6 +27,7 @@ child_process = require 'child_process'
 scriptFiles = [
   "scripted_css.coffee",
   "scripted_css/css_parser.js",
+  "scripted_css/css_attributes_parser.js",
   "scripted_css/jquery.coffee",
   "scripted_css/utils.coffee",
   "scripted_css/common_expansions.coffee",
@@ -39,6 +40,7 @@ scriptFiles = [
 
 task 'build', 'build scripted css', (options) ->
   invoke 'compile:parser'
+  invoke 'compile:attr_parser'
 
   compile = (file) ->
     source = fs.readFileSync(path.join("lib", file)).toString()
@@ -81,3 +83,13 @@ task 'compile:parser', 'compile the css parser', (options) ->
 
   fs.writeFileSync "lib/scripted_css/css_parser.js", parserSource + lexer + ast
   console.log "Compiled parser to lib/scripted_css/css_parser.js"
+
+task 'compile:attr_parser', 'compile the css attributes parser', (options) ->
+  nodesSource  = fs.readFileSync("./lib/scripted_css/parser/attributes_nodes.coffee").toString()
+  parser       = require "./lib/scripted_css/parser/attributes.coffee"
+  parserSource = parser.generate(moduleName: "ScriptedCss.AttributesParser")
+  parserSource = parserSource.replace("last_column: lstack[lstack.length-1].last_column,", "last_column: lstack[lstack.length-1].last_column") # hack to fix parser for IE
+  nodes        = CoffeeScript.compile nodesSource
+
+  fs.writeFileSync "lib/scripted_css/css_attributes_parser.js", parserSource + nodes
+  console.log "Compiled attributes parser to lib/scripted_css/css_attributes_parser.js"
