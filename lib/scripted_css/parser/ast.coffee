@@ -192,13 +192,19 @@ CssAST =
 
     add: (attribute) ->
       if @expansion(attribute.name)
-        for expanded in @merge(@expansion(attribute.name).explode(attribute))
-          expanded.important = attribute.important
-          expanded
-      else
-        attribute.rule = @owner
-        @items.push(attribute)
-        @hash[attribute.name] = attribute
+        results = @expansion(attribute.name).explode(attribute)
+
+        if results
+          for expanded in results
+            expanded.important = attribute.important
+
+          @merge(results)
+
+          return
+
+      attribute.rule = @owner
+      @items.push(attribute)
+      @hash[attribute.name] = attribute
 
     addFilter: (node) ->
       filterAttribute = @hash["filter"]
