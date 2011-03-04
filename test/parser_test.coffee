@@ -149,7 +149,7 @@ test "test multiple values", ->
   same(css.rules[0].attributes.items[1].value(), "#000")
 
 test "test unit value", ->
-  css = parser.parse("body {margin: 10px;}")
+  css = parser.parse("body {testing: 10px;}")
   same(css.rules[0].attributes.items[0].value(), "10px")
   same(css.rules[0].attributes.items[0].values[0].number, 10)
   same(css.rules[0].attributes.items[0].values[0].unit, "px")
@@ -176,7 +176,7 @@ test "test number value", ->
   same(css.rules[0].attributes.items[0].value(), "0")
 
 test "test unit number value", ->
-  css = parser.parse("body {margin: 10px;}")
+  css = parser.parse("body {testing: 10px;}")
   same(css.rules[0].attributes.items[0].value(), "10px")
 
 test "test function value", ->
