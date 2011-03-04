@@ -257,4 +257,41 @@
       "inside":  true
       "outside": true
 
+    attributeGrammar:
+      # font grammar, based on CSS 2.1 specification: http://www.w3.org/TR/2010/WD-CSS2-20101207/fonts.html
+      "font-family":
+        value: "[[ <family-name> | <generic-family> ] [, <family-name> | <generic-family> ]*] | inherit"
+        return: (v) -> if v.get(1) then [_.flatten([v.get(0)].concat(v.get(1)))] else v.results
+
+      "font-weight": "normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | inherit"
+      "font-style": "normal | italic | oblique | inherit"
+      "font-variant": "normal | small-caps | inherit"
+      "font-size": "<absolute-size> | <relative-size> | <length> | <percentage> | inherit"
+      "font":
+        value: "[ [ <font-style> || <font-variant> || <font-weight> ]? <font-size> [ / <line-height> ]? <font-family> ] | caption | icon | menu | message-box | small-caption | status-bar | inherit"
+        return: (v) ->
+          return v.results unless v.isList()
+
+          style:      v.get(0, 0)
+          variant:    v.get(0, 1)
+          weight:     v.get(0, 2)
+          size:       v.get(1)
+          lineHeight: v.get(2, 1)
+          family:     v.get(3)
+
+      "generic-family": "serif | sans-serif | cursive | fantasy | monospace"
+      "family-name": "<literal> | <string>"
+
+      # common grammar
+      "absolute-size": "xx-small | x-small | small | medium | large | x-large | xx-large"
+      "line-height": "normal | <number> | <length> | <percentage> | inherit"
+      "relative-size": "larger | smaller"
+
+      # internal grammar
+      "literal": (nodes) -> @collect nodes, (node) -> node.type == "LITERAL"
+      "string": (nodes) -> @collect nodes, (node) -> node.type == "STRING"
+      "length": (nodes) -> @collect nodes, (node) -> node.type == "UNIT_NUMBER"
+      "percentage": (nodes) -> @collect nodes, (node) -> node.type == "PERCENT"
+      "number": (nodes) -> @collect nodes, (node) -> node.type == "NUMBER"
+
 )(jQuery)

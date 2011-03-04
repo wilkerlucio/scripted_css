@@ -265,67 +265,20 @@
 
     font:
       explode: (attribute) ->
-        family = size = line_height = style = variant = weight = null
+        values = ScriptedCss.parseAttributes(attribute.values, "font")
+        return false unless values and !values.string
 
-        i = 0
-        values = attribute.values
-
-        while parts = values.slice(i)
-          v = parts[0]
-          break unless v
-
-          switch v.type
-            when "NUMBER"
-              weight = v if ScriptedCss.Utils.fontWeights[v.string()]
-
-              break
-            when "UNIT_NUMBER"
-              size = v
-
-              if parts[1].string() == "/" and parts[2].type == "UNIT_NUMBER"
-                line_height = parts[2]
-                i += 2
-
-              break
-            when "STRING"
-              family = v
-              break
-            when "MULTI_VALUE"
-              family = v
-              break
-            when "LITERAL"
-              str = v.string()
-
-              if ScriptedCss.Utils.fontStyles[str]
-                style = v
-              else if ScriptedCss.Utils.fontSizes[str]
-                size = v
-              else if ScriptedCss.Utils.fontVariants[str]
-                variant = v
-              else if ScriptedCss.Utils.fontWeights[str]
-                weight = v
-              else if str == "inherit"
-                family      = v unless family
-                size        = v unless size
-                line_height = v unless line_height
-                style       = v unless style
-                variant     = v unless variant
-                weight      = v unless weight
-              else
-                family = v
-
-          i += 1
-
-        family      = new CssAST.LiteralNode("")       unless family
-        size        = new CssAST.LiteralNode("medium") unless size
-        style       = new CssAST.LiteralNode("normal") unless style
-        variant     = new CssAST.LiteralNode("normal") unless variant
-        weight      = new CssAST.LiteralNode("normal") unless weight
+        family     = values.family
+        size       = values.size or $n("medium")
+        style      = values.style or $n("normal")
+        variant    = values.variant or $n("normal")
+        weight     = values.weight or $n("normal")
+        lineHeight = values.lineHeight
 
         attributes = []
-        attributes.push(new CssAST.AttributeNode("#{attribute.name}-family", [family]))
+        attributes.push(new CssAST.AttributeNode("#{attribute.name}-family", family))
         attributes.push(new CssAST.AttributeNode("#{attribute.name}-size", [size]))
-        attributes.push(new CssAST.AttributeNode("line-height", [line_height])) if line_height
+        attributes.push(new CssAST.AttributeNode("line-height", [lineHeight])) if lineHeight
         attributes.push(new CssAST.AttributeNode("#{attribute.name}-style", [style]))
         attributes.push(new CssAST.AttributeNode("#{attribute.name}-variant", [variant]))
         attributes.push(new CssAST.AttributeNode("#{attribute.name}-weight", [weight]))

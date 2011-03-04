@@ -70,5 +70,11 @@
       callbacks = @eventList?[event] || []
       callback.apply(this, args) for callback in callbacks
 
+    # helpers
+    parseAttributes: (nodes, rule, customGrammar = {}) ->
+      grammar = _.extend(customGrammar, ScriptedCss.Information.attributeGrammar)
+
+      ScriptedCss.AttributesParser.parseNodes(nodes, rule, grammar)
+
   $ -> ScriptedCss.start()
 )(jQuery)
