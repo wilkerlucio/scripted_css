@@ -421,6 +421,12 @@ CssAST =
 
     string: -> @value
 
+  PercentNode: class PercentNode
+    constructor: (@value) ->
+      @type = "PERCENT"
+
+    string: -> @value
+
   MultiValue: class MultiValue
     constructor: (@literals, @separator) ->
       @type = "MULTI_VALUE"

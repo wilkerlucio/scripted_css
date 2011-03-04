@@ -112,6 +112,7 @@ grammar =
     o "IDENTIFIER",                                    -> new LiteralNode($1)
     o "STRING",                                        -> new StringNode($1)
     o "HEXNUMBER",                                     -> new HexnumberNode($1)
+    o "PERCENT",                                       -> new PercentNode($1)
     o "UNITNUMBER",                                    -> new UnitNumberNode($1)
     o "NUMBER",                                        -> new NumberNode($1)
     o "/",                                             -> new LiteralNode($1)

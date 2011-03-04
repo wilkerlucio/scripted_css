@@ -25,7 +25,8 @@ ATTRID     = /^[*]?[a-zA-Z_-][a-zA-Z0-9_-]*/
 NEWLINE    = /^\n/
 WHITESPACE = /^[^\n\S]+/
 NUMBER     = /^-?(\d+(\.\d+)?|\.\d+)/
-UNITNUMBER = /^-?(\d+(\.\d+)?|\.\d+)(%|(in|cm|mm|em|ex|pt|pc|px|ms|s)\b)/
+UNITNUMBER = /^-?(\d+(\.\d+)?|\.\d+)(in|cm|mm|em|ex|pt|pc|px|ms|s)\b/
+PERCENT    = /^-?(\d+(\.\d+)?|\.\d+)%/
 HEXNUMBER  = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})\b/
 STRING     = /^(?:"([^"]*)"|'([^']*)')/
 
@@ -183,6 +184,9 @@ Lexer =
     else if match = UNITNUMBER.exec @chunk
       [input] = match
       @token("UNITNUMBER", input)
+    else if match = PERCENT.exec @chunk
+      [input] = match
+      @token("PERCENT", input)
     else if match = NUMBER.exec @chunk
       [input] = match
       @token("NUMBER", input)
