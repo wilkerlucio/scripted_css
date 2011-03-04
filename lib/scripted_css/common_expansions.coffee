@@ -227,6 +227,26 @@
       explode: (attribute) ->
         Expanders.line.explode(attribute, {width: "medium"})
 
+    margin:
+      explode: (attribute) ->
+        values = ScriptedCss.parseAttributes(attribute.values, "margin")
+        return false unless values and !values.string
+
+        comp = Expanders.helpers.computeDirections(values[0])
+
+        for dir, i in ["top", "right", "bottom", "left"]
+          new CssAST.AttributeNode("#{attribute.name}-#{dir}", [comp[i]])
+
+    padding:
+      explode: (attribute) ->
+        values = ScriptedCss.parseAttributes(attribute.values, "padding")
+        return false unless values and !values.string
+
+        comp = Expanders.helpers.computeDirections(values[0])
+
+        for dir, i in ["top", "right", "bottom", "left"]
+          new CssAST.AttributeNode("#{attribute.name}-#{dir}", [comp[i]])
+
     outline:
       explode: (attribute) ->
         values = ScriptedCss.parseAttributes(attribute.values, "outline")
@@ -291,7 +311,7 @@
   CssAST.AttributeSet.registerExpansion "border-width",  Expanders.sulfixDirections
   CssAST.AttributeSet.registerExpansion "font",          Expanders.font
   CssAST.AttributeSet.registerExpansion "list-style",    Expanders.listStyle
-  CssAST.AttributeSet.registerExpansion "margin",        Expanders.directions
+  CssAST.AttributeSet.registerExpansion "margin",        Expanders.margin
   CssAST.AttributeSet.registerExpansion "outline",       Expanders.outline
-  CssAST.AttributeSet.registerExpansion "padding",       Expanders.directions
+  CssAST.AttributeSet.registerExpansion "padding",       Expanders.padding
 )(jQuery)

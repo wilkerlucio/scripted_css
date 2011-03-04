@@ -296,6 +296,10 @@
           position: v.get(1)
           image:    v.get(2)
 
+      # margin grammar, based on CSS 2.1 specification: http://www.w3.org/TR/2010/WD-CSS2-20101207/box.html#margin-properties
+      "margin-width": "<length> | <percentage> | auto"
+      "margin": "<margin-width>{1, 4} | inherit"
+
       # outline grammar, based on CSS 2.1 specification: http://www.w3.org/TR/2010/WD-CSS2-20101207/ui.html#dynamic-outlines
       "outline-width": "<border-width>"
       "outline-style": "<border-style>"
@@ -309,6 +313,10 @@
           color: v.get(0)
           style: v.get(1)
           width: v.get(2)
+
+      # padding grammar, based on CSS 2.1 specification: http://www.w3.org/TR/2010/WD-CSS2-20101207/box.html#padding-properties
+      "padding-width": "<length> | <percentage>"
+      "padding": "<padding-width>{1, 4} | inherit"
 
       # common grammar
       "border-width": "<length> | thin | medium | thick"
