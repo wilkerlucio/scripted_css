@@ -61,37 +61,101 @@
 
     background:
       explode: (attribute) ->
-        attachment = new CssAST.LiteralNode("scroll")
-        color      = new CssAST.LiteralNode("transparent")
-        image      = new CssAST.LiteralNode("none")
-        repeat     = new CssAST.LiteralNode("repeat")
-        position   = []
+        defaults =
+          color:      "transparent"
+          image:      "none"
+          repeat:     "repeat"
+          attachment: "scroll"
+          position:   "0% 0%"
+          clip:       "border-box"
+          origin:     "padding-box"
+          size:       "auto"
 
-        for v in attribute.values
-          switch v.type
-            when "HEXNUMBER"
-              color = v
-              break
-            when "NUMBER"
-              position.push(v)
-              break
-            when "UNIT_NUMBER"
-              position.push(v)
-              break
-            when "FUNCTION"
-              image = v
-              break
-            when "LITERAL"
-              str = v.string()
+        backgroundParser =
+          grammar:
+            "background":
+              value:    "[<bg-layer> , ]* <final-bg-layer>"
+              response: (r) -> r.get(0).push(r.get(1))
 
-              if ScriptedCss.Utils.backgroundAttachments[str]
-                attachment = v
-              else if ScriptedCss.Utils.backgroundRepeats[str]
-                repeat = v
-              else if ScriptedCss.Utils.backgroundPositions[str]
+            "bg-layer":
+              value:    "<bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <box>{1,2}"
+              response: (r) ->
+                image:      r.get(0)
+                position:   r.get(3)
+                size:       r.get(4, 1)
+                style:      r.get(6)
+                attachment: r.get(8)
+                origin:     r.get(10, 0)
+                clip:       r.get(10, 1) || r.get(10, 0)
+
+            "final-bg-layer":
+              value:    "<bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <box>{1,2} || <color>"
+              response: (r) ->
+                image:      r.get(0)
+                position:   r.get(3)
+                size:       r.get(4, 1)
+                style:      r.get(6)
+                attachment: r.get(8)
+                origin:     r.get(10, 0)
+                clip:       r.get(10, 1) || r.get(10, 0)
+                color:      r.get(11)
+
+            "bg-image":       "<image> | none"
+            "repeat-style":   "repeat-x | repeat-y | [ repeat | space | round | no-repeat ]{1,2}"
+
+            "image":
+              value: "<url> | <image-list> | <element-reference> | <image-combination> | <gradient>"
+
+            "url":
+              value: (nodes) ->
+                node = nodes[0]
+
+                if node.type == "FUNCTION" and node.name == "url"
+                  node
+                else
+                  false
+
+        backgrounds   = attribute.groupMultiValues()
+        expansions    = [] # store first expansion lopp
+        modifications = {} # store modified attributes
+        items         = [] # store final attributes
+
+        for values, i in backgrounds
+          attributes = {}
+          last = i == backgrounds.length - 1
+
+          for v in values
+            if last # special rules for last item
+              if v.type == "HEXNUMBER"
+                items.push($n("attribute", "background-color", [v]))
+              else if ScriptedCss.Utils.colors[v.string()]
+                items.push($n("attribute", "background-color", [v]))
+
+            switch v.type
+              when "NUMBER"
                 position.push(v)
-              else if ScriptedCss.Utils.colors[str]
-                color = v
+                break
+              when "UNIT_NUMBER"
+                position.push(v)
+                break
+              when "FUNCTION"
+                image = v
+                break
+              when "LITERAL"
+                str = v.string()
+
+                if ScriptedCss.Utils.backgroundAttachments[str]
+                  attachment = v
+                else if ScriptedCss.Utils.backgroundRepeats[str]
+                  repeat = v
+                else if ScriptedCss.Utils.backgroundPositions[str]
+                  position.push(v)
+
+        attachment = $n("scroll")
+        color      = $n("transparent")
+        image      = $n("none")
+        repeat     = $n("repeat")
+        position   = []
 
         position = [new CssAST.NumberNode("0"), new CssAST.NumberNode("0")] if position.length == 0
 
@@ -104,9 +168,6 @@
 
         items
 
-      implode: (attributes, property) ->
-        concatImplode attributes, property, ["color", "image", "repeat", "attachment", "position"]
-
     directions:
       explode: (attribute) ->
         v = attribute.values
@@ -115,24 +176,10 @@
         for dir, i in ["top", "right", "bottom", "left"]
           new CssAST.AttributeNode("#{attribute.name}-#{dir}", [comp[i]])
 
-      implode: (attributes, property) ->
-        items = []
-
-        for dir in ["top", "right", "bottom", "left"]
-          attr = attributes.get("#{property}-#{dir}")?.values[0] || new CssAST.LiteralNode("0")
-          items.push(attr)
-
-        items = Expanders.helpers.normalizeDirections(items)
-
-        new CssAST.AttributeNode(property, items)
-
     simpleDirections:
       explode: (attribute) ->
         for dir in ["top", "right", "bottom", "left"]
           new CssAST.AttributeNode("#{attribute.name}-#{dir}", attribute.values)
-
-      implode: (attributes, property) ->
-        new CssAST.AttributeNode(property, [new CssAST.LiteralNode("")])
 
     sulfixDirections:
       explode: (attribute) ->
@@ -147,9 +194,6 @@
           item.name = item.name + "-" + sulfix
 
         items
-
-      implode: (attributes, property) ->
-        new CssAST.AttributeNode(property, [new CssAST.LiteralNode("")])
 
     line:
       explode: (attribute, defaults = {}) ->
@@ -189,22 +233,13 @@
 
         attributes
 
-      implode: (attributes, property) ->
-        concatImplode attributes, property, ["width", "style", "color"]
-
     borderValue:
       explode: (attribute) ->
         Expanders.line.explode(attribute, {width: "medium"})
 
-      implode: (attributes, property) ->
-        Expanders.line.implode(attributes, property)
-
     outline:
       explode: (attribute) ->
         Expanders.line.explode(attribute, {color: "invert", style: "none", width: "medium"})
-
-      implode: (attributes, property) ->
-        Expanders.line.implode(attributes, property)
 
     listStyle:
       explode: (attribute) ->
@@ -237,9 +272,6 @@
         attributes.push(new CssAST.AttributeNode("#{attribute.name}-type", [type]))
 
         attributes
-
-      implode: (attributes, property) ->
-        concatImplode attributes, property, ["type", "position", "image"]
 
     font:
       explode: (attribute) ->
@@ -309,9 +341,6 @@
         attributes.push(new CssAST.AttributeNode("#{attribute.name}-weight", [weight]))
 
         attributes
-
-      implode: (attributes, property) ->
-        new CssAST.AttributeNode(property, [new CssAST.LiteralNode("")])
 
   CssAST.AttributeSet.registerExpansion "background",    Expanders.background
   CssAST.AttributeSet.registerExpansion "border",        Expanders.simpleDirections
