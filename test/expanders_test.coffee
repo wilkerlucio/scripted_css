@@ -26,150 +26,144 @@ testExpansion = (attr, expected) ->
   css  = parser.parse "* {#{attr}}"
   attr = css.rules[0].attributes
 
+  equal(attr.items.length, expected.length)
+
   for item, i in expected
     same(attr.items[i].name,    item[0])
     same(attr.items[i].value(), item[1])
 
-testImplosion = (attrs, expected) ->
-  css  = parser.parse "* {#{attrs}}"
-  attr = css.rules[0].attributes
+# test "test expanding background", ->
+#   testExpansion "background: #000 url('test.gif') no-repeat fixed center", [
+#     ["background-attachment", "fixed"]
+#     ["background-color",      "#000"]
+#     ["background-image",      "url('test.gif')"]
+#     ["background-position",   "center"]
+#     ["background-repeat",     "no-repeat"]
+#   ]
+#
+#   testExpansion "background: transparent", [
+#     ["background-color", "transparent"]
+#   ]
+#
+# test "expanding multiple backgrounds", ->
+#   testExpansion "background: url('test.gif') no-repeat, #aaa url('other.gif') center repeat-x", [
+#     ["background-color",    "#aaa"]
+#     ["background-image",    "url('test.gif'), url('other.gif')"]
+#     ["background-position", "0 0, center"]
+#     ["background-repeat",   "no-repeat, repeat-x"]
+#   ]
 
-  same(attr.get(expected[0]).value(), expected[1])
-
-test "test expanding background", ->
-  testExpansion "background: #000 url('test.gif') no-repeat fixed center", [
-    ["background-attachment", "fixed"]
-    ["background-color",      "#000"]
-    ["background-image",      "url('test.gif')"]
-    ["background-position",   "center"]
-    ["background-repeat",     "no-repeat"]
-  ]
-
-  testExpansion "background: transparent", [
-    ["background-attachment", "scroll"]
-    ["background-color",      "transparent"]
-    ["background-image",      "none"]
-    ["background-position",   "0 0"]
-    ["background-repeat",     "repeat"]
-  ]
-
-test "test imploding background", ->
-  testImplosion(
-    "background-color: #000; background-image: url('some.png'); background-repeat: repeat-x",
-    ["background", "#000 url('some.png') repeat-x"]
-  )
-
-test "test expanding border", ->
-  testExpansion "border: 1px solid #000", [
-    ["border-top-color",    "#000"]
-    ["border-top-style",    "solid"]
-    ["border-top-width",    "1px"]
-    ["border-right-color",  "#000"]
-    ["border-right-style",  "solid"]
-    ["border-right-width",  "1px"]
-    ["border-bottom-color", "#000"]
-    ["border-bottom-style", "solid"]
-    ["border-bottom-width", "1px"]
-    ["border-left-color",   "#000"]
-    ["border-left-style",   "solid"]
-    ["border-left-width",   "1px"]
-  ]
-
-for direction in ["top", "right", "bottom", "left"]
-  (->
-    dir = direction
-
-    test "test expanding border-#{dir}", ->
-      testExpansion "border-#{dir}: 1px solid #000", [
-        ["border-#{dir}-color", "#000"]
-        ["border-#{dir}-style", "solid"]
-        ["border-#{dir}-width", "1px"]
-      ]
-
-      testExpansion "border-#{dir}: none", [
-        ["border-#{dir}-color", ""]
-        ["border-#{dir}-style", "none"]
-        ["border-#{dir}-width", "medium"]
-      ]
-  )()
-
-for attribute in ["margin", "padding"]
-  (->
-    attr = attribute
-
-    test "test expanding #{attr} with 1 value", ->
-      testExpansion "#{attr}: 10px", [
-        ["#{attr}-top",    "10px"]
-        ["#{attr}-right",  "10px"]
-        ["#{attr}-bottom", "10px"]
-        ["#{attr}-left",   "10px"]
-      ]
-
-    test "test expanding #{attr} with 2 values", ->
-      testExpansion "#{attr}: 10px 8px", [
-        ["#{attr}-top",    "10px"]
-        ["#{attr}-right",  "8px"]
-        ["#{attr}-bottom", "10px"]
-        ["#{attr}-left",   "8px"]
-      ]
-
-    test "test expanding #{attr} with 3 values", ->
-      testExpansion "#{attr}: 10px 8px 6px", [
-        ["#{attr}-top",    "10px"]
-        ["#{attr}-right",  "8px"]
-        ["#{attr}-bottom", "6px"]
-        ["#{attr}-left",   "8px"]
-      ]
-
-    test "test expanding #{attr} with 4 values", ->
-      testExpansion "#{attr}: 10px 8px 6px 4px", [
-        ["#{attr}-top",    "10px"]
-        ["#{attr}-right",  "8px"]
-        ["#{attr}-bottom", "6px"]
-        ["#{attr}-left",   "4px"]
-      ]
-  )()
-
-test "expanding list-style", ->
-  testExpansion "list-style: square inside url('/images/blueball.gif');", [
-    ["list-style-image",    "url('/images/blueball.gif')"]
-    ["list-style-position", "inside"]
-    ["list-style-type",     "square"]
-  ]
-
-  testExpansion "list-style: none;", [
-    ["list-style-image",    "none"]
-    ["list-style-position", "outside"]
-    ["list-style-type",     "none"]
-  ]
-
-test "expanding outline", ->
-  testExpansion "outline: #00ff00 dotted thick", [
-    ["outline-color", "#00ff00"]
-    ["outline-style", "dotted"]
-    ["outline-width", "thick"]
-  ]
-
-  testExpansion "outline: none", [
-    ["outline-color", "invert"]
-    ["outline-style", "none"]
-    ["outline-width", "medium"]
-  ]
-
-test "expanding font", ->
-  testExpansion "font: italic bold 12px/30px Georgia, serif", [
-    ["font-family",  "Georgia, serif"]
-    ["font-size",    "12px"]
-    ["line-height",  "30px"]
-    ["font-style",   "italic"]
-    ["font-variant", "normal"]
-    ["font-weight",  "bold"]
-  ]
-
-  testExpansion "font: Courier;", [
-    ["font-family",  "Courier"]
-    ["font-size",    "medium"]
-    ["font-style",   "normal"]
-    ["font-variant", "normal"]
-    ["font-weight",  "normal"]
-  ]
+# test "test expanding border", ->
+#   testExpansion "border: 1px solid #000", [
+#     ["border-top-color",    "#000"]
+#     ["border-top-style",    "solid"]
+#     ["border-top-width",    "1px"]
+#     ["border-right-color",  "#000"]
+#     ["border-right-style",  "solid"]
+#     ["border-right-width",  "1px"]
+#     ["border-bottom-color", "#000"]
+#     ["border-bottom-style", "solid"]
+#     ["border-bottom-width", "1px"]
+#     ["border-left-color",   "#000"]
+#     ["border-left-style",   "solid"]
+#     ["border-left-width",   "1px"]
+#   ]
+#
+# for direction in ["top", "right", "bottom", "left"]
+#   (->
+#     dir = direction
+#
+#     test "test expanding border-#{dir}", ->
+#       testExpansion "border-#{dir}: 1px solid #000", [
+#         ["border-#{dir}-color", "#000"]
+#         ["border-#{dir}-style", "solid"]
+#         ["border-#{dir}-width", "1px"]
+#       ]
+#
+#       testExpansion "border-#{dir}: none", [
+#         ["border-#{dir}-color", ""]
+#         ["border-#{dir}-style", "none"]
+#         ["border-#{dir}-width", "medium"]
+#       ]
+#   )()
+#
+# for attribute in ["margin", "padding"]
+#   (->
+#     attr = attribute
+#
+#     test "test expanding #{attr} with 1 value", ->
+#       testExpansion "#{attr}: 10px", [
+#         ["#{attr}-top",    "10px"]
+#         ["#{attr}-right",  "10px"]
+#         ["#{attr}-bottom", "10px"]
+#         ["#{attr}-left",   "10px"]
+#       ]
+#
+#     test "test expanding #{attr} with 2 values", ->
+#       testExpansion "#{attr}: 10px 8px", [
+#         ["#{attr}-top",    "10px"]
+#         ["#{attr}-right",  "8px"]
+#         ["#{attr}-bottom", "10px"]
+#         ["#{attr}-left",   "8px"]
+#       ]
+#
+#     test "test expanding #{attr} with 3 values", ->
+#       testExpansion "#{attr}: 10px 8px 6px", [
+#         ["#{attr}-top",    "10px"]
+#         ["#{attr}-right",  "8px"]
+#         ["#{attr}-bottom", "6px"]
+#         ["#{attr}-left",   "8px"]
+#       ]
+#
+#     test "test expanding #{attr} with 4 values", ->
+#       testExpansion "#{attr}: 10px 8px 6px 4px", [
+#         ["#{attr}-top",    "10px"]
+#         ["#{attr}-right",  "8px"]
+#         ["#{attr}-bottom", "6px"]
+#         ["#{attr}-left",   "4px"]
+#       ]
+#   )()
+#
+# test "expanding list-style", ->
+#   testExpansion "list-style: square inside url('/images/blueball.gif');", [
+#     ["list-style-image",    "url('/images/blueball.gif')"]
+#     ["list-style-position", "inside"]
+#     ["list-style-type",     "square"]
+#   ]
+#
+#   testExpansion "list-style: none;", [
+#     ["list-style-image",    "none"]
+#     ["list-style-position", "outside"]
+#     ["list-style-type",     "none"]
+#   ]
+#
+# test "expanding outline", ->
+#   testExpansion "outline: #00ff00 dotted thick", [
+#     ["outline-color", "#00ff00"]
+#     ["outline-style", "dotted"]
+#     ["outline-width", "thick"]
+#   ]
+#
+#   testExpansion "outline: none", [
+#     ["outline-color", "invert"]
+#     ["outline-style", "none"]
+#     ["outline-width", "medium"]
+#   ]
+#
+# test "expanding font", ->
+#   testExpansion "font: italic bold 12px/30px Georgia, serif", [
+#     ["font-family",  "Georgia, serif"]
+#     ["font-size",    "12px"]
+#     ["line-height",  "30px"]
+#     ["font-style",   "italic"]
+#     ["font-variant", "normal"]
+#     ["font-weight",  "bold"]
+#   ]
+#
+#   testExpansion "font: Courier;", [
+#     ["font-family",  "Courier"]
+#     ["font-size",    "medium"]
+#     ["font-style",   "normal"]
+#     ["font-variant", "normal"]
+#     ["font-weight",  "normal"]
+#   ]
