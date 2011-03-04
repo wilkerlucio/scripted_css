@@ -123,20 +123,21 @@ testExpansion = (attr, expected) ->
 #         ["#{attr}-left",   "4px"]
 #       ]
 #   )()
-#
-# test "expanding list-style", ->
-#   testExpansion "list-style: square inside url('/images/blueball.gif');", [
-#     ["list-style-image",    "url('/images/blueball.gif')"]
-#     ["list-style-position", "inside"]
-#     ["list-style-type",     "square"]
-#   ]
-#
-#   testExpansion "list-style: none;", [
-#     ["list-style-image",    "none"]
-#     ["list-style-position", "outside"]
-#     ["list-style-type",     "none"]
-#   ]
-#
+
+test "expanding list-style", ->
+  testExpansion "list-style: square inside url('/images/blueball.gif');", [
+    ["list-style-image",    "url('/images/blueball.gif')"]
+    ["list-style-position", "inside"]
+    ["list-style-type",     "square"]
+  ]
+
+test "expanding list-style with none", ->
+  testExpansion "list-style: none;", [
+    ["list-style-image",    "none"]
+    ["list-style-position", "outside"]
+    ["list-style-type",     "none"]
+  ]
+
 # test "expanding outline", ->
 #   testExpansion "outline: #00ff00 dotted thick", [
 #     ["outline-color", "#00ff00"]
@@ -149,7 +150,7 @@ testExpansion = (attr, expected) ->
 #     ["outline-style", "none"]
 #     ["outline-width", "medium"]
 #   ]
-#
+
 test "expanding font", ->
   testExpansion "font: italic bold 12px/30px Georgia, serif", [
     ["font-family",  "Georgia , serif"]

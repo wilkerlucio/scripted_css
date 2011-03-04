@@ -282,6 +282,20 @@
       "generic-family": "serif | sans-serif | cursive | fantasy | monospace"
       "family-name": "<literal> | <string>"
 
+      # lists grammar, based on CSS 2.1 specification: http://www.w3.org/TR/2010/WD-CSS2-20101207/generate.html#lists
+      "list-style-type": "disc | circle | square | decimal | decimal-leading-zero | lower-roman | upper-roman | lower-greek | lower-latin | upper-latin | armenian | georgian | lower-alpha | upper-alpha | none | inherit"
+      "list-style-image": "<uri> | none | inherit"
+      "list-style-position": "inside | outside | inherit"
+      "list-style":
+        value: "inherit | [ <list-style-type> || <list-style-position> || <list-style-image> ]"
+        return: (v) ->
+          return v.results unless v.isList()
+          return false unless _.any(v.results)
+
+          type:     v.get(0)
+          position: v.get(1)
+          image:    v.get(2)
+
       # common grammar
       "absolute-size": "xx-small | x-small | small | medium | large | x-large | xx-large"
       "line-height": "normal | <number> | <length> | <percentage> | inherit"
@@ -293,5 +307,6 @@
       "length": (nodes) -> @collect nodes, (node) -> node.type == "UNIT_NUMBER"
       "percentage": (nodes) -> @collect nodes, (node) -> node.type == "PERCENT"
       "number": (nodes) -> @collect nodes, (node) -> node.type == "NUMBER"
+      "uri": (nodes) -> @collect nodes, (node) -> node.type == "FUNCTION" and node.name == "url"
 
 )(jQuery)

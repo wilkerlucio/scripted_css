@@ -233,33 +233,16 @@
 
     listStyle:
       explode: (attribute) ->
-        image = position = type = null
+        values = ScriptedCss.parseAttributes(attribute.values, "list-style")
 
-        for v in attribute.values
-          switch v.type
-            when "FUNCTION"
-              image = v
-              break
-            when "LITERAL"
-              str = v.string()
-
-              if ScriptedCss.Utils.listTypes[str]
-                type = v
-              else if ScriptedCss.Utils.listPositions[str]
-                position = v
-              else if str == "inherit" or str == "none"
-                image    = v unless image
-                position = v unless position or str == "none"
-                type     = v unless type
-
-        image    = new CssAST.LiteralNode("none") unless image
-        position = new CssAST.LiteralNode("outside") unless position
-        type     = new CssAST.LiteralNode("disc") unless type
+        image    = values.image    or $n("none")
+        position = values.position or $n("outside")
+        type     = values.type     or $n("disc")
 
         attributes = []
-        attributes.push(new CssAST.AttributeNode("#{attribute.name}-image", [image]))
-        attributes.push(new CssAST.AttributeNode("#{attribute.name}-position", [position]))
-        attributes.push(new CssAST.AttributeNode("#{attribute.name}-type", [type]))
+        attributes.push($n("attribute", "#{attribute.name}-image", [image]))
+        attributes.push($n("attribute", "#{attribute.name}-position", [position]))
+        attributes.push($n("attribute", "#{attribute.name}-type", [type]))
 
         attributes
 
