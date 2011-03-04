@@ -53,6 +53,7 @@ parser = new Parser(
       ["\\*",     "return '*';"]
       ["\\?",     "return '?';"]
       ["\\+",     "return '+';"]
+      [",",     "return ',';"]
       [".",       "return 'IDENTIFIER';"]
     ]
 
@@ -83,6 +84,7 @@ parser = new Parser(
       o "DEFINITION",          -> new Macro($1)
       o "IDENTIFIER",          -> new Literal($1)
       o "NUMBER",              -> new Literal($1)
+      o ",",                   -> new Literal($1)
     ]
 
     Length: [
