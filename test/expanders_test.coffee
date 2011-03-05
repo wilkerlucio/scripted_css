@@ -32,26 +32,26 @@ testExpansion = (attr, expected) ->
     same(attr.items[i].name,    item[0])
     same(attr.items[i].value(), item[1])
 
-# test "test expanding background", ->
-#   testExpansion "background: #000 url('test.gif') no-repeat fixed center", [
-#     ["background-attachment", "fixed"]
-#     ["background-color",      "#000"]
-#     ["background-image",      "url('test.gif')"]
-#     ["background-position",   "center"]
-#     ["background-repeat",     "no-repeat"]
-#   ]
-#
-#   testExpansion "background: transparent", [
-#     ["background-color", "transparent"]
-#   ]
-#
-# test "expanding multiple backgrounds", ->
-#   testExpansion "background: url('test.gif') no-repeat, #aaa url('other.gif') center repeat-x", [
-#     ["background-color",    "#aaa"]
-#     ["background-image",    "url('test.gif'), url('other.gif')"]
-#     ["background-position", "0 0, center"]
-#     ["background-repeat",   "no-repeat, repeat-x"]
-#   ]
+test "test expanding background", ->
+  testExpansion "background: #000 url('test.gif') no-repeat fixed center", [
+    ["background-attachment", "fixed"]
+    ["background-color",      "#000"]
+    ["background-image",      "url('test.gif')"]
+    ["background-position",   "center"]
+    ["background-repeat",     "no-repeat"]
+  ]
+
+  testExpansion "background: transparent", [
+    ["background-color", "transparent"]
+  ]
+
+test "expanding multiple backgrounds", ->
+  testExpansion "background: url('test.gif') no-repeat, #aaa url('other.gif') center repeat-x", [
+    ["background-color",    "#aaa"]
+    ["background-image",    "url('test.gif'), url('other.gif')"]
+    ["background-position", "0 0, center"]
+    ["background-repeat",   "no-repeat, repeat-x"]
+  ]
 
 # test "test expanding border", ->
 #   testExpansion "border: 1px solid #000", [

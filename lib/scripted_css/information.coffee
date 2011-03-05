@@ -258,15 +258,67 @@
       "outside": true
 
     attributeGrammar:
+      # background grammar, based on CSS 3 specification:
+      "background":
+        value:    "[<bg-layer> , ]* <final-bg-layer> | <final-bg-layer>"
+        return: (v) ->
+          layers = v.get(0)
+          layers.push(v.get(1))
+          layers
+
+      "bg-layer":
+        value:    "<bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <box>{1,2}"
+        return: (v) ->
+          return false unless _.any(v.results)
+
+          image:      v.get(0)
+          position:   v.get(1)
+          size:       v.get(2, 1)
+          style:      v.get(3)
+          attachment: v.get(4)
+          origin:     v.get(5, 0)
+          clip:       v.get(5, 1) || v.get(5, 0)
+
+      "final-bg-layer":
+        value:    "<bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <box>{1,2} || <color>"
+        return: (v) ->
+          return false unless _.any(v.results)
+
+          console.log(v.results)
+
+          image:      v.get(0)
+          position:   v.get(1)
+          size:       v.get(2, 1)
+          style:      v.get(3)
+          attachment: v.get(4)
+          origin:     v.get(5, 0)
+          clip:       v.get(5, 1) || v.get(5, 0)
+          color:      v.get(6)
+
+      "bg-image": "<image> | none"
+      # "bg-position": " [ top | bottom ] | [ <percentage> | <length> | left | center | right ] [ <percentage> | <length> | top | center | bottom ]? | [ center | [ left | right ] [ <percentage> | <length> ]? ] [ center | [ top | bottom ] [ <percentage> | <length> ]? ] "
+      "bg-position":
+        value: "[ left | center | right | <percentage> | <length> ] [ center | top | bottom | <percentage> | <length> ]?"
+        return: (v) ->
+          positions = v.get(1)
+          positions.unshift(v.get(0))
+          positions
+
+      "bg-size": "[ <length> | <percentage> | auto ]{1,2} | cover | contain"
+      "attachment": "scroll | fixed | local"
+      "box": "border-box | padding-box | content-box"
+
+      "repeat-style": "repeat-x | repeat-y | [ repeat | space | round | no-repeat ]{1,2}"
+
       # font grammar, based on CSS 2.1 specification: http://www.w3.org/TR/2010/WD-CSS2-20101207/fonts.html
       "font-family":
         value: "[[ <family-name> | <generic-family> ] [, <family-name> | <generic-family> ]*]"
         return: (v) -> if v.get(1) then [_.flatten([v.get(0)].concat(v.get(1)))] else v.results
 
-      "font-weight": "normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900"
-      "font-style": "normal | italic | oblique"
+      "font-weight":  "normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900"
+      "font-style":   "normal | italic | oblique"
       "font-variant": "normal | small-caps"
-      "font-size": "<absolute-size> | <relative-size> | <length> | <percentage>"
+      "font-size":    "<absolute-size> | <relative-size> | <length> | <percentage>"
       "font":
         value: "[ [ <font-style> || <font-variant> || <font-weight> ]? <font-size> [ / <line-height> ]? <font-family> ] | caption | icon | menu | message-box | small-caption | status-bar | inherit"
         return: (v) ->
@@ -280,11 +332,18 @@
           family:     v.get(3)
 
       "generic-family": "serif | sans-serif | cursive | fantasy | monospace"
-      "family-name": "<literal> | <string>"
+      "family-name":    "<literal> | <string>"
+
+      # gradients, based on CSS 3 specification: http://www.w3.org/TR/2011/WD-css3-images-20110217/#gradients
+      "gradient": "<linear-gradient> | <radial-gradient> | <repeating-linear-gradient> | <repeating-radial-gradient>"
+      "linear-gradient": (nodes) -> @collect nodes, (node) -> node.type == "FUNCTION" and node.name == "linear-gradient"
+      "radial-gradient": (nodes) -> @collect nodes, (node) -> node.type == "FUNCTION" and node.name == "radial-gradient"
+      "repeating-linear-gradient": (nodes) -> @collect nodes, (node) -> node.type == "FUNCTION" and node.name == "repeating-linear-gradient"
+      "repeating-radial-gradient": (nodes) -> @collect nodes, (node) -> node.type == "FUNCTION" and node.name == "repeating-radial-gradient"
 
       # lists grammar, based on CSS 2.1 specification: http://www.w3.org/TR/2010/WD-CSS2-20101207/generate.html#lists
-      "list-style-type": "disc | circle | square | decimal | decimal-leading-zero | lower-roman | upper-roman | lower-greek | lower-latin | upper-latin | armenian | georgian | lower-alpha | upper-alpha | none"
-      "list-style-image": "<uri> | none"
+      "list-style-type":     "disc | circle | square | decimal | decimal-leading-zero | lower-roman | upper-roman | lower-greek | lower-latin | upper-latin | armenian | georgian | lower-alpha | upper-alpha | none"
+      "list-style-image":    "<url> | none"
       "list-style-position": "inside | outside"
       "list-style":
         value: "[ <list-style-type> || <list-style-position> || <list-style-image> ] | inherit"
@@ -298,7 +357,7 @@
 
       # margin grammar, based on CSS 2.1 specification: http://www.w3.org/TR/2010/WD-CSS2-20101207/box.html#margin-properties
       "margin-width": "<length> | <percentage> | auto"
-      "margin": "<margin-width>{1, 4} | inherit"
+      "margin":       "<margin-width>{1, 4} | inherit"
 
       # outline grammar, based on CSS 2.1 specification: http://www.w3.org/TR/2010/WD-CSS2-20101207/ui.html#dynamic-outlines
       "outline-width": "<border-width>"
@@ -316,26 +375,29 @@
 
       # padding grammar, based on CSS 2.1 specification: http://www.w3.org/TR/2010/WD-CSS2-20101207/box.html#padding-properties
       "padding-width": "<length> | <percentage>"
-      "padding": "<padding-width>{1, 4} | inherit"
+      "padding":       "<padding-width>{1, 4} | inherit"
 
       # common grammar
-      "border-width": "<length> | thin | medium | thick"
-      "border-style": "none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset"
+      "border-width":  "<length> | thin | medium | thick"
+      "border-style":  "none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset"
       "absolute-size": "xx-small | x-small | small | medium | large | x-large | xx-large"
-      "line-height": "normal | <number> | <length> | <percentage>"
+      "line-height":   "normal | <number> | <length> | <percentage>"
       "relative-size": "larger | smaller"
 
       # internal grammar
-      "literal": (nodes) -> @collect nodes, (node) -> node.type == "LITERAL"
-      "string": (nodes) -> @collect nodes, (node) -> node.type == "STRING"
-      "length": (nodes) -> @collect nodes, (node) -> node.type == "UNIT_NUMBER"
+      "literal":    (nodes) -> @collect nodes, (node) -> node.type == "LITERAL"
+      "string":     (nodes) -> @collect nodes, (node) -> node.type == "STRING"
+      "length":     (nodes) -> @collect nodes, (node) -> node.type == "UNIT_NUMBER"
       "percentage": (nodes) -> @collect nodes, (node) -> node.type == "PERCENT"
-      "number": (nodes) -> @collect nodes, (node) -> node.type == "NUMBER"
-      "uri": (nodes) -> @collect nodes, (node) -> node.type == "FUNCTION" and node.name == "url"
+      "number":     (nodes) -> @collect nodes, (node) -> node.type == "NUMBER"
+      "url":        (nodes) -> @collect nodes, (node) -> node.type == "FUNCTION" and node.name == "url"
+      "image":      "<url> | <gradient>"
       "color": (nodes) -> # color spec following CSS 3 colors draft: http://www.w3.org/TR/2010/PR-css3-color-20101028/
         @collect nodes, (node) ->
-          (node.type == "HEXNUMBER") or
-          (ScriptedCss.Information.colors[node.string()]) or
-          (node.type == "FUNCTION" and _.include(["rgb", "rgba", "hsl"], node.name))
+          return true if node.type == "HEXNUMBER"
+          return true if ScriptedCss.Information.colors[node.string()]
+          return true if node.type == "FUNCTION" and _.include(["rgb", "rgba", "hsl"], node.name)
+
+          false
 
 )(jQuery)
