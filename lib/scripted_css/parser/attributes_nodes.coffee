@@ -39,8 +39,21 @@ window.ScriptedCss.AttributesParser.yy =
       @type = "OPTIONAL"
 
     parse: (nodes, grammar) ->
+      nodesClone = nodes.clone()
+
       r1 = @v1.parse(nodes, grammar)
+
+      if r1
+        nodesClone.items = nodes.items
+      else
+        nodes.items = nodesClone.items
+
       r2 = @v2.parse(nodes, grammar)
+
+      if r2
+        nodesClone.items = nodes.items
+      else
+        nodes.items = nodesClone.items
 
       f(r1 || new Null, r2 || new Null)
 
@@ -69,10 +82,12 @@ window.ScriptedCss.AttributesParser.yy =
       @type = "AND"
 
     parse: (nodes, grammar) ->
+      nodesClone = nodes.clone()
+
       r1 = @v1.parse(nodes, grammar)
       r2 = @v2.parse(nodes, grammar)
 
-      if r1 and r2 then f(r1, r2) else false
+      if r1 and r2 then f(r1, r2) else nodes.items = nodesClone.items; false
 
   Value: class Value
     constructor: (@value, @quantity = new Quantity(1)) ->
