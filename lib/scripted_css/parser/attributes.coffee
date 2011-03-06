@@ -53,7 +53,7 @@ parser = new Parser(
       ["\\*",     "return '*';"]
       ["\\?",     "return '?';"]
       ["\\+",     "return '+';"]
-      [",",     "return ',';"]
+      [",",       "return ',';"]
       [".",       "return 'IDENTIFIER';"]
     ]
 
