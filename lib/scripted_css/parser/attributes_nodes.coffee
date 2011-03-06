@@ -184,6 +184,26 @@ window.ScriptedCss.AttributesParser.helpers =
     nodes.items = rest
     result
 
+  splitOnValue: (nodes, value) ->
+    groups = []
+    group = []
+
+    for item in nodes.items
+      if item.value == value
+        groups.push(group)
+        group = []
+      else
+        group.push(item)
+
+    groups.push(group)
+    groups
+
+  parseInternal: (nodes, rule, grammar) ->
+    ScriptedCss.AttributesParser.parseNodesInternal(nodes, rule, grammar)
+
+  parse: (nodes, rule, grammar) ->
+    ScriptedCss.AttributesParser.parseNodes(nodes, rule, grammar)
+
   normalize: (value, ignores) ->
     if _.isArray(value)
       list = []

@@ -57,10 +57,14 @@ test "test expanding background", ->
 
 test "expanding multiple backgrounds", ->
   testExpansion "background: url('test.gif') no-repeat, #aaa url('other.gif') center repeat-x", [
-    ["background-color",    "#aaa"]
-    ["background-image",    "url('test.gif'), url('other.gif')"]
-    ["background-position", "0 0, center"]
-    ["background-repeat",   "no-repeat, repeat-x"]
+    ["background-color",      "#aaa"]
+    ["background-image",      "url('test.gif') , url('other.gif')"]
+    ["background-repeat",     "no-repeat , repeat-x"]
+    ["background-attachment", "scroll , scroll"]
+    ["background-position",   "0% 0% , center"]
+    ["background-clip",       "border-box , border-box"]
+    ["background-origin",     "padding-box , padding-box"]
+    ["background-size",       "auto , auto"]
   ]
 
 # test "test expanding border", ->

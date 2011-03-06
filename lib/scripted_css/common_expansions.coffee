@@ -54,6 +54,8 @@
         values = ScriptedCss.parseAttributes(attribute.values, "background")
         return false unless values and !values.string
 
+        values = _.flatten(values)
+
         defaults =
           image:      $n "none"
           repeat:     $n "repeat"
@@ -75,6 +77,7 @@
         }
 
         for layer in values
+          continue if layer.value == ","
           result.color = [layer.color] if layer.color
 
           for key, value of defaults

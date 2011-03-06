@@ -260,38 +260,47 @@
     attributeGrammar:
       # background grammar, based on CSS 3 specification:
       "background":
-        value:    "[<bg-layer> , ]* <final-bg-layer>"
-        return: (v) ->
-          layers = v.get(0)
-          layers.push(v.get(1))
-          layers
+        value: (v, grammar) ->
+          layers = @splitOnValue(v, ",")
+          finalLayer = @parse(layers.pop(), "final-bg-layer", grammar)
+
+          return false unless finalLayer
+
+          results = []
+
+          for layer in layers
+            obj = @parse(layer, "bg-layer", grammar)
+            results.push(obj) if obj
+
+          results.push(finalLayer)
+          results
 
       "bg-layer":
-        value:    "<bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <box>{1,2}"
+        value:    "<bg-image> || [<bg-position> [ / <bg-size> ]?]? || <repeat-style> || <attachment> || <box>{1,2}"
         return: (v) ->
           return false unless _.any(v.results)
 
           image:      v.get(0)
-          position:   v.get(1)
-          size:       v.get(2, 1)
-          repeat:     v.get(3)
-          attachment: v.get(4)
-          origin:     v.get(5, 0)
-          clip:       v.get(5, 1) || v.get(5, 0)
+          position:   v.get(1, 0)
+          size:       v.get(1, 1, 1)
+          repeat:     v.get(2)
+          attachment: v.get(3)
+          origin:     v.get(4, 0)
+          clip:       v.get(4, 1) || v.get(4, 0)
 
       "final-bg-layer":
-        value:    "<bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <box>{1,2} || <color>"
+        value:    "<bg-image> || [<bg-position> [ / <bg-size> ]?]? || <repeat-style> || <attachment> || <box>{1,2} || <color>"
         return: (v) ->
           return false unless _.any(v.results)
 
           image:      v.get(0)
-          position:   v.get(1)
-          size:       v.get(2, 1)
-          repeat:     v.get(3)
-          attachment: v.get(4)
-          origin:     v.get(5, 0)
-          clip:       v.get(5, 1) || v.get(5, 0)
-          color:      v.get(6)
+          position:   v.get(1, 0)
+          size:       v.get(1, 1, 1)
+          repeat:     v.get(2)
+          attachment: v.get(3)
+          origin:     v.get(4, 0)
+          clip:       v.get(4, 1) || v.get(4, 0)
+          color:      v.get(5)
 
       "bg-image": "<image> | none"
       "bg-position":
