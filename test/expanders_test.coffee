@@ -33,16 +33,26 @@ testExpansion = (attr, expected) ->
     same(attr.items[i].value(), item[1])
 
 test "test expanding background", ->
-  testExpansion "background: #000 url('test.gif') no-repeat fixed center", [
-    ["background-attachment", "fixed"]
+  testExpansion "background: url('test.gif') center center / 50% no-repeat fixed padding-box border-box #000", [
     ["background-color",      "#000"]
     ["background-image",      "url('test.gif')"]
-    ["background-position",   "center"]
     ["background-repeat",     "no-repeat"]
+    ["background-attachment", "fixed"]
+    ["background-position",   "center center"]
+    ["background-clip",       "padding-box"]
+    ["background-origin",     "border-box"]
+    ["background-size",       "50%"]
   ]
 
   testExpansion "background: transparent", [
-    ["background-color", "transparent"]
+    ["background-color",      "transparent"]
+    ["background-image",      "none"]
+    ["background-repeat",     "repeat"]
+    ["background-attachment", "scroll"]
+    ["background-position",   "0% 0%"]
+    ["background-clip",       "border-box"]
+    ["background-origin",     "padding-box"]
+    ["background-size",       "auto"]
   ]
 
 test "expanding multiple backgrounds", ->

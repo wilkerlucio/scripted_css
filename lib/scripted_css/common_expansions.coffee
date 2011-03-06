@@ -52,21 +52,36 @@
     background:
       explode: (attribute) ->
         values = ScriptedCss.parseAttributes(attribute.values, "background")
-        # console.log(attribute.values)
-        console.dir(values[0])
         return false unless values and !values.string
 
         defaults =
-          color:      "transparent"
-          image:      "none"
-          repeat:     "repeat"
-          attachment: "scroll"
-          position:   "0% 0%"
-          clip:       "border-box"
-          origin:     "padding-box"
-          size:       "auto"
+          image:      $n "none"
+          repeat:     $n "repeat"
+          attachment: $n "scroll"
+          position:   [$n("0%"), $n("0%")]
+          clip:       $n "border-box"
+          origin:     $n "padding-box"
+          size:       $n "auto"
 
-        layers = []
+        result = {
+          color:      [$n "transparent"]
+          image:      []
+          repeat:     []
+          attachment: []
+          position:   []
+          clip:       []
+          origin:     []
+          size:       []
+        }
+
+        for layer in values
+          result.color = [layer.color] if layer.color
+
+          for key, value of defaults
+            result[key].push($n(",")) unless result[key].length == 0
+            result[key].push(layer[key] || value)
+
+        $n("attribute", "#{attribute.name}-#{key}", _.flatten(value)) for key, value of result
 
     margin:
       explode: (attribute) ->

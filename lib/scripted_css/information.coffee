@@ -260,7 +260,7 @@
     attributeGrammar:
       # background grammar, based on CSS 3 specification:
       "background":
-        value:    "[<bg-layer> , ]* <final-bg-layer> | <final-bg-layer>"
+        value:    "[<bg-layer> , ]* <final-bg-layer>"
         return: (v) ->
           layers = v.get(0)
           layers.push(v.get(1))
@@ -274,7 +274,7 @@
           image:      v.get(0)
           position:   v.get(1)
           size:       v.get(2, 1)
-          style:      v.get(3)
+          repeat:     v.get(3)
           attachment: v.get(4)
           origin:     v.get(5, 0)
           clip:       v.get(5, 1) || v.get(5, 0)
@@ -284,25 +284,35 @@
         return: (v) ->
           return false unless _.any(v.results)
 
-          console.log(v.results)
-
           image:      v.get(0)
           position:   v.get(1)
           size:       v.get(2, 1)
-          style:      v.get(3)
+          repeat:     v.get(3)
           attachment: v.get(4)
           origin:     v.get(5, 0)
           clip:       v.get(5, 1) || v.get(5, 0)
           color:      v.get(6)
 
       "bg-image": "<image> | none"
-      # "bg-position": " [ top | bottom ] | [ <percentage> | <length> | left | center | right ] [ <percentage> | <length> | top | center | bottom ]? | [ center | [ left | right ] [ <percentage> | <length> ]? ] [ center | [ top | bottom ] [ <percentage> | <length> ]? ] "
       "bg-position":
-        value: "[ left | center | right | <percentage> | <length> ] [ center | top | bottom | <percentage> | <length> ]?"
+        value: "
+            [ top | bottom ]
+          |
+            [
+              [ left | center | right | <percentage> | <length> ]
+              [ top | center | bottom | <percentage> | <length> ]?
+            ]
+          |
+            [
+              [ center | [ left | right ] [ <percentage> | <length> ]? ]
+              [ center | [ top | bottom ] [ <percentage> | <length> ]? ]
+            ]
+          "
         return: (v) ->
-          positions = v.get(1)
-          positions.unshift(v.get(0))
-          positions
+          if v.results.length > 1
+            [_.flatten([v.results])]
+          else
+            v.results
 
       "bg-size": "[ <length> | <percentage> | auto ]{1,2} | cover | contain"
       "attachment": "scroll | fixed | local"
