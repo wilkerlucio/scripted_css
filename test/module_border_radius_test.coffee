@@ -22,14 +22,6 @@ module "Module - Border Radius"
 
 parser = ScriptedCss.CssParser
 
-testExpansion = (attr, expected) ->
-  css  = parser.parse "* {#{attr}}"
-  attr = css.rules[0].attributes
-
-  for item, i in expected
-    same(attr.items[i].name,    item[0])
-    same(attr.items[i].value(), item[1])
-
 testAddedAttributes = (attr, expected, step = 1) ->
   css  = parser.parse "* {#{attr}}"
   ScriptedCss.trigger("scriptLoaded", css)
@@ -39,70 +31,6 @@ testAddedAttributes = (attr, expected, step = 1) ->
   for item, i in expected
     same(attr.items[i + step].name,    item[0])
     same(attr.items[i + step].value(), item[1])
-
-test "test expanding border radius with one value", ->
-  testExpansion "border-radius: 10px", [
-    ["border-top-left-radius",     "10px"]
-    ["border-top-right-radius",    "10px"]
-    ["border-bottom-right-radius", "10px"]
-    ["border-bottom-left-radius",  "10px"]
-  ]
-
-test "test expanding border radius with two values", ->
-  testExpansion "border-radius: 10px 5px", [
-    ["border-top-left-radius",     "10px"]
-    ["border-top-right-radius",    "5px"]
-    ["border-bottom-right-radius", "10px"]
-    ["border-bottom-left-radius",  "5px"]
-  ]
-
-test "test expanding border radius with three values", ->
-  testExpansion "border-radius: 10px 5px 8px", [
-    ["border-top-left-radius",     "10px"]
-    ["border-top-right-radius",    "5px"]
-    ["border-bottom-right-radius", "8px"]
-    ["border-bottom-left-radius",  "5px"]
-  ]
-
-test "test expanding border radius with four values", ->
-  testExpansion "border-radius: 10px 5px 8px 2px", [
-    ["border-top-left-radius",     "10px"]
-    ["border-top-right-radius",    "5px"]
-    ["border-bottom-right-radius", "8px"]
-    ["border-bottom-left-radius",  "2px"]
-  ]
-
-test "test expanding border radius with one second value", ->
-  testExpansion "border-radius: 10px / 5px", [
-    ["border-top-left-radius",     "10px 5px"]
-    ["border-top-right-radius",    "10px 5px"]
-    ["border-bottom-right-radius", "10px 5px"]
-    ["border-bottom-left-radius",  "10px 5px"]
-  ]
-
-test "test expanding border radius with two second values", ->
-  testExpansion "border-radius: 10px / 5px 8px", [
-    ["border-top-left-radius",     "10px 5px"]
-    ["border-top-right-radius",    "10px 8px"]
-    ["border-bottom-right-radius", "10px 5px"]
-    ["border-bottom-left-radius",  "10px 8px"]
-  ]
-
-test "test expanding border radius with three second values", ->
-  testExpansion "border-radius: 10px / 5px 8px 4px", [
-    ["border-top-left-radius",     "10px 5px"]
-    ["border-top-right-radius",    "10px 8px"]
-    ["border-bottom-right-radius", "10px 4px"]
-    ["border-bottom-left-radius",  "10px 8px"]
-  ]
-
-test "test expanding border radius with four second values", ->
-  testExpansion "border-radius: 10px / 5px 8px 4px 6px", [
-    ["border-top-left-radius",     "10px 5px"]
-    ["border-top-right-radius",    "10px 8px"]
-    ["border-bottom-right-radius", "10px 4px"]
-    ["border-bottom-left-radius",  "10px 6px"]
-  ]
 
 test "adding browser specific rounded borders for top left", ->
   testAddedAttributes "border-top-left-radius: 5px", [

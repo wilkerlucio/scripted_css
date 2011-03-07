@@ -86,6 +86,92 @@
 
         $n("attribute", "#{attribute.name}-#{key}", _.flatten(value)) for key, value of result
 
+    border:
+      explode: (attribute) ->
+        values = ScriptedCss.parseAttributes(attribute.values, "border")
+        return false unless values
+
+        items = []
+        for key, item of values
+          items.push(item) if item
+
+        attributes = for dir, i in ["top", "right", "bottom", "left"]
+          $n("attribute", "#{attribute.name}-#{dir}", items)
+
+        attributes.push($n("attribute", "#{attribute.name}-image", [$n("none")])) # border specification says to reset border-image when setting border property
+        attributes
+
+    borderDirection:
+      explode: (attribute) ->
+        values = ScriptedCss.parseAttributes(attribute.values, "border")
+        return false unless values
+
+        defaults =
+          color: $n "currentColor"
+          style: $n "none"
+          width: $n "medium"
+
+        for key, value of defaults
+          $n("attribute", "#{attribute.name}-#{key}", [values[key] || value])
+
+    borderColor:
+      explode: (attribute) ->
+        values = ScriptedCss.parseAttributes(attribute.values, "border-color-attr")
+        return false unless values
+
+        comp = Expanders.helpers.computeDirections(values[0])
+
+        for dir, i in ["top", "right", "bottom", "left"]
+          new CssAST.AttributeNode("border-#{dir}-color", [comp[i]])
+
+    borderStyle:
+      explode: (attribute) ->
+        values = ScriptedCss.parseAttributes(attribute.values, "border-style-attr")
+        return false unless values
+
+        comp = Expanders.helpers.computeDirections(values[0])
+
+        for dir, i in ["top", "right", "bottom", "left"]
+          new CssAST.AttributeNode("border-#{dir}-style", [comp[i]])
+
+    borderWidth:
+      explode: (attribute) ->
+        values = ScriptedCss.parseAttributes(attribute.values, "border-width-attr")
+        return false unless values
+
+        comp = Expanders.helpers.computeDirections(values[0])
+
+        for dir, i in ["top", "right", "bottom", "left"]
+          new CssAST.AttributeNode("border-#{dir}-width", [comp[i]])
+
+    borderRadius:
+      explode: (attribute) ->
+        values = ScriptedCss.parseAttributes(attribute.values, "border-radius")
+        return false unless values
+
+        horizontal = ([h] for h, i in ScriptedCss.Expanders.helpers.computeDirections(values.horizontal))
+
+        if values.vertical
+          vertical = ScriptedCss.Expanders.helpers.computeDirections(values.vertical)
+          horizontal[i].push(v) for v, i in vertical
+
+        for dir, i in ["top-left", "top-right", "bottom-right", "bottom-left"]
+          $n("attribute", "border-#{dir}-radius", horizontal[i])
+
+    borderImage:
+      explode: (attribute) ->
+        values = ScriptedCss.parseAttributes(attribute.values, "border-image")
+        return false unless values and !values.string
+
+        defaults =
+          source: $n "none"
+          slice:  $n "100%"
+          width:  $n "1"
+          outset: $n "0"
+          repeat: $n "stretch"
+
+        for key, value of values
+          $n("attribute", "border-image-#{key}", _.flatten([value || defaults[key]]))
     margin:
       explode: (attribute) ->
         values = ScriptedCss.parseAttributes(attribute.values, "margin")
@@ -160,14 +246,16 @@
         attributes
 
   CssAST.AttributeSet.registerExpansion "background",    Expanders.background
-  CssAST.AttributeSet.registerExpansion "border",        Expanders.simpleDirections
-  CssAST.AttributeSet.registerExpansion "border-top",    Expanders.borderValue
-  CssAST.AttributeSet.registerExpansion "border-right",  Expanders.borderValue
-  CssAST.AttributeSet.registerExpansion "border-bottom", Expanders.borderValue
-  CssAST.AttributeSet.registerExpansion "border-left",   Expanders.borderValue
-  CssAST.AttributeSet.registerExpansion "border-color",  Expanders.sulfixDirections
-  CssAST.AttributeSet.registerExpansion "border-style",  Expanders.sulfixDirections
-  CssAST.AttributeSet.registerExpansion "border-width",  Expanders.sulfixDirections
+  CssAST.AttributeSet.registerExpansion "border",        Expanders.border
+  CssAST.AttributeSet.registerExpansion "border-top",    Expanders.borderDirection
+  CssAST.AttributeSet.registerExpansion "border-right",  Expanders.borderDirection
+  CssAST.AttributeSet.registerExpansion "border-bottom", Expanders.borderDirection
+  CssAST.AttributeSet.registerExpansion "border-left",   Expanders.borderDirection
+  CssAST.AttributeSet.registerExpansion "border-color",  Expanders.borderColor
+  CssAST.AttributeSet.registerExpansion "border-style",  Expanders.borderStyle
+  CssAST.AttributeSet.registerExpansion "border-width",  Expanders.borderWidth
+  CssAST.AttributeSet.registerExpansion "border-image",  Expanders.borderImage
+  CssAST.AttributeSet.registerExpansion "border-radius", Expanders.borderRadius
   CssAST.AttributeSet.registerExpansion "font",          Expanders.font
   CssAST.AttributeSet.registerExpansion "list-style",    Expanders.listStyle
   CssAST.AttributeSet.registerExpansion "margin",        Expanders.margin

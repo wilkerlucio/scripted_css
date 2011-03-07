@@ -329,6 +329,58 @@
 
       "repeat-style": "repeat-x | repeat-y | [ repeat | space | round | no-repeat ]{1,2}"
 
+      # border grammar, based on CSS 3 specification: http://www.w3.org/TR/2011/CR-css3-background-20110215/#borders
+      "border-color-attr": "<color>{1,4}"
+      "border-style-attr": "<border-style>{1,4}"
+      "border-width-attr": "<border-width>{1,4}"
+      "border":
+        value: "<border-width> || <border-style> || <color>"
+        return: (v) ->
+          return false unless _.any(v.results)
+
+          width: v.get(0)
+          style: v.get(1)
+          color: v.get(2)
+
+      # border corners grammar, based on CSS 3 specification: http://www.w3.org/TR/2011/CR-css3-background-20110215/#corners
+      "border-radius":
+        # value: "[ <length> | <percentage> ]{1,4} [ / [ <length> | <percentage> ]{1,4} ]?"
+        value: (v, grammar) ->
+          parts = @splitOnValue(v, "/")
+          @parse(part, "border-radius-item", grammar) for part in parts
+
+        return: (v) ->
+          return false unless _.any(v.results)
+          horizontal: v.get(0, 0)
+          vertical: v.get(1, 0)
+
+      "border-radius-item": "[ <length> | <percentage> ]{1,4}"
+
+      # border image grammar, based on CSS 3 specification: http://www.w3.org/TR/2011/CR-css3-background-20110215/#border-images
+      "border-image-source": "none | <image>"
+      "border-image-slice":  "[ <percentage> | <number> ] fill?"
+      "border-image-width":  "[ <length> | <percentage> | <number> | auto ]"
+      "border-image-outset": "[ <length> | <number> ]"
+      "border-image-repeat": "[ stretch | repeat | round ]"
+      "border-image":
+        value: "
+           <border-image-source>
+        || [<border-image-slice> [[ / <border-image-width> ]? [ / <border-image-outset> ]? ]?]
+        || <border-image-repeat>
+        "
+
+        return: (v) ->
+          return false unless _.any(v.results)
+
+          slice = v.get(1, 0)
+          slice = [slice, v.get(1, 1)] if slice and v.get(1, 1)
+
+          source: v.get(0)
+          slice: slice
+          width: v.get(1, 2, 0, 1)
+          outset: v.get(1, 2, 1, 1)
+          repeat: v.get(2)
+
       # font grammar, based on CSS 2.1 specification: http://www.w3.org/TR/2010/WD-CSS2-20101207/fonts.html
       "font-family":
         value: "[ <family-name> | <generic-family> ] [, <family-name> | <generic-family> ]*"
