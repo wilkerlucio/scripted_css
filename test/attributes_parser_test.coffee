@@ -121,8 +121,8 @@ test "or with only invalid items", ->
 
 test "or don't lose values", ->
   out = parser.parseNodes([$n("a")], "orLoss", grammar)
-  same(out[0].string(), "a")
-  same(out[1], null)
+  same(out[0][0].string(), "a")
+  same(out[0][1], null)
 
   out = parser.parseNodes([$n("b")], "orLoss", grammar)
   same(out.string(), "b")
@@ -263,8 +263,8 @@ test "complex optional with all optional missing", ->
 
 test "complex optional with or", ->
   out = parser.parseNodes([$n("a"), $n("b")], "complexOptionalWithOr", grammar)
-  same(out[0].string(), "a")
-  same(out[1].string(), "b")
+  same(out[0][0].string(), "a")
+  same(out[0][1].string(), "b")
 
 test "complex optional with or failing on first", ->
   out = parser.parseNodes([$n("c")], "complexOptionalWithOr", grammar)

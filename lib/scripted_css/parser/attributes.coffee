@@ -76,8 +76,8 @@ parser = new Parser(
     Value: [
       o "ValueItem",           -> new Value($1)
       o "ValueItem Length",    -> new Value($1, $2)
-      o "[ e ]",               -> new Value($2)
-      o "[ e ] Length",        -> new Value($2, $4)
+      o "[ e ]",               -> new Value($2, new Quantity(1), true)
+      o "[ e ] Length",        -> new Value($2, $4, true)
     ]
 
     ValueItem: [

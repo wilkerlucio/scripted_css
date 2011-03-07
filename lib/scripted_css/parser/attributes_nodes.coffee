@@ -73,9 +73,17 @@ window.ScriptedCss.AttributesParser.yy =
       false
 
     isValid: (result) ->
-      return result unless _.isArray(result)
+      valid = false
 
-      _.any result, (node) -> !node.type or node.type != "NULL"
+      if _.isArray(result)
+        for value in result
+          if @isValid(value)
+            valid = true
+            break
+      else
+        valid = true if result and result.type != "NULL"
+
+      valid
 
   And: class And
     constructor: (@v1, @v2) ->
@@ -90,11 +98,12 @@ window.ScriptedCss.AttributesParser.yy =
       if r1 and r2 then f(r1, r2) else nodes.items = nodesClone.items; false
 
   Value: class Value
-    constructor: (@value, @quantity = new Quantity(1)) ->
+    constructor: (@value, @quantity = new Quantity(1), @group = false) ->
       @type = "VALUE"
 
     parse: (nodes, grammar) ->
-      @quantity.parse(@value, nodes, grammar)
+      result = @quantity.parse(@value, nodes, grammar)
+      if @group and @quantity.min == 1 and @quantity.max == 1 then [result] else result
 
   Macro: class Macro
     constructor: (@value) ->

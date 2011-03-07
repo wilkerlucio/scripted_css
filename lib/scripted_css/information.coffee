@@ -276,7 +276,7 @@
           results
 
       "bg-layer":
-        value:    "<bg-image> || [<bg-position> [ / <bg-size> ]?]? || <repeat-style> || <attachment> || <box>{1,2}"
+        value:    "<bg-image> || [<bg-position> [ / <bg-size> ]?] || <repeat-style> || <attachment> || <box>{1,2}"
         return: (v) ->
           return false unless _.any(v.results)
 
@@ -289,7 +289,7 @@
           clip:       v.get(4, 1) || v.get(4, 0)
 
       "final-bg-layer":
-        value:    "<bg-image> || [<bg-position> [ / <bg-size> ]?]? || <repeat-style> || <attachment> || <box>{1,2} || <color>"
+        value:    "<bg-image> || [<bg-position> [ / <bg-size> ]?] || <repeat-style> || <attachment> || <box>{1,2} || <color>"
         return: (v) ->
           return false unless _.any(v.results)
 
@@ -331,7 +331,7 @@
 
       # font grammar, based on CSS 2.1 specification: http://www.w3.org/TR/2010/WD-CSS2-20101207/fonts.html
       "font-family":
-        value: "[[ <family-name> | <generic-family> ] [, <family-name> | <generic-family> ]*]"
+        value: "[ <family-name> | <generic-family> ] [, <family-name> | <generic-family> ]*"
         return: (v) -> if v.get(1) then [_.flatten([v.get(0)].concat(v.get(1)))] else v.results
 
       "font-weight":  "normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900"
@@ -343,12 +343,12 @@
         return: (v) ->
           return v.results unless v.isList()
 
-          style:      v.get(0, 0)
-          variant:    v.get(0, 1)
-          weight:     v.get(0, 2)
-          size:       v.get(1)
-          lineHeight: v.get(2, 1)
-          family:     v.get(3)
+          style:      v.get(0, 0, 0)
+          variant:    v.get(0, 0, 1)
+          weight:     v.get(0, 0, 2)
+          size:       v.get(0, 1)
+          lineHeight: v.get(0, 2, 1)
+          family:     v.get(0, 3)
 
       "generic-family": "serif | sans-serif | cursive | fantasy | monospace"
       "family-name":    "<literal> | <string>"
@@ -370,9 +370,9 @@
           return v.results unless v.isList()
           return false unless _.any(v.results)
 
-          type:     v.get(0)
-          position: v.get(1)
-          image:    v.get(2)
+          type:     v.get(0, 0)
+          position: v.get(0, 1)
+          image:    v.get(0, 2)
 
       # margin grammar, based on CSS 2.1 specification: http://www.w3.org/TR/2010/WD-CSS2-20101207/box.html#margin-properties
       "margin-width": "<length> | <percentage> | auto"
@@ -388,9 +388,9 @@
           return v.results unless v.isList()
           return false unless _.any(v.results)
 
-          color: v.get(0)
-          style: v.get(1)
-          width: v.get(2)
+          color: v.get(0, 0)
+          style: v.get(0, 1)
+          width: v.get(0, 2)
 
       # padding grammar, based on CSS 2.1 specification: http://www.w3.org/TR/2010/WD-CSS2-20101207/box.html#padding-properties
       "padding-width": "<length> | <percentage>"

@@ -52,7 +52,7 @@
     background:
       explode: (attribute) ->
         values = ScriptedCss.parseAttributes(attribute.values, "background")
-        return false unless values and !values.string
+        return false unless values
 
         values = _.flatten(values)
 
