@@ -118,6 +118,7 @@ source = dslPeg(
   combinator: [
     '  "+" S*', -> "+"
     '/ ">" S*', -> ">"
+    '/ "~" S*', -> "~"
   ]
 
   unary_operator: [
