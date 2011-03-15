@@ -167,7 +167,7 @@ source = dslPeg(
   simple_selector: [
     'element:element_name'
     'qualifiers:('
-      'id:HASH', -> type: "ID selector", id: id.substr(1)
+      'id_selector'
       '/ class'
       '/ attrib'
       '/ pseudo'
@@ -176,7 +176,7 @@ source = dslPeg(
       element:    element,
       qualifiers: qualifiers
     '/ qualifiers:('
-      'id:HASH', -> type: "ID selector", id: id.substr(1)
+      'id_selector'
       '/ class'
       '/ attrib'
       '/ pseudo'
@@ -186,7 +186,10 @@ source = dslPeg(
       qualifiers: qualifiers
   ]
 
+  id_selector: ['id:HASH', -> type: "id_selector", id: id.substr(1)]
+
   class: ['"." class_:IDENT', -> type: "class_selector", "class": class_]
+
   element_name: ["IDENT / '*'"]
 
   attrib: [
