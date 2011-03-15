@@ -21,16 +21,19 @@
 fs            = require "fs"
 path          = require "path"
 CoffeeScript  = require "coffee-script"
-yui           = require "./vendor/yui-compressor/index.js"
 child_process = require 'child_process'
+jsp           = require "./vendor/uglifyjs/parse-js"
+pro           = require "./vendor/uglifyjs/process"
 
 scriptFiles = [
-  "scripted_css.coffee",
-  "scripted_css/css_parser.js",
-  "scripted_css/css_attributes_parser.js",
-  "scripted_css/jquery.coffee",
-  "scripted_css/information.coffee",
-  "scripted_css/common_expansions.coffee",
+  "peg.js",
+  "scripted_css.coffee"
+  "scripted_css/parser/css_parser.coffee"
+  "scripted_css/parser/ast.coffee"
+  "scripted_css/css_attributes_parser.js"
+  "scripted_css/jquery.coffee"
+  "scripted_css/information.coffee"
+  "scripted_css/common_expansions.coffee"
   "scripted_css/modules.coffee"
   "scripted_css/modules/border-radius.coffee"
   "scripted_css/modules/opacity.coffee"
@@ -39,9 +42,6 @@ scriptFiles = [
 ]
 
 task 'build', 'build scripted css', (options) ->
-  invoke 'compile:parser'
-  invoke 'compile:attr_parser'
-
   compile = (file) ->
     source = fs.readFileSync(path.join("lib", file)).toString()
     source = CoffeeScript.compile(source) if path.extname(file) == ".coffee"
@@ -56,9 +56,12 @@ task 'build', 'build scripted css', (options) ->
   fs.writeFileSync "dist/scripted_css.js", output
   console.log "Compiled ScriptedCss to dist/scripted_css.js"
 
-  yui.compile output, (compressed) ->
-    fs.writeFileSync "dist/scripted_css.min.js", compressed
-    console.log "Compiled ScriptedCss minified to dist/scripted_css.min.js"
+  ast = jsp.parse(output)
+  ast = pro.ast_mangle(ast)
+  ast = pro.ast_squeeze(ast)
+
+  fs.writeFileSync "dist/scripted_css.min.js", pro.gen_code(ast)
+  console.log "Compiled ScriptedCss minified to dist/scripted_css.min.js"
 
 task 'dev:compile', 'compile files for development', (options) ->
   invoke 'build'
