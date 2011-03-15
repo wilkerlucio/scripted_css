@@ -192,7 +192,7 @@ source = dslPeg(
     '"[" S*'
       'attribute:IDENT S*'
       'operatorAndValue:('
-        '("=" / INCLUDES / DASHMATCH) S*'
+        '("=" / INCLUDES / DASHMATCH / BEGINMATCH / ENDMATCH / CONTAINSMATCH) S*'
         '(IDENT / STRING) S*'
       ')?'
     '"]"'
@@ -482,6 +482,9 @@ source = dslPeg(
   'CDC "-->"':              'comment* "-->"'
   'INCLUDES "~="':          'comment* "~="'
   'DASHMATCH "|="':         'comment* "|="'
+  'BEGINMATCH "^="':        'comment* "^="'
+  'ENDMATCH "$="':          'comment* "$="'
+  'CONTAINSMATCH "*="':     'comment* "*="'
   'STRING "string"':        ['comment* string:string', -> string]
   'IDENT "identifier"':     ['comment* ident:ident',   -> ident]
   'HASH "hash"':            ['comment* "#" name:name', -> "#" + name]
