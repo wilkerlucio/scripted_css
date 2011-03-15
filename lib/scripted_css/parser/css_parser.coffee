@@ -203,7 +203,11 @@ source = dslPeg(
   pseudo: [
     '":" ":"?'
     'value:('
-      'name:FUNCTION S* params:(IDENT S*)? ")"', ->
+      '"not" S* "(" selector:simple_selector S* ")"', ->
+        type:   "function"
+        name:   "not"
+        params: selector
+      '/ name:FUNCTION S* params:(expr S*)? ")"', ->
         type:   "function"
         name:   name
         params: if params != "" then [params[0]] else []
@@ -509,4 +513,4 @@ source = dslPeg(
 
 parser = PEG.buildParser(source)
 
-window.CssParser = parser
+window.ScriptedCss.CssParser = parser
