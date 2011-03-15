@@ -35,17 +35,10 @@ dslPeg = (source) ->
   rules.join("\n\n")
 
 source = dslPeg(
-  # CSS parser based on the grammar described at http://www.w3.org/TR/CSS2/grammar.html.
+  # This CSS parser is a fork of PEG.js example one that can be found here: https://github.com/dmajda/pegjs/blob/master/examples/css.pegjs
   #
-  # The parser builds a tree representing the parsed CSS, composed of basic
-  # JavaScript values, arrays and objects (basically JSON). It can be easily
-  # used by various CSS processors, transformers, etc.
-  #
-  # Note that the parser does not handle errors in CSS according to the
-  # specification -- many errors which it should recover from (e.g. malformed
-  # declarations or unexpected end of stylesheet) are simply fatal. This is a
-  # result of straightforward rewrite of the CSS grammar to PEG.js and it should
-  # be fixed sometimes.
+  # This version was converted to use my mini DSL for PEG.js, also added some
+  # CSS 3 rules, more flexible parts and parsing result in my custom CSS Tree
 
   # ===== Syntactical Elements =====
 
