@@ -47,7 +47,7 @@ source = dslPeg(
   stylesheet: [
     'charset:(CHARSET_SYM STRING ";")? (S / CDO / CDC)*'
     'imports:(import (CDO S* / CDC S*)*)*'
-    'rules:((ruleset / media / page) (CDO S* / CDC S*)*)*'
+    'rules:((ruleset / media / page / keyframes) (CDO S* / CDC S*)*)*'
     ->
       importsConverted = (i[0] for i in imports)
       rulesConverted = (r[0] for r in rules)
@@ -83,17 +83,37 @@ source = dslPeg(
     'ident:IDENT S*', -> ident
   ]
 
+  keyframes: [
+    '"@keyframes" S* name:(IDENT / STRING) S* "{" S* blocks:keyframe_blocks "}" S*'
+    ->
+      type:   "keyframes"
+      name:   name
+      blocks: blocks
+  ]
+
+  keyframe_blocks: [
+    'blocks:(keyframe_selector S* declarations)* S*'
+    ->
+      for block in blocks
+        {
+          type:         "keyframe_block"
+          selector:     block[0]
+          declarations: block[2]
+        }
+  ]
+
+  keyframe_selector: [
+    'selectorHead:("from" / "to" / PERCENTAGE) S* selectorsTail:("," S* ("from" / "to" / PERCENTAGE) S*)*'
+    ->
+      selectors = if selectorHead != "" then [selectorHead] else []
+      selectors.push(sel[2]) for sel in selectorsTail
+      selectors
+  ]
+
   page: [
     'PAGE_SYM S* qualifier:pseudo_page?'
-    '"{" S*'
-    'declarationsHead:declaration?'
-    'declarationsTail:(";" S* declaration?)*'
-    '"}" S*',
+    'declarations:declarations'
     ->
-      declarations = if declarationsHead != "" then [declarationsHead] else []
-      for dec in declarationsTail
-        declarations.push(dec[2]) if dec[2] != ""
-
       type:         "page_rule"
       qualifier:    if qualifier != "" then qualifier else null
       declarations: declarations
@@ -126,21 +146,27 @@ source = dslPeg(
   ruleset: [
     'selectorsHead:selector'
     'selectorsTail:("," S* selector)*'
+    'declarations:declarations'
+    ->
+      selectors = [selectorsHead]
+      selectors.push(tail[2]) for tail in selectorsTail
+
+      type:         "ruleset"
+      selectors:    selectors
+      declarations: declarations
+  ]
+
+  declarations: [
     '"{" S*'
     'declarationsHead:declaration?'
     'declarationsTail:(";" S* declaration?)*'
     '"}" S*'
     ->
-      selectors = [selectorsHead]
-      selectors.push(tail[2]) for tail in selectorsTail
-
       declarations = if declarationsHead != "" then [declarationsHead] else []
       for dec in declarationsTail
         declarations.push(dec[2]) if dec[2] != ""
 
-      type:         "ruleset"
-      selectors:    selectors
-      declarations: declarations
+      declarations
   ]
 
   selector: [
