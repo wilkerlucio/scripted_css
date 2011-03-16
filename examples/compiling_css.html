@@ -7,6 +7,7 @@
 		</script>
 		<script type="text/javascript" src="../vendor/jquery-1.5.min.js"></script>
 		<script type="text/javascript" src="../vendor/underscore-min.js"></script>
+		<script type="text/javascript" src="../vendor/jsDump.js"></script>
 		<script type="text/javascript" src="../dist/scripted_css.js"></script>
 		<style type="text/scripted-css">
 			body {
@@ -33,36 +34,28 @@
 		</style>
 
 		<script type="text/javascript">
-			last_css = null
+			ScriptedCss.autoStart = false;
+			last_css = null;
 
 			$(function() {
 				$("#compile-input").click(function() {
 					var source = $("#source-area").val();
-					var tokens = ScriptedCss.CssParser.Lexer.tokenize(source);
-					var output;
+					var output = "";
 
 					try {
-						var css = ScriptedCss.CssParser.parse(source);
+						var parseTree = jsDump.parse(ScriptedCss.CssParser.parse(source));
 
-						ScriptedCss.trigger("scriptLoaded", css);
-						ScriptedCss.trigger("cssReady", css);
+						/* ScriptedCss.trigger("scriptLoaded", css); */
+						/* ScriptedCss.trigger("cssReady", css); */
 
-						last_css = css;
+						/* last_css = css; */
 
-						output = css.string();
+						/* output = css.string(); */
 					} catch(error) {
 						output = error;
 					}
 
-					var tokenString = "";
-
-					for (var i = 0; i < tokens.length; i++) {
-						var token = tokens[i];
-
-						tokenString += "[" + token[0] + ", " + token[1] + "]\n";
-					}
-
-					$("#tokens-area").val(tokenString);
+					$("#tokens-area").val(parseTree);
 					$("#output-area").val(output);
 				});
 			});
