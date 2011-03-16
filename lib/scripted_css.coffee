@@ -23,7 +23,7 @@
     autoStart: true
 
     start: ->
-      @documentStyle = new CssAST.RulesNode([])
+      @documentStyle = new ScriptedCss.Nodes.Document([])
 
       return unless ScriptedCss.autoStart
 
