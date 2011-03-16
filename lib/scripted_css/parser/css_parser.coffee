@@ -516,11 +516,11 @@ source = dslPeg(
   'S "whitespace"':         'comment* s'
   'CDO "<!--"':             'comment* "<!--"'
   'CDC "-->"':              'comment* "-->"'
-  'INCLUDES "~="':          'comment* "~="'
-  'DASHMATCH "|="':         'comment* "|="'
-  'BEGINMATCH "^="':        'comment* "^="'
-  'ENDMATCH "$="':          'comment* "$="'
-  'CONTAINSMATCH "*="':     'comment* "*="'
+  'INCLUDES "~="':          ['comment* op:"~="', -> op]
+  'DASHMATCH "|="':         ['comment* op:"|="', -> op]
+  'BEGINMATCH "^="':        ['comment* op:"^="', -> op]
+  'ENDMATCH "$="':          ['comment* op:"$="', -> op]
+  'CONTAINSMATCH "*="':     ['comment* op:"*="', -> op]
   'STRING "string"':        ['comment* string:string', -> string]
   'IDENT "identifier"':     ['comment* ident:ident',   -> ident]
   'HASH "hash"':            ['comment* "#" name:name', -> "#" + name]
