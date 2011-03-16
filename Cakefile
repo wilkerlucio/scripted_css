@@ -66,7 +66,7 @@ task 'build', 'build scripted css', (options) ->
 task 'dev:compile', 'compile files for development', (options) ->
   invoke 'build'
 
-  child_process.exec 'find test | grep "_test\.coffee$"', (error, stdout, stderr) ->
+  child_process.exec 'find test | grep "\.coffee$"', (error, stdout, stderr) ->
     testFiles = stdout.trim().split("\n")
     for file in testFiles
       source = CoffeeScript.compile(fs.readFileSync(file).toString())
