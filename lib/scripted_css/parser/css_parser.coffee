@@ -245,7 +245,7 @@ source = dslPeg(
       '/ name:FUNCTION S* params:(expr S*)? ")"', ->
         type:   "function"
         name:   name
-        params: if params != "" then [params[0]] else []
+        params: if params != "" then params[0] else []
       '/ IDENT'
     ')'
     ->
