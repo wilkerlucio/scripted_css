@@ -20,57 +20,44 @@
 
 collectStrings = (list) -> (item.string() for item in list)
 
-Array.prototype.isArray = -> true
-
-CssAST =
+nodes =
   createNode: (args...) ->
-    expressions = ScriptedCss.CssParser.Lexer.expressions
-
     nodes =
-      "rules":              RulesNode
-      "rule":               RuleNode
+      "document":           Document
+      "rule":               Rule
       "attributes":         AttributeSet
-      "meta":               MetaNode
-      "selector":           SelectorNode
-      "meta-selector":      MetaSelectorNode
-      "attribute":          AttributeNode
-      "function":           FunctionNode
-      "attribute-selector": AttributeSelectorNode
-      "string":             StringNode
-      "arg":                NamedArgumentNode
-      "important":          ImportantNode
-      "literal":            LiteralNode
-      "number":             NumberNode
-      "unit":               UnitNumberNode
-      "hex":                HexnumberNode
-      "multi-value":        MultiValue
+      "meta":               Meta
+      "selector":           Selector
+      "meta-selector":      MetaSelector
+      "attribute":          Attribute
+      "function":           Function
+      "attribute-selector": AttributeSelector
+      "string":             String
+      "identifier":         Identifier
+      "value":              Value
 
     type = args.shift()
 
     if args.length == 0
       type += "" # ensure its a string
 
-      if type == "!"
-        new ImportantNode()
-      else if type.match(expressions.hexnumber)
-        new HexnumberNode(type)
+      if type.match(expressions.hexnumber)
+        new Hexnumber(type)
       else if type.match(expressions.unitnumber)
-        new UnitNumberNode(type)
+        new Value(type)
       else if type.match(expressions.number)
-        new NumberNode(type)
+        new Value(type)
       else
-        new LiteralNode(type)
+        new Identifier(type)
     else
       if nodes[type]
         args[0] = "'#{args[0]}'" if type == "string"
 
         new nodes[type](args...)
       else
-        return new MultiValue(type, args[0]) if type.isArray() and args[0]
-
         throw "Can't create node for type #{type}"
 
-  RulesNode: class RulesNode
+  Document: class Document
     constructor: (rules) ->
       @type         = "RULES"
       @rules        = []
@@ -142,7 +129,7 @@ CssAST =
 
     attributeForElement: (element, attribute, stringify = true) ->
       rules = @rulesForElement(element)
-      value = [new AttributeNode(attribute, []), 0]
+      value = [new Attribute(attribute, []), 0]
 
       for rule in rules
         attr = rule.attributes.hash[attribute]
@@ -156,7 +143,7 @@ CssAST =
 
     string: -> (rule.string() for rule in @rules).join("\n")
 
-  RuleNode: class RuleNode
+  Rule: class Rule
     constructor: (@selector, attributes) ->
       @type = "RULE"
       @attributes = new AttributeSet(this, attributes)
@@ -212,7 +199,7 @@ CssAST =
       if filterAttribute
         filterAttribute.values.push(node)
       else
-        @add(new AttributeNode("filter", [node]))
+        @add(new Attribute("filter", [node]))
 
     get: (name) ->
       if @expansion(name)
@@ -224,7 +211,7 @@ CssAST =
 
     string: -> "{ " + collectStrings(@items).join("; ") + " }"
 
-  MetaNode: class MetaNode
+  Meta: class Meta
     constructor: (@name, @value) ->
       @type = "META"
 
@@ -232,7 +219,7 @@ CssAST =
         @value = new AttributeSet(this, @value)
     string: -> "@#{@name} #{@value.string()}"
 
-  SelectorNode: class SelectorNode
+  Selector: class Selector
     constructor: (@selector, @attributes = null, @meta = null) ->
       @type   = "SELECTOR"
       @next   = null
@@ -347,13 +334,13 @@ CssAST =
     metaString:      -> if @meta then @meta.string() else ""
     string:          -> "#{@selector}#{@attributeString()}#{@metaString()}#{@nextString()}"
 
-  MetaSelectorNode: class MetaSelectorNode
+  MetaSelector: class MetaSelector
     constructor: (@value, @operator) ->
       @type = "META_SELECTOR"
 
     string: -> "#{@operator}#{@value.string()}"
 
-  AttributeNode: class AttributeNode
+  Attribute: class Attribute
     constructor: (@name, values, @important = false) ->
       @type      = "ATTRIBUTE"
       @values    = []
@@ -374,7 +361,7 @@ CssAST =
     value: (includeImportant = false) -> collectStrings(@values).join(" ") + (if includeImportant then @importantString() else "")
     string: -> "#{@name}: #{@value(true)}"
 
-  FunctionNode: class FunctionNode
+  Function: class Function
     constructor: (@name, @arguments) ->
       @type = "FUNCTION"
       @namedArguments = {}
@@ -386,69 +373,38 @@ CssAST =
     argumentsString: -> collectStrings(@arguments).join(",")
     string: -> "#{@name}(#{@argumentsString()})"
 
-  AttributeSelectorNode: class AttributeSelectorNode
+  AttributeSelector: class AttributeSelector
     constructor: (@name, @operator, @value) ->
       @type = "ATTRIBUTE_SELECTOR"
 
     string: -> "#{@name}#{@operator}#{@value.string()}"
 
-  LiteralNode: class LiteralNode
+  Identifier: class Identifier
     constructor: (@value) ->
       @type = "LITERAL"
 
     string: -> @value.toString()
 
-  StringNode: class StringNode
+  String: class String
     constructor: (@value) ->
       @type = "STRING"
       @text = @value.substr(1, @value.length - 2)
 
     string: -> @value.toString()
 
-  NumberNode: class NumberNode
+  Value: class Value
     constructor: (@value) ->
       @type = "NUMBER"
 
     number: -> parseFloat(@value)
     string: -> @value.toString()
 
-  UnitNumberNode: class UnitNumberNode
-    constructor: (@value) ->
-      @type = "UNIT_NUMBER"
-
-      [@value, @number, @unit] = value.match(/(.+?)([a-zA-Z%]+)/)
-      @number = parseFloat(@number)
-
-    string: -> @value.toString()
-
-  HexnumberNode: class HexnumberNode
+  Hexnumber: class Hexnumber
     constructor: (@value) ->
       @type = "HEXNUMBER"
 
     string: -> @value
 
-  PercentNode: class PercentNode
-    constructor: (@value) ->
-      @type = "PERCENT"
-
-    string: -> @value
-
-  MultiValue: class MultiValue
-    constructor: (@literals, @separator) ->
-      @type = "MULTI_VALUE"
-    string: -> collectStrings(@literals).join(@separator)
-
-  NamedArgumentNode: class NamedArgumentNode
-    constructor: (@name, @value) ->
-      @type = "NAMED_ARGUMENT"
-    string: -> "#{@name}=#{@value.string()}"
-
-  ImportantNode: class ImportantNode
-    constructor: ->
-      @type = "IMPORTANT"
-      @important = true
-    string: -> "!important"
-
-window.CssAST = CssAST if window?
-window.$n = CssAST.createNode if window?
-module.exports = CssAST if module?
+window.ScriptedCss.Nodes = nodes if window?
+window.$n = nodes.createNode if window?
+module.exports = nodes if module?
