@@ -135,6 +135,7 @@ source = dslPeg(
   operator: [
     '  "/" S*', -> "/"
     '/ "," S*', -> ","
+    '/ "=" S*', -> "="
   ]
 
   combinator: [
@@ -149,7 +150,7 @@ source = dslPeg(
   ]
 
   property: [
-    'ident:IDENT S*', -> ident
+    'ie7hack:"*"? ident:IDENT S*', -> (ie7hack || "") + ident
   ]
 
   ruleset: [
@@ -529,6 +530,8 @@ source = dslPeg(
   'MEDIA_SYM "@media"':     'comment* "@" M E D I A'
   'CHARSET_SYM "@charset"': 'comment* "@charset "'
 
+  'IE_FN': ['"progid:" comp:([^(]+) ', -> "progid:#{comp.join('')}"]
+
   # Note: We replace "w" with "s" here to avoid infinite recursion.
   'IMPORTANT_SYM "!important"': ['comment* "!" (s / comment)* I M P O R T A N T', -> "!important"]
 
@@ -543,7 +546,7 @@ source = dslPeg(
   'NUMBER "number"':         ['comment* num:num',                                          -> num]
 
   'URI "uri"': ['comment* U R L "(" w value:(string / url) w ")"', -> value]
-  'FUNCTION "function"': ['comment* name:ident "("', -> name]
+  'FUNCTION "function"': ['comment* name:(IE_FN / ident) "("', -> name]
 )
 
 parser = PEG.buildParser(source)
