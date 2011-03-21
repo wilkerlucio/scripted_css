@@ -22,6 +22,18 @@ module "Selector Node"
 
 selector = ScriptedCss.Nodes.Selector
 
+matcherSel = (combinator) ->
+  new selector(
+    type: "selector"
+    combinator: combinator
+    left:
+      type: "plain"
+      match: (el) -> if el.tagName == "DIV" then el else false
+    right:
+      type: "plain"
+      match: (el) -> if el.tagName == "SPAN" then el else false
+  )
+
 test "initialize", ->
   sel = new selector(
     type: "selector"
@@ -63,6 +75,61 @@ test "weight", ->
   )
 
   equal(sel.weight(), 21)
+
+test "match elements with ' ' if has a valid parent", ->
+  obj = $("<div><strong><span></span></strong></div>").find("span")[0]
+  ok(matcherSel(' ').match(obj))
+
+test "don't match elements with ' ' if has not a valid parent", ->
+  obj = $("<body><strong><span></span></strong></body>").find("span")[0]
+  ok(!matcherSel(' ').match(obj))
+
+test "match elements with '>' if has a valid direct parent", ->
+  obj = $("<div><span></span></div>").find("span")[0]
+  ok(matcherSel('>').match(obj))
+
+test "don't match elements with '>' if has not a valid direct parent", ->
+  obj = $("<div><strong><span></span></strong></div>").find("span")[0]
+  ok(!matcherSel('>').match(obj))
+
+test "match elements with '+' if has a valid direct sibling", ->
+  obj = $("<div><div></div><span></span></div>").find("span")[0]
+  ok(matcherSel('+').match(obj))
+
+test "don't match elements with '+' if has not a valid direct sibling", ->
+  obj = $("<div><div></div><strong>hey</strong><span></span></div>").find("span")[0]
+  ok(!matcherSel('+').match(obj))
+
+test "match elements with '~' if has a valid previous sibling", ->
+  obj = $("<div><div>ho</div><strong>hey</strong><span></span></div>").find("span")[0]
+  ok(matcherSel('~').match(obj))
+
+test "don't match elements with '~' if has not a valid previous sibling", ->
+  obj = $("<div><strong>hey</strong><span></span><div></div></div>").find("span")[0]
+  ok(!matcherSel('~').match(obj))
+
+test "nest complex matching", ->
+  sel = new selector(
+    type: "selector"
+    combinator: " "
+    left:
+      type: "plain"
+      match: (el) -> if el.tagName == "DIV" then el else false
+    right:
+      type: "selector"
+      combinator: "+"
+      left:
+        type: "plain"
+        match: (el) -> if el.tagName == "STRONG" then el else false
+      right:
+        type: "plain"
+        match: (el) -> if el.tagName == "SPAN" then el else false
+  )
+
+  obj = $("<div><ul><li><strong>hey</strong><span>joe</span></li></ul></div>").find("span")[0]
+  ok(sel.match(obj))
+  obj = $("<div><ul><li><b>hey</b><span>joe</span></li></ul></div>").find("span")[0]
+  ok(!sel.match(obj))
 
 test "stringify", ->
   for combinator in [" ", ">", "+", "~"]

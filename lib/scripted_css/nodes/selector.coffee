@@ -29,6 +29,27 @@ class Selector extends ScriptedCss.Nodes.Base
 
   weight: -> @left.weight() + @right.weight()
 
+  match: (element) ->
+    if element = @right.match(element)
+      switch @combinator
+        when ' '
+          while element = element.parentNode
+            return element if @left.match(element)
+
+        when '>'
+          return element if @left.match(element.parentNode)
+
+        when '+'
+          element = element.previousSibling
+          element = element.previousSibling until element.nodeType == 1 or !element
+          return element if @left.match(element)
+
+        when '~'
+          while element = element.previousSibling
+            return element if @left.match(element)
+
+    false
+
   stringify: ->
     combinator = if @combinator == " " then " " else " #{@combinator} "
     @left.stringify() + combinator + @right.stringify()
