@@ -32,6 +32,7 @@ scriptFiles = [
   "scripted_css/nodes.coffee"
   "scripted_css/nodes/base.coffee"
   "scripted_css/nodes/stylesheet.coffee"
+  "scripted_css/nodes/rule.coffee"
   # "scripted_css/css_attributes_parser.js"
   # "scripted_css/jquery.coffee"
   # "scripted_css/information.coffee"
