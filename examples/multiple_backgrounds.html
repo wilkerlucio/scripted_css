@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>ScriptedCSS: Border Radius Module</title>
+		<style type="text/scripted-css">
+			body { background-image: url(images/blue-ball.gif),url(images/red-ball.gif); }
+			div { background: #000; width: 100px; height: 100px }
+		</style>
+		<script type="text/javascript" src="../vendor/jquery-1.5.min.js"></script>
+		<script type="text/javascript" src="../vendor/underscore-min.js"></script>
+		<script type="text/javascript" src="../dist/scripted_css.js"></script>
+		<script type="text/javascript">
+			$(function() {
+				$("div").click(function() { alert("hello"); });
+				el = $("div");
+				el.detach();
+				el.appendTo("body");
+			});
+		</script>
+	</head>
+	<body>
+		<div>a</div>
+	</body>
+</html>
