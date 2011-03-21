@@ -22,6 +22,8 @@ class Base
   init: (object) ->
     _.extend(this, object)
 
+  factory: (object) -> ScriptedCss.Nodes.factory.call(this, object)
+
   stringifyArray: (list, joiner = null) ->
     list = _.invoke(list, 'stringify')
     if joiner then list.join(joiner) else list
