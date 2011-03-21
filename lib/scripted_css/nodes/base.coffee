@@ -19,8 +19,12 @@
 # THE SOFTWARE.
 
 class Base
-  init: (object) ->
+  init: (object, type) ->
+    @checkType(object.type, type)
     _.extend(this, object)
+
+  checkType: (currentType, expectedType) ->
+    throw new TypeError("invalid type #{currentType}, expecting #{expectedType}") unless currentType == expectedType
 
   factory: (object) -> ScriptedCss.Nodes.factory.call(this, object)
 
