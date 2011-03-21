@@ -158,11 +158,12 @@ test "indexing rules", ->
   ok(s.regularRules["rule3"])
   equal(s.rules.length, 3)
 
-test "indexing declarations", ->
+test "indexing declarations and selector details", ->
   css =
     rules: [
       {
         selector: "a"
+        selections: -> ["TAG", ".class"]
         declarations: [
           {
             property: "aa"
@@ -176,6 +177,7 @@ test "indexing declarations", ->
       },
       {
         selector: "b"
+        selections: -> ["#id", ".class"]
         declarations: [
           {
             property: "aa"
@@ -185,11 +187,16 @@ test "indexing declarations", ->
       },
     ]
 
-  css.regularRules = _.toArray(css.rules)
-  css.rulesWithProperty = style::rulesWithProperty
+  css.regularRules       = _.toArray(css.rules)
+  css.rulesWithProperty  = style::rulesWithProperty
+  css.rulesWithSelection = style::rulesWithSelection
 
-  cancelEvents -> style.DeclarationsIndexer.index(css)
+  cancelEvents -> style.DetailsIndexer.index(css)
 
   equal(css.rulesWithProperty("aa").length, 2)
   same(css.rulesWithProperty("aa")[0].selector, "a")
   same(css.rulesWithProperty("aa")[1].selector, "b")
+  same(css.rulesWithSelection("TAG")[0].selector, "a")
+  same(css.rulesWithSelection(".class")[0].selector, "a")
+  same(css.rulesWithSelection("#id")[0].selector, "b")
+  same(css.rulesWithSelection(".class")[1].selector, "b")

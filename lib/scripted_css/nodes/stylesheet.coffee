@@ -98,22 +98,32 @@ Stylesheet.RulesIndexer =
 ScriptedCss.bind "stylesheetRulesExtracted", Stylesheet.RulesIndexer.index
 
 # index attributes
-Stylesheet.DeclarationsIndexer =
+Stylesheet.DetailsIndexer =
   index: (stylesheet) ->
-    stylesheet.declarationsIndex = _.reduce stylesheet.regularRules, ((memo, rule) ->
+    declarations = {}
+    selections   = {}
+
+    for rule in stylesheet.regularRules
+      for selection in rule.selections()
+        selections[selection] ?= []
+        selections[selection].push(rule)
+
       for declaration in rule.declarations
-        memo[declaration.property] ?= []
-        memo[declaration.property].push(rule)
+        declarations[declaration.property] ?= []
+        declarations[declaration.property].push(rule)
 
-      memo
-    ), {}
+    stylesheet.declarationsIndex = declarations
+    stylesheet.selectorIndex     = selections
 
-    ScriptedCss.trigger("stylesheetDeclarationsIndexed", stylesheet)
+    ScriptedCss.trigger("stylesheetDetailsIndexed", stylesheet)
 
 Stylesheet::rulesWithProperty = (property) ->
   @declarationsIndex[property] || []
 
-ScriptedCss.bind "stylesheetRulesIndexed", Stylesheet.DeclarationsIndexer.index
+Stylesheet::rulesWithSelection = (selection) ->
+  @selectorIndex[selection] || []
+
+ScriptedCss.bind "stylesheetRulesIndexed", Stylesheet.DetailsIndexer.index
 
 # exporting
 window.ScriptedCss.Nodes.Stylesheet = Stylesheet
