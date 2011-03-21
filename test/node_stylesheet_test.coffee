@@ -24,6 +24,7 @@ style = ScriptedCss.Nodes.Stylesheet
 
 test "stringify", ->
   dummy = (output) ->
+    type: "plain"
     selector:
       stringify: ->
     stringify: -> output
