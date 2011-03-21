@@ -30,6 +30,6 @@ class Base
 
   stringifyArray: (list, joiner = null) ->
     list = _.invoke(list, 'stringify')
-    if joiner then list.join(joiner) else list
+    if _.isString(joiner) then list.join(joiner) else list
 
 window.ScriptedCss.Nodes.Base = Base if window
