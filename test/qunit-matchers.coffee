@@ -20,3 +20,8 @@
 
 window.contains = (object, properties) ->
     same(object[key], value, "object contains '#{key}' with value '#{value}'") for key, value of properties
+
+window.cancelEvents = (callback) ->
+  stub = sinon.stub(ScriptedCss, 'trigger')
+  callback()
+  stub.restore()

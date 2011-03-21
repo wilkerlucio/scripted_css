@@ -20,11 +20,6 @@
 
 module "Document Node"
 
-cancelEvents = (callback) ->
-  stub = sinon.stub(ScriptedCss, 'trigger')
-  callback()
-  stub.restore()
-
 style = ScriptedCss.Nodes.Stylesheet
 
 test "stringify", ->
