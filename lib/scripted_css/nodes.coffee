@@ -43,7 +43,9 @@ Nodes =
       when "string"             then new Nodes.String(object)
       when "ident"              then new Nodes.Identifier(object)
       when "hexcolor"           then new Nodes.HexColor(object)
-      when "plain"              then object
+      when "plain"
+        object.plain = true
+        object
       else throw new TypeError("can't factory type #{object.type}")
 
     result.parent = this
