@@ -44,6 +44,7 @@ Nodes =
       when "ident"              then new Nodes.Identifier(object)
       when "hexcolor"           then new Nodes.HexColor(object)
       when "plain" # this one is just for test porpuses
+        object.type = object.stubType if object.stubType
         object.plain = true
         object
       else throw new TypeError("can't factory type #{object.type}")
