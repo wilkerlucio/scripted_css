@@ -20,11 +20,9 @@
 
 class Stylesheet extends ScriptedCss.Nodes.Base
   constructor: (stylesheet) ->
-    throw "invalid type #{stylesheet.type}, expecting stylesheet" unless stylesheet.type == 'stylesheet'
-
     ScriptedCss.trigger("stylesheetPreInitialize", stylesheet, this)
 
-    @init(stylesheet)
+    @init(stylesheet, "stylesheet")
 
     ScriptedCss.trigger("stylesheetInitialized", this)
 
