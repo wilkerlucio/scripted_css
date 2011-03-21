@@ -23,15 +23,15 @@
     autoStart: true
 
     start: ->
-      @documentStyle = new ScriptedCss.Nodes.Document([])
+      # @documentStyle = new ScriptedCss.Nodes.Document([])
 
-      return unless ScriptedCss.autoStart
+      # return unless ScriptedCss.autoStart
 
-      originalDisplay = $(document.body).css("display")
-      $(document.body).css(display: "none")
+      # originalDisplay = $(document.body).css("display")
+      # $(document.body).css(display: "none")
 
-      @loadStyles ->
-        $(document.body).css(display: originalDisplay)
+      # @loadStyles ->
+      #   $(document.body).css(display: originalDisplay)
 
     addStyle: (styleText) ->
       css = document.createElement("style")

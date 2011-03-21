@@ -29,16 +29,18 @@ scriptFiles = [
   "peg.js",
   "scripted_css.coffee"
   "scripted_css/parser/css_parser.coffee"
-  "scripted_css/parser/ast.coffee"
-  "scripted_css/css_attributes_parser.js"
-  "scripted_css/jquery.coffee"
-  "scripted_css/information.coffee"
-  "scripted_css/common_expansions.coffee"
-  "scripted_css/modules.coffee"
-  "scripted_css/modules/border-radius.coffee"
-  "scripted_css/modules/opacity.coffee"
-  "scripted_css/modules/template_layout.coffee"
-  "scripted_css/modules/transition.coffee"
+  "scripted_css/nodes.coffee"
+  "scripted_css/nodes/base.coffee"
+  "scripted_css/nodes/stylesheet.coffee"
+  # "scripted_css/css_attributes_parser.js"
+  # "scripted_css/jquery.coffee"
+  # "scripted_css/information.coffee"
+  # "scripted_css/common_expansions.coffee"
+  # "scripted_css/modules.coffee"
+  # "scripted_css/modules/border-radius.coffee"
+  # "scripted_css/modules/opacity.coffee"
+  # "scripted_css/modules/template_layout.coffee"
+  # "scripted_css/modules/transition.coffee"
 ]
 
 task 'build', 'build scripted css', (options) ->
