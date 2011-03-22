@@ -25,8 +25,12 @@ child_process = require 'child_process'
 jsp           = require "./vendor/uglifyjs/parse-js"
 pro           = require "./vendor/uglifyjs/process"
 
+dependencies = [
+  "vendor/peg.js"
+  "vendor/underscore-min.js"
+]
+
 scriptFiles = [
-  "peg.js",
   "scripted_css.coffee"
   "scripted_css/parser/css_parser.coffee"
   "scripted_css/nodes.coffee"
@@ -66,16 +70,17 @@ scriptFiles = [
 ]
 
 task 'build', 'build scripted css', (options) ->
-  compile = (file) ->
-    source = fs.readFileSync(path.join("lib", file)).toString()
-    source = CoffeeScript.compile(source) if path.extname(file) == ".coffee"
-    source
+  source = ""
+  vendorSource = ""
 
-  output = ""
+  for file in dependencies
+    vendorSource += fs.readFileSync(file).toString() + "\n"
 
   for file in scriptFiles
-    source = compile(file)
-    output += source + "\n"
+    filePath = path.join("lib", file)
+    source += fs.readFileSync(filePath).toString() + "\n"
+
+  output = vendorSource + CoffeeScript.compile(source)
 
   fs.writeFileSync "dist/scripted_css.js", output
   console.log "Compiled ScriptedCss to dist/scripted_css.js"
@@ -84,7 +89,7 @@ task 'build', 'build scripted css', (options) ->
   ast = pro.ast_mangle(ast)
   ast = pro.ast_squeeze(ast)
 
-  fs.writeFileSync "dist/scripted_css.min.js", pro.gen_code(ast)
+  fs.writeFileSync "dist/scripted_css.min.js", pro.gen_code(ast, ascii_only: true)
   console.log "Compiled ScriptedCss minified to dist/scripted_css.min.js"
 
 task 'dev:compile', 'compile files for development', (options) ->
@@ -97,19 +102,6 @@ task 'dev:compile', 'compile files for development', (options) ->
       outputPath = path.join(path.dirname(file), path.basename(file, ".coffee") + ".js")
       fs.writeFileSync(outputPath, source)
       console.log "Compiled test file #{outputPath}"
-
-task 'compile:parser', 'compile the css parser', (options) ->
-  lexSource    = fs.readFileSync("./lib/scripted_css/parser/lexer.coffee").toString()
-  astSource    = fs.readFileSync("./lib/scripted_css/parser/ast.coffee").toString()
-  parser       = require "./lib/scripted_css/parser"
-  parserSource = parser.generate(moduleName: "ScriptedCss.CssParser")
-  parserSource = parserSource.replace("last_column: lstack[lstack.length-1].last_column,", "last_column: lstack[lstack.length-1].last_column") # hack to fix parser for IE
-  lexer        = CoffeeScript.compile lexSource
-  ast          = CoffeeScript.compile astSource
-  ast          += CoffeeScript.compile fs.readFileSync("./lib/scripted_css/parser/parser_configuration.coffee").toString()
-
-  fs.writeFileSync "lib/scripted_css/css_parser.js", parserSource + lexer + ast
-  console.log "Compiled parser to lib/scripted_css/css_parser.js"
 
 task 'compile:attr_parser', 'compile the css attributes parser', (options) ->
   nodesSource  = fs.readFileSync("./lib/scripted_css/parser/attributes_nodes.coffee").toString()
