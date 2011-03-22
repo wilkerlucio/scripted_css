@@ -20,8 +20,80 @@
 
 module("AttributeSelector Node Test")
 
+attr = ScriptedCss.Nodes.AttributeSelector
+ga = (name, op = null, val = null) -> new attr(type: "attribute_selector", attribute: name, operator: op, value: val)
+
 test "initialize", ->
-  ok(false)
+  a = ga("type", "=", "text")
+
+  same(a.type, "attribute_selector")
+  same(a.attribute, "type")
+  same(a.operator, "=")
+  same(a.value, "text")
+
+test "matching attribute existance", ->
+  a = ga("type")
+
+  ok(a.match($("<div />", type: "tt")[0]))
+  ok(a.match($("<div />", type: "")[0]))
+  ok(!a.match($("<div />")[0]))
+
+test "matching attribute equallity", ->
+  a = ga("type", "=", "text")
+
+  ok(a.match($("<div />", type: "text")[0]))
+  ok(!a.match($("<div />", type: "tex")[0]))
+  ok(!a.match($("<div />")[0]))
+
+test "matching attribute inclusion", ->
+  a = ga("type", "~=", "text")
+
+  ok(a.match($("<div />", type: "some text value")[0]))
+  ok(a.match($("<div />", type: "text")[0]))
+  ok(!a.match($("<div />", type: "non tex value")[0]))
+  ok(!a.match($("<div />", type: "")[0]))
+  ok(!a.match($("<div />")[0]))
+
+test "matching attribute begins", ->
+  a = ga("type", "^=", "text")
+
+  ok(a.match($("<div />", type: "textes")[0]))
+  ok(a.match($("<div />", type: "text")[0]))
+  ok(!a.match($("<div />", type: "tex")[0]))
+  ok(!a.match($("<div />")[0]))
+
+test "matching attribute ends", ->
+  a = ga("type", "$=", "text")
+
+  ok(a.match($("<div />", type: "aatext")[0]))
+  ok(a.match($("<div />", type: "text")[0]))
+  ok(!a.match($("<div />", type: "texty")[0]))
+  ok(!a.match($("<div />")[0]))
+
+test "matching attribute contains", ->
+  a = ga("type", "*=", "text")
+
+  ok(a.match($("<div />", type: "aatextaa")[0]))
+  ok(a.match($("<div />", type: "atext")[0]))
+  ok(a.match($("<div />", type: "texta")[0]))
+  ok(!a.match($("<div />", type: "aatexaa")[0]))
+  ok(!a.match($("<div />")[0]))
+
+test "matching attribute hypen separated starting with", ->
+  a = ga("type", "|=", "en")
+
+  ok(a.match($("<div />", type: "en")[0]))
+  ok(a.match($("<div />", type: "en-US")[0]))
+  ok(!a.match($("<div />", type: "US-en")[0]))
+  ok(!a.match($("<div />")[0]))
+
+  a = ga("type", "|=", "en-US")
+
+  ok(a.match($("<div />", type: "en-US")[0]))
+  ok(a.match($("<div />", type: "en-US-O")[0]))
+  ok(!a.match($("<div />", type: "en")[0]))
 
 test "stringify", ->
-  ok(false)
+  a = ga("type", "=", "text")
+
+  same(a.stringify(), "[type=text]")

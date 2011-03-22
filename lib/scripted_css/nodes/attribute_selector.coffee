@@ -22,6 +22,19 @@ class AttributeSelector extends ScriptedCss.Nodes.Base
   constructor: (object) ->
     @init(object, "attribute_selector")
 
-  stringify: -> ""
+  match: (element) ->
+    value = element.getAttribute(@attribute)
+
+    switch @operator
+      when null then _.isString(value)
+      when "="  then value == @value
+      when "~=" then _.include((value || "").split(" "), @value)
+      when "^=" then (value || "").match(new RegExp("^" + @value))
+      when "$=" then (value || "").match(new RegExp(@value + "$"))
+      when "*=" then (value || "").match(new RegExp(@value))
+      when "|=" then _.all(_.zip(@value.split("-"), (value || "").split("-")).slice(0, @value.split("-").length), (v) -> v[0] == v[1])
+
+  stringify: ->
+    "[#{@attribute}#{@operator}#{@value}]"
 
 window.ScriptedCss.Nodes.AttributeSelector = AttributeSelector if window?
