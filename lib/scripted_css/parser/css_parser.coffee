@@ -47,8 +47,7 @@ source = dslPeg(
   stylesheet: [
     'charset:(CHARSET_SYM STRING ";")? (S / CDO / CDC)*'
     'imports:(import (CDO S* / CDC S*)*)*'
-    'fonts:(font_face)* S*'
-    'rules:((ruleset / media / page / keyframes) (CDO S* / CDC S*)*)*'
+    'rules:((ruleset / media / page / keyframes / font_face) (CDO S* / CDC S*)*)*'
     ->
       importsConverted = (i[0] for i in imports)
       rulesConverted = (r[0] for r in rules)
@@ -56,7 +55,6 @@ source = dslPeg(
       type:    "stylesheet"
       charset: if charset != "" then charset[1] else null
       imports: importsConverted
-      fonts:   fonts
       rules:   rulesConverted
   ]
 

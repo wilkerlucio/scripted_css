@@ -29,13 +29,13 @@ test "parsing imports", ->
 
 test "parsing font face", ->
   css = parse("@font-face { font-family: 'scarface'; src: url(scarface-webfont.eot); src: local('scarface'), url('scarface-webfont.ttf') format('truetype'); }")
-  same(css.fonts[0].declarations[0].property, 'font-family')
-  contains(css.fonts[0].declarations[0].expression[0], value: 'scarface')
-  contains(css.fonts[0].declarations[1].expression[0], type: 'uri', value: 'scarface-webfont.eot')
-  contains(css.fonts[0].declarations[2].expression[0], type: 'function', name: 'local', params: [type: "string", value: "scarface"])
-  contains(css.fonts[0].declarations[2].expression[1], value: ',')
-  contains(css.fonts[0].declarations[2].expression[2], type: 'uri', value: 'scarface-webfont.ttf')
-  contains(css.fonts[0].declarations[2].expression[3], type: 'function', name: 'format', params: [type: "string", value: "truetype"])
+  same(css.rules[0].declarations[0].property, 'font-family')
+  contains(css.rules[0].declarations[0].expression[0], value: 'scarface')
+  contains(css.rules[0].declarations[1].expression[0], type: 'uri', value: 'scarface-webfont.eot')
+  contains(css.rules[0].declarations[2].expression[0], type: 'function', name: 'local', params: [type: "string", value: "scarface"])
+  contains(css.rules[0].declarations[2].expression[1], value: ',')
+  contains(css.rules[0].declarations[2].expression[2], type: 'uri', value: 'scarface-webfont.ttf')
+  contains(css.rules[0].declarations[2].expression[3], type: 'function', name: 'format', params: [type: "string", value: "truetype"])
 
 test "parsing simple selector", ->
   css = parse("body {}")

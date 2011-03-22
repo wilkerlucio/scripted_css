@@ -27,13 +27,12 @@ class Stylesheet extends ScriptedCss.Nodes.Base
     ScriptedCss.trigger("stylesheetInitialized", this)
 
     @imports = _.map @imports, _.bind(ScriptedCss.Nodes.factory, this)
-    @fonts   = _.map @fonts,   _.bind(ScriptedCss.Nodes.factory, this)
     @rules   = _.map @rules,   _.bind(ScriptedCss.Nodes.factory, this)
 
     ScriptedCss.trigger("stylesheetReady", this)
 
   stringify: ->
-    ["@charset '#{@charset}';"].concat(@stringifyArray(@fonts)).concat(@stringifyArray(@rules)).join("\n")
+    ["@charset '#{@charset}';"].concat(@stringifyArray(@rules)).join("\n")
 
 # rewrite to each rule as a single selector
 Stylesheet.SelectorExpander =

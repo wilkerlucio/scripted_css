@@ -33,11 +33,10 @@ test "stringify", ->
     type: 'stylesheet'
     charset: 'utf-8'
     imports: [dummy('import')]
-    fonts: [dummy('font1')]
     rules: [dummy("rule1"), dummy("rule2")]
   )
 
-  same(s.stringify(), "@charset 'utf-8';\nfont1\nrule1\nrule2")
+  same(s.stringify(), "@charset 'utf-8';\nrule1\nrule2")
 
 test "expanding selectors", ->
   stylesheet =
