@@ -20,8 +20,11 @@
 
 class Media extends ScriptedCss.Nodes.Base
   constructor: (object) ->
-    @init(object, "media")
+    @init(object, "media_rule")
 
-  stringify: -> ""
+    @rules = _.map @rules, _.bind(@factory, this)
+
+  stringify: ->
+    "@media #{@media.join(', ')} {\n#{@stringifyArray(@rules, "\n")}\n}"
 
 window.ScriptedCss.Nodes.Media = Media if window?

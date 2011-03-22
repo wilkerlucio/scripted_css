@@ -21,7 +21,14 @@
 module("Media Node Test")
 
 test "initialize", ->
-  ok(false)
+  m = new ScriptedCss.Nodes.Media(type: "media_rule", media: ["screen"], rules: [{type: "plain"}])
+
+  same(m.type, "media_rule")
+  same(m.media, ["screen"])
+  ok(m.rules[0].plain)
 
 test "stringify", ->
-  ok(false)
+  gm = (media) -> new ScriptedCss.Nodes.Media(type: "media_rule", media: media, rules: [{type: "plain", stringify: -> "rules"}])
+
+  same(gm(["screen"]).stringify(), "@media screen {\nrules\n}")
+  same(gm(["screen", "print"]).stringify(), "@media screen, print {\nrules\n}")
