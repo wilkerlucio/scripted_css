@@ -22,6 +22,9 @@ class FontFace extends ScriptedCss.Nodes.Base
   constructor: (object) ->
     @init(object, "font_face")
 
-  stringify: -> ""
+    @declarations = _.map @declarations, _.bind(@factory, this)
+
+  stringify: ->
+    "@font-face {\n#{@stringifyArray(@declarations, "\n")}\n}"
 
 window.ScriptedCss.Nodes.FontFace = FontFace if window?

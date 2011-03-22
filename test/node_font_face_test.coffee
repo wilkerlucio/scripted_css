@@ -21,7 +21,21 @@
 module("FontFace Node Test")
 
 test "initialize", ->
-  ok(false)
+  f = new ScriptedCss.Nodes.FontFace(
+    type: "font_face"
+    declarations: [{type: "plain"}]
+  )
+
+  same(f.type, "font_face")
+  ok(f.declarations[0].plain)
 
 test "stringify", ->
-  ok(false)
+  f = new ScriptedCss.Nodes.FontFace(
+    type: "font_face"
+    declarations: [
+      {type: "plain", stringify: -> "decl"}
+      {type: "plain", stringify: -> "decl2"}
+    ]
+  )
+
+  same(f.stringify(), "@font-face {\ndecl\ndecl2\n}")
