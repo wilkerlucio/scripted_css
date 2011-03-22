@@ -22,6 +22,6 @@ class String extends ScriptedCss.Nodes.Base
   constructor: (object) ->
     @init(object, "string")
 
-  stringify -> ""
+  stringify: -> ""
 
 window.ScriptedCss.Nodes.String = String if window?

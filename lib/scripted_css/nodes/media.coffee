@@ -22,6 +22,6 @@ class Media extends ScriptedCss.Nodes.Base
   constructor: (object) ->
     @init(object, "media")
 
-  stringify -> ""
+  stringify: -> ""
 
 window.ScriptedCss.Nodes.Media = Media if window?

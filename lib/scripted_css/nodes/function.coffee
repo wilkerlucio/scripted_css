@@ -22,6 +22,6 @@ class Function extends ScriptedCss.Nodes.Base
   constructor: (object) ->
     @init(object, "function")
 
-  stringify -> ""
+  stringify: -> ""
 
 window.ScriptedCss.Nodes.Function = Function if window?

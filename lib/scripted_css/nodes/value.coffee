@@ -22,6 +22,6 @@ class Value extends ScriptedCss.Nodes.Base
   constructor: (object) ->
     @init(object, "value")
 
-  stringify -> ""
+  stringify: -> ""
 
 window.ScriptedCss.Nodes.Value = Value if window?

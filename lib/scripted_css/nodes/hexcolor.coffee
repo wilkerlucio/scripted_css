@@ -22,6 +22,6 @@ class Hexcolor extends ScriptedCss.Nodes.Base
   constructor: (object) ->
     @init(object, "hexcolor")
 
-  stringify -> ""
+  stringify: -> ""
 
 window.ScriptedCss.Nodes.Hexcolor = Hexcolor if window?

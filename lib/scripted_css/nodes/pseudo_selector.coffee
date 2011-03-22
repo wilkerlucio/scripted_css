@@ -22,6 +22,6 @@ class PseudoSelector extends ScriptedCss.Nodes.Base
   constructor: (object) ->
     @init(object, "pseudo_selector")
 
-  stringify -> ""
+  stringify: -> ""
 
 window.ScriptedCss.Nodes.PseudoSelector = PseudoSelector if window?

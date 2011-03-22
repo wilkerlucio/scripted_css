@@ -22,6 +22,6 @@ class Declaration extends ScriptedCss.Nodes.Base
   constructor: (object) ->
     @init(object, "declaration")
 
-  stringify -> ""
+  stringify: -> ""
 
 window.ScriptedCss.Nodes.Declaration = Declaration if window?

@@ -22,6 +22,6 @@ class Operator extends ScriptedCss.Nodes.Base
   constructor: (object) ->
     @init(object, "operator")
 
-  stringify -> ""
+  stringify: -> ""
 
 window.ScriptedCss.Nodes.Operator = Operator if window?

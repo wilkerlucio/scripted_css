@@ -22,6 +22,6 @@ class Page extends ScriptedCss.Nodes.Base
   constructor: (object) ->
     @init(object, "page")
 
-  stringify -> ""
+  stringify: -> ""
 
 window.ScriptedCss.Nodes.Page = Page if window?

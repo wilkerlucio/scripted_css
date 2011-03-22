@@ -22,6 +22,6 @@ class FontFace extends ScriptedCss.Nodes.Base
   constructor: (object) ->
     @init(object, "font_face")
 
-  stringify -> ""
+  stringify: -> ""
 
 window.ScriptedCss.Nodes.FontFace = FontFace if window?

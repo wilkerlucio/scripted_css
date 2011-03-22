@@ -22,6 +22,6 @@ class AttributeSelector extends ScriptedCss.Nodes.Base
   constructor: (object) ->
     @init(object, "attribute_selector")
 
-  stringify -> ""
+  stringify: -> ""
 
 window.ScriptedCss.Nodes.AttributeSelector = AttributeSelector if window?

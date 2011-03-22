@@ -20,7 +20,8 @@
 
 class DeclarationSet extends ScriptedCss.Nodes.Base
   constructor: (object) ->
-    @type = "declaration_set"
-    @init(object)
+    @init(object, "declaration_set")
+
+  stringify: -> ""
 
 window.ScriptedCss.Nodes.DeclarationSet = DeclarationSet if window?
