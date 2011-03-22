@@ -94,12 +94,12 @@ test "parsing attribute selectors", ->
 test "parsing simple metaselector", ->
   css = parse("body:before {}")
   same(css.rules[0].selectors[0].element, "body")
-  contains(css.rules[0].selectors[0].qualifiers[0], type: "pseudo_selector", value: "before")
+  contains(css.rules[0].selectors[0].qualifiers[0], type: "pseudo_selector", symbol: ":", value: "before")
 
 test "parsing metaselector function", ->
   css = parse("body::slot(a) {}")
   same(css.rules[0].selectors[0].element, "body")
-  same(css.rules[0].selectors[0].qualifiers[0], type: "pseudo_selector", value: {type: "function", name: "slot", params: [{type: "ident", value: "a"}]})
+  same(css.rules[0].selectors[0].qualifiers[0], type: "pseudo_selector", symbol: "::", value: {type: "function", name: "slot", params: [{type: "ident", value: "a"}]})
 
 test "parsing meta selector without tag", ->
   css = parse(":focus {}")

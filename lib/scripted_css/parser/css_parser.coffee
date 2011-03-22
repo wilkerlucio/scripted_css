@@ -235,7 +235,7 @@ source = dslPeg(
   ]
 
   pseudo: [
-    '":" ":"?'
+    'sym:(":" ":"?)'
     'value:('
       '"not" S* "(" selector:simple_selector S* ")"', ->
         type:   "function"
@@ -253,6 +253,7 @@ source = dslPeg(
       # same at the syntactic level).
 
       type:  "pseudo_selector",
+      symbol: sym.join('')
       value: value
   ]
 
