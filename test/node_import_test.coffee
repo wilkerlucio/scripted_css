@@ -21,7 +21,15 @@
 module("Import Node Test")
 
 test "initialize", ->
-  ok(false)
+  i = new ScriptedCss.Nodes.Import(type: "import_rule", href: "test.css", media: ["screen"])
+
+  same(i.type, "import_rule")
+  same(i.href, "test.css")
+  same(i.media, ["screen"])
 
 test "stringify", ->
-  ok(false)
+  gi = (medias = []) -> new ScriptedCss.Nodes.Import(type: "import_rule", href: "test.css", media: medias)
+
+  same(gi().stringify(), "@import 'test.css';")
+  same(gi(["screen"]).stringify(), "@import 'test.css' screen;")
+  same(gi(["screen", "print"]).stringify(), "@import 'test.css' screen, print;")

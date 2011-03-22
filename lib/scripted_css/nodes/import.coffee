@@ -20,8 +20,10 @@
 
 class Import extends ScriptedCss.Nodes.Base
   constructor: (object) ->
-    @init(object, "import")
+    @init(object, "import_rule")
 
-  stringify -> ""
+  stringify: ->
+    medias = if @media.length > 0 then " " + @media.join(", ") else ""
+    "@import '#{@href}'#{medias};"
 
 window.ScriptedCss.Nodes.Import = Import if window?
