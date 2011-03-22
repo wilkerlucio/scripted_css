@@ -89,7 +89,7 @@ task 'build', 'build scripted css', (options) ->
   ast = pro.ast_mangle(ast)
   ast = pro.ast_squeeze(ast)
 
-  fs.writeFileSync "dist/scripted_css.min.js", pro.gen_code(ast, ascii_only: true)
+  fs.writeFileSync "dist/scripted_css.min.js", pro.gen_code(ast, beautify: false, ascii_only: true)
   console.log "Compiled ScriptedCss minified to dist/scripted_css.min.js"
 
 task 'dev:compile', 'compile files for development', (options) ->
