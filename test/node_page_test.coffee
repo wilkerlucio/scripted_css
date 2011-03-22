@@ -21,7 +21,24 @@
 module("Page Node Test")
 
 test "initialize", ->
-  ok(false)
+  p = new ScriptedCss.Nodes.Page(
+    type:         "page_rule"
+    qualifier:    "left"
+    declarations: [{type: "plain"}]
+  )
+
+  same(p.type, "page_rule")
+  same(p.qualifier, "left")
+  ok(p.declarations[0].plain)
 
 test "stringify", ->
-  ok(false)
+  p = new ScriptedCss.Nodes.Page(
+    type:         "page_rule"
+    qualifier:    "left"
+    declarations: [
+      {type: "plain", stringify: -> "decl"}
+      {type: "plain", stringify: -> "decl2"}
+    ]
+  )
+
+  same(p.stringify(), "@page :left {\ndecl\ndecl2\n}")

@@ -20,8 +20,11 @@
 
 class Page extends ScriptedCss.Nodes.Base
   constructor: (object) ->
-    @init(object, "page")
+    @init(object, "page_rule")
 
-  stringify: -> ""
+    @declarations = _.map @declarations, _.bind(@factory, this)
+
+  stringify: ->
+    "@page :#{@qualifier} {\n#{@stringifyArray(@declarations, "\n")}\n}"
 
 window.ScriptedCss.Nodes.Page = Page if window?
