@@ -21,7 +21,21 @@
 module("Keyframes Node Test")
 
 test "initialize", ->
-  ok(false)
+  k = new ScriptedCss.Nodes.Keyframes(
+    type: "keyframes"
+    name: "anim"
+    blocks: [{type: "plain"}]
+  )
+
+  same(k.type, "keyframes")
+  same(k.name, "anim")
+  ok(k.blocks[0].plain)
 
 test "stringify", ->
-  ok(false)
+  k = new ScriptedCss.Nodes.Keyframes(
+    type: "keyframes"
+    name: "anim"
+    blocks: [{type: "plain", stringify: -> "block"}]
+  )
+
+  same(k.stringify(), "@keyframes 'anim' {\nblock\n}")
