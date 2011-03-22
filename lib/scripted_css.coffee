@@ -18,63 +18,63 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-(($) ->
-  window.ScriptedCss =
-    autoStart: true
+$ = jQuery
 
-    start: ->
-      # @documentStyle = new ScriptedCss.Nodes.Document([])
+window.ScriptedCss =
+  autoStart: true
 
-      # return unless ScriptedCss.autoStart
+  start: ->
+    # @documentStyle = new ScriptedCss.Nodes.Document([])
 
-      # originalDisplay = $(document.body).css("display")
-      # $(document.body).css(display: "none")
+    # return unless ScriptedCss.autoStart
 
-      # @loadStyles ->
-      #   $(document.body).css(display: originalDisplay)
+    # originalDisplay = $(document.body).css("display")
+    # $(document.body).css(display: "none")
 
-    addStyle: (styleText) ->
-      css = document.createElement("style")
-      css.type = "text/css"
+    # @loadStyles ->
+    #   $(document.body).css(display: originalDisplay)
 
-      if css.styleSheet
-        css.styleSheet.cssText = styleText
-      else
-        css.innerHTML = styleText
+  addStyle: (styleText) ->
+    css = document.createElement("style")
+    css.type = "text/css"
 
-      $("head").append(css)
+    if css.styleSheet
+      css.styleSheet.cssText = styleText
+    else
+      css.innerHTML = styleText
 
-    loadStyles: (callback) ->
-      self = this
+    $("head").append(css)
 
-      $("style[type='text/scripted-css']").each ->
-        source = this.innerHTML
-        css    = ScriptedCss.CssParser.parse(source)
+  loadStyles: (callback) ->
+    self = this
 
-        ScriptedCss.trigger("scriptLoaded", css)
-        self.documentStyle.merge(css)
+    $("style[type='text/scripted-css']").each ->
+      source = this.innerHTML
+      css    = ScriptedCss.CssParser.parse(source)
 
-        ScriptedCss.addStyle(css.string())
+      ScriptedCss.trigger("scriptLoaded", css)
+      self.documentStyle.merge(css)
 
-      ScriptedCss.trigger("cssReady", @documentStyle)
-      callback()
-      ScriptedCss.trigger("afterCallback", @documentStyle)
+      ScriptedCss.addStyle(css.string())
 
-    # observable methods
-    bind: (event, callback) ->
-      @eventList ?= {}
-      @eventList[event] ?= []
-      @eventList[event].push(callback)
+    ScriptedCss.trigger("cssReady", @documentStyle)
+    callback()
+    ScriptedCss.trigger("afterCallback", @documentStyle)
 
-    trigger: (event, args...) ->
-      callbacks = @eventList?[event] || []
-      callback.apply(this, args) for callback in callbacks
+  # observable methods
+  bind: (event, callback) ->
+    @eventList ?= {}
+    @eventList[event] ?= []
+    @eventList[event].push(callback)
 
-    # helpers
-    parseAttributes: (nodes, rule, customGrammar = {}) ->
-      grammar = _.extend(customGrammar, ScriptedCss.Information.attributeGrammar)
+  trigger: (event, args...) ->
+    callbacks = @eventList?[event] || []
+    callback.apply(this, args) for callback in callbacks
 
-      ScriptedCss.AttributesParser.parseNodes(nodes, rule, grammar)
+  # helpers
+  parseAttributes: (nodes, rule, customGrammar = {}) ->
+    grammar = _.extend(customGrammar, ScriptedCss.Information.attributeGrammar)
 
-  $ -> ScriptedCss.start()
-)(jQuery)
+    ScriptedCss.AttributesParser.parseNodes(nodes, rule, grammar)
+
+$ -> ScriptedCss.start()
