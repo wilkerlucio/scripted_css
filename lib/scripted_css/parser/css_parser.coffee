@@ -21,7 +21,7 @@
 # mini dsl for PEG.js
 dslPeg = (source) ->
   parseValue = (item) -> if _.isFunction(item) then "{ #{extractFunction(item)} }" else item
-  extractFunction = (fn) -> fn.toString().match(/^function\s*\(\)\s*\{\s*([\s\S]*)\n\s*\}/)[1]
+  extractFunction = (fn) -> fn.toString().match(/^function\s*\(\)\s*\{\s*([\s\S]*)\n?\s*\}/)[1]
 
   rules = for rule, value of source
     if _.isArray(value)
