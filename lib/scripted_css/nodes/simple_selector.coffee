@@ -22,7 +22,7 @@ class SimpleSelector extends ScriptedCss.Nodes.Base
   constructor: (object) ->
     @init(object, "simple_selector")
 
-    @qualifiers = _.map @qualifiers, @factory.bind(this)
+    @qualifiers = _.map @qualifiers, _.bind(@factory, this)
 
   selections: ->
     _.reduce @qualifiers, ((memo, qualifier) ->

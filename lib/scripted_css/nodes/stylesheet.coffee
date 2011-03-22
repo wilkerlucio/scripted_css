@@ -26,9 +26,9 @@ class Stylesheet extends ScriptedCss.Nodes.Base
 
     ScriptedCss.trigger("stylesheetInitialized", this)
 
-    @imports = _.map @imports, ScriptedCss.Nodes.factory.bind(this)
-    @fonts   = _.map @fonts,   ScriptedCss.Nodes.factory.bind(this)
-    @rules   = _.map @rules,   ScriptedCss.Nodes.factory.bind(this)
+    @imports = _.map @imports, _.bind(ScriptedCss.Nodes.factory, this)
+    @fonts   = _.map @fonts,   _.bind(ScriptedCss.Nodes.factory, this)
+    @rules   = _.map @rules,   _.bind(ScriptedCss.Nodes.factory, this)
 
     ScriptedCss.trigger("stylesheetReady", this)
 
