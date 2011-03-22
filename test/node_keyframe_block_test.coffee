@@ -21,7 +21,24 @@
 module("KeyframeBlock Node Test")
 
 test "initialize", ->
-  ok(false)
+  b = new ScriptedCss.Nodes.KeyframeBlock(
+    type: "keyframe_block"
+    selectors: ["0%", "10%"]
+    declarations: [{type: "plain"}]
+  )
+
+  same(b.type, "keyframe_block")
+  same(b.selectors, ["0%", "10%"])
+  ok(b.declarations[0].plain)
 
 test "stringify", ->
-  ok(false)
+  b = new ScriptedCss.Nodes.KeyframeBlock(
+    type: "keyframe_block"
+    selectors: ["0%", "10%"]
+    declarations: [
+      {type: "plain", stringify: -> "decl"}
+      {type: "plain", stringify: -> "decl2"}
+    ]
+  )
+
+  same(b.stringify(), "0%, 10% {\ndecl\ndecl2\n}")

@@ -22,6 +22,9 @@ class KeyframeBlock extends ScriptedCss.Nodes.Base
   constructor: (object) ->
     @init(object, "keyframe_block")
 
-  stringify: -> ""
+    @declarations = _.map @declarations, _.bind(@factory, this)
+
+  stringify: ->
+    "#{@selectors.join(", ")} {\n#{@stringifyArray(@declarations, "\n")}\n}"
 
 window.ScriptedCss.Nodes.KeyframeBlock = KeyframeBlock if window?
