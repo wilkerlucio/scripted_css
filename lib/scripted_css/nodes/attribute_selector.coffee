@@ -29,10 +29,13 @@ class AttributeSelector extends ScriptedCss.Nodes.Base
       when null then _.isString(value)
       when "="  then value == @value
       when "~=" then _.include((value || "").split(" "), @value)
-      when "^=" then (value || "").match(new RegExp("^" + @value))
-      when "$=" then (value || "").match(new RegExp(@value + "$"))
-      when "*=" then (value || "").match(new RegExp(@value))
+      when "^=" then (value || "").match(new RegExp("^" + @escapeExp(@value)))
+      when "$=" then (value || "").match(new RegExp(@escapeExp(@value) + "$"))
+      when "*=" then (value || "").match(new RegExp(@escapeExp(@value)))
       when "|=" then _.all(_.zip(@value.split("-"), (value || "").split("-")).slice(0, @value.split("-").length), (v) -> v[0] == v[1])
+
+  escapeExp: (str) ->
+    window.String(str).replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1')
 
   stringify: ->
     "[#{@attribute}#{@operator}#{@value}]"
