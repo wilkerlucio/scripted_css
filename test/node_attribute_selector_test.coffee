@@ -85,6 +85,7 @@ test "matching attribute hypen separated starting with", ->
   ok(a.match($("<div />", type: "en")[0]))
   ok(a.match($("<div />", type: "en-US")[0]))
   ok(!a.match($("<div />", type: "US-en")[0]))
+  ok(!a.match($("<div />", type: "ens-US")[0]))
   ok(!a.match($("<div />")[0]))
 
   a = ga("type", "|=", "en-US")
