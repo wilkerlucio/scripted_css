@@ -20,8 +20,13 @@
 
 module("Identifier Node Test")
 
+g = (v) -> new ScriptedCss.Nodes.Identifier(type: "ident", value: v)
+
 test "initialize", ->
-  ok(false)
+  i = g("blank")
+
+  same(i.type, "ident")
+  same(i.value, "blank")
 
 test "stringify", ->
-  ok(false)
+  same(g("blank").stringify(), "blank")

@@ -20,8 +20,8 @@
 
 class Identifier extends ScriptedCss.Nodes.Base
   constructor: (object) ->
-    @init(object, "identifier")
+    @init(object, "ident")
 
-  stringify: -> ""
+  stringify: -> @value
 
 window.ScriptedCss.Nodes.Identifier = Identifier if window?
