@@ -24,6 +24,7 @@ class Base
     _.extend(this, object)
 
   checkType: (currentType, expectedType) ->
+    return unless expectedType
     throw new TypeError("invalid type #{currentType}, expecting #{expectedType}") unless currentType == expectedType
 
   factory: (object) -> ScriptedCss.Nodes.factory.call(this, object)
