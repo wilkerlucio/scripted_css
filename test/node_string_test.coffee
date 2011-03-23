@@ -20,8 +20,12 @@
 
 module("String Node Test")
 
+g = (v) -> new ScriptedCss.Nodes.String(type: "string", value: v)
+
 test "initialize", ->
-  ok(false)
+  s = g("hello")
+  same(s.type, "string")
+  same(s.value, "hello")
 
 test "stringify", ->
-  ok(false)
+  same(g("hel\"lo").stringify(), '"hel\\"lo"')
