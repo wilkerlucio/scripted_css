@@ -131,9 +131,9 @@ source = dslPeg(
   ]
 
   operator: [
-    '  "/" S*', -> "/"
-    '/ "," S*', -> ","
-    '/ "=" S*', -> "="
+    '  "/" S*', -> type: "operator", value: "/"
+    '/ "," S*', -> type: "operator", value: ","
+    '/ "=" S*', -> type: "operator", value: "="
   ]
 
   combinator: [
@@ -268,14 +268,7 @@ source = dslPeg(
   prio: [ 'IMPORTANT_SYM S*' ]
 
   expr: [
-    'head:term tail:(operator? term)*', ->
-      result = [head]
-      # result.concat(_.compact(_.pluck(tail, 0)))
-      for t in tail
-        result.push(type: "operator", value: t[0]) if t[0]
-        result.push(t[1])
-
-      result
+    'items:(term / operator)*', -> items
   ]
 
   term: [
