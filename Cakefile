@@ -36,6 +36,15 @@ dependencies = [
     ]
   }
   {
+    path: "vendor/functional.min.js"
+    info: [
+      "Includes Functional"
+      "http://osteele.com/sources/javascript/functional/"
+      "Copyright 2007 by Oliver Steele."
+      "Released under the MIT License."
+    ]
+  }
+  {
     path: "vendor/underscore-min.js"
     info: [
       "Includes Underscore.js"
