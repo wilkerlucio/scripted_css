@@ -20,8 +20,13 @@
 
 module("Operator Node Test")
 
+go = (v) -> new ScriptedCss.Nodes.Operator(type: "operator", value: v)
+
 test "initialize", ->
-  ok(false)
+  o = go("+")
+
+  same(o.type, "operator")
+  same(o.value, "+")
 
 test "stringify", ->
-  ok(false)
+  same(go("+").stringify(), "+")
