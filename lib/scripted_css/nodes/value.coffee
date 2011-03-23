@@ -21,7 +21,8 @@
 class Value extends ScriptedCss.Nodes.Base
   constructor: (object) ->
     @init(object, "value")
+    @unit = @value.match(/[^\d]+$/)?[0] || ""
 
-  stringify: -> ""
+  stringify: -> @value
 
 window.ScriptedCss.Nodes.Value = Value if window?

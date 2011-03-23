@@ -20,8 +20,24 @@
 
 module("Value Node Test")
 
+gv = (val) -> new ScriptedCss.Nodes.Value(type: "value", value: val)
+
 test "initialize", ->
-  ok(false)
+  v = gv("1")
+
+  same(v.type, "value")
+  same(v.value, "1")
+
+test "extracting unit", ->
+  same(gv("1px").unit,   "px")
+  same(gv("3em").unit,   "em")
+  same(gv("3s").unit,    "s")
+  same(gv("+3%").unit,   "%")
+  same(gv("-3%").unit,   "%")
+  same(gv("4.5px").unit, "px")
+  same(gv("6").unit,     "")
 
 test "stringify", ->
-  ok(false)
+  v = gv("2em")
+
+  same(v.stringify(), "2em")
