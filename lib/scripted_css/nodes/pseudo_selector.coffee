@@ -19,9 +19,43 @@
 # THE SOFTWARE.
 
 class PseudoSelector extends ScriptedCss.Nodes.Base
+  @pseudos = {}
+  @register = (id, matcher) -> @pseudos[id] = matcher
+
   constructor: (object) ->
     @init(object, "pseudo_selector")
 
-  stringify: -> ""
+    if _.isString(@value)
+      @value = new ScriptedCss.Nodes.Identifier(type: "ident", value: @value, name: @value)
+    else
+      @value = @factory(@value)
+
+    @id = @symbol + @value.name
+
+  match: (element) ->
+    matcher = PseudoSelector.pseudos[@id]
+    if matcher then matcher(element, @value) else false
+
+  stringify: -> @symbol + @value.stringify()
+
+  @register ":root",             (element) -> !element.parentNode
+  @register ":nth-child",        (element) -> false
+  @register ":nth-last-child",   (element) -> false
+  @register ":nth-of-type",      (element) -> false
+  @register ":nth-last-of-type", (element) -> false
+  @register ":first-child",      (element) -> !element.previousSibling
+  @register ":last-child",       (element) -> !element.nextSibling
+  @register ":first-of-type",    (element) -> F.every(".tagName != '#{element.tagName}'", F.collectUntilLeaf(element, 'previousSibling'))
+  @register ":last-of-type",     (element) -> F.every(".tagName != '#{element.tagName}'", F.collectUntilLeaf(element, 'nextSibling'))
+  @register ":only-child",       (element) -> !element.previousSibling && !element.nextSibling
+  @register ":only-of-type",     (element) -> F.every(".tagName != '#{element.tagName}'", F.collectUntilLeaf(element, "previousSibling").concat(F.collectUntilLeaf(element, "nextSibling")))
+  @register ":empty",            (element) -> element.childNodes.length == 0
+  @register ":enabled",          (element) -> !_.isString(element.getAttribute("disabled"))
+  @register ":disabled",         (element) -> _.isString(element.getAttribute("disabled"))
+  @register ":checked",          (element) -> _.isString(element.getAttribute("checked"))
+  @register ":not",              (element, value) ->
+    throw new TypeError(":not pseudo selectors needs to be a function") unless value.type == "function"
+    selector = ScriptedCss.Nodes.factory(value.params)
+    !selector.match(element)
 
 window.ScriptedCss.Nodes.PseudoSelector = PseudoSelector if window?
