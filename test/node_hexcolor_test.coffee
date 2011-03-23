@@ -20,8 +20,13 @@
 
 module("Hexcolor Node Test")
 
+g = (v) -> new ScriptedCss.Nodes.Hexcolor(type: "hexcolor", value: v)
+
 test "initialize", ->
-  ok(false)
+  h = g("#000")
+
+  same(h.type, "hexcolor")
+  same(h.value, "#000")
 
 test "stringify", ->
-  ok(false)
+  same(g("#000").stringify(), "#000")
