@@ -30,6 +30,26 @@ dependencies = [
   "vendor/underscore-min.js"
 ]
 
+licence = "# Copyright (c) 2011 Wilker Lúcio\n
+#\n
+# Permission is hereby granted, free of charge, to any person obtaining a copy\n
+# of this software and associated documentation files (the \"Software\"), to deal\n
+# in the Software without restriction, including without limitation the rights\n
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n
+# copies of the Software, and to permit persons to whom the Software is\n
+# furnished to do so, subject to the following conditions:\n
+#\n
+# The above copyright notice and this permission notice shall be included in\n
+# all copies or substantial portions of the Software.\n
+#\n
+# THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n
+# THE SOFTWARE.\n\n"
+
 scriptFiles = [
   "scripted_css.coffee"
   "scripted_css/parser/css_parser.coffee"
@@ -82,14 +102,16 @@ task 'build', 'build scripted css', (options) ->
 
   output = vendorSource + CoffeeScript.compile(source)
 
-  fs.writeFileSync "dist/scripted_css.js", output
+  fs.writeFileSync "dist/scripted_css.js", licence + output
   console.log "Compiled ScriptedCss to dist/scripted_css.js"
 
   ast = jsp.parse(output)
   ast = pro.ast_mangle(ast)
   ast = pro.ast_squeeze(ast)
 
-  fs.writeFileSync "dist/scripted_css.min.js", pro.gen_code(ast, beautify: false, ascii_only: true)
+  minified = pro.gen_code(ast, beautify: false, ascii_only: true)
+
+  fs.writeFileSync "dist/scripted_css.min.js", licence + minified
   console.log "Compiled ScriptedCss minified to dist/scripted_css.min.js"
 
 task 'dev:compile', 'compile files for development', (options) ->
