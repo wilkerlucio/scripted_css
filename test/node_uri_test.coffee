@@ -20,8 +20,13 @@
 
 module("Uri Node Test")
 
+g = (v) -> new ScriptedCss.Nodes.Uri(type: "uri", value: v)
+
 test "initialize", ->
-  ok(false)
+  u = g("image.png")
+
+  same(u.type, "uri")
+  same(u.value, "image.png")
 
 test "stringify", ->
-  ok(false)
+  same(g("image.png").stringify(), 'url("image.png")')

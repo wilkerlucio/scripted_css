@@ -22,6 +22,6 @@ class Uri extends ScriptedCss.Nodes.Base
   constructor: (object) ->
     @init(object, "uri")
 
-  stringify: -> ""
+  stringify: -> "url(#{JSON.stringify(@value)})"
 
 window.ScriptedCss.Nodes.Uri = Uri if window?
