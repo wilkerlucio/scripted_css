@@ -42,7 +42,7 @@ Nodes =
       when "operator"           then new Nodes.Operator(object)
       when "string"             then new Nodes.String(object)
       when "ident"              then new Nodes.Identifier(object)
-      when "hexcolor"           then new Nodes.HexColor(object)
+      when "hexcolor"           then new Nodes.Hexcolor(object)
       when "plain" # this one is just for test porpuses
         object.type = object.stubType if object.stubType
         object.plain = true
