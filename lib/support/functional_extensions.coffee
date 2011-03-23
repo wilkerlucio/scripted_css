@@ -22,24 +22,22 @@ Functional.collect = (fn, memo) ->
   fn = window.Function.toFunction(fn)
 
   callback = (value) ->
-    memo = fn.call(null, memo, value)
-    memo
+    callback.value = fn.call(null, callback.value, value)
 
-  callback.initial = memo
+  callback.value = memo
   callback
 
 Functional.collectUntil = (pred, fn, collector = null) ->
   fn = window.Function.toFunction(fn)
   pred = window.Function.toFunction(pred)
   collector ||= Functional.collect('x.concat([y])', [])
-  res = collector.initial
 
   (value) ->
     while(!pred.call(null, value))
-      res = collector.call(null, value)
+      collector.call(null, value)
       value = fn.call(null, value)
 
-    res
+    collector.value
 
 Functional.collectUntilLeaf = (obj, property, inclusive = false) ->
   p = Functional.pluck(property)
