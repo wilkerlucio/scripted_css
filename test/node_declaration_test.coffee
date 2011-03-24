@@ -20,8 +20,20 @@
 
 module("Declaration Node Test")
 
+g = (property, expression = [], important = false) ->
+  new ScriptedCss.Nodes.Declaration(type: "declaration", property: property, expression: expression, important: important)
+
 test "initialize", ->
-  ok(false)
+  d = g("a", [{type: "plain"}], true)
+
+  same(d.type, "declaration")
+  same(d.property, "a")
+  same(d.expression.type, "expression")
+  ok(d.expression.parent == d)
+  same(d.important, true)
 
 test "stringify", ->
-  ok(false)
+  d = g("a", [], true)
+  d.expression.stringify = -> "properties"
+
+  same(d.stringify(), "a: properties")
