@@ -40,8 +40,7 @@ class Selector extends ScriptedCss.Nodes.Base
           return element if @left.match(element.parentNode)
 
         when '+'
-          element = element.previousSibling
-          element = element.previousSibling until element.nodeType == 1 or !element
+          element = F.until(F.or('.nodeType == 1', F.not(F.I)), F.pluck("previousSibling"))(element.previousSibling)
           return element if @left.match(element)
 
         when '~'
