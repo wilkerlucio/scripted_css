@@ -24,6 +24,7 @@ class Rule extends ScriptedCss.Nodes.Base
 
     @selector     = @factory(@selector)
     @declarations = new ScriptedCss.Nodes.DeclarationSet(@declarations)
+    @declarations.parent = this
 
   stringify: -> "#{@selector.stringify()} {#{@declarations.stringify()}}"
 

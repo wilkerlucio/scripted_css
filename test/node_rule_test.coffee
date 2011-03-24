@@ -31,6 +31,7 @@ test "initialize values", ->
 
   ok(r.selector.plain)
   same(r.declarations.type, "declaration_set")
+  ok(r.declarations.parent == r)
 
 test "stringify", ->
   r = new ScriptedCss.Nodes.Rule(
