@@ -20,8 +20,30 @@
 
 module("DeclarationSet Node Test")
 
+g = (list) -> new ScriptedCss.Nodes.DeclarationSet(list)
+
 test "initialize", ->
-  ok(false)
+  ds = g([{type: "plain", property: "a"}])
+
+  same(ds.type, "declaration_set")
+  ok(ds.declarations[0].parent == ds)
+  ok(ds.declarations[0].plain)
+
+test "generate attribute hash", ->
+  ds = g([
+    {type: "plain", property: "a", stringify: -> "0"}
+    {type: "plain", property: "a", stringify: -> "10px"}
+    {type: "plain", property: "b", stringify: -> "left"}
+  ])
+
+  same(ds.hash["a"].stringify(), "10px")
+  same(ds.hash["b"].stringify(), "left")
 
 test "stringify", ->
-  ok(false)
+  ds = g([
+    {type: "plain", property: "a", stringify: -> "a: 0"}
+    {type: "plain", property: "a", stringify: -> "a: 10px"}
+    {type: "plain", property: "b", stringify: -> "b: left"}
+  ])
+
+  same(ds.stringify(), "a: 0; a: 10px; b: left")

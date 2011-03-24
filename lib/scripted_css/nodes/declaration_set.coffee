@@ -19,10 +19,14 @@
 # THE SOFTWARE.
 
 class DeclarationSet extends ScriptedCss.Nodes.Base
-  constructor: (object) ->
+  constructor: (declarations) ->
     @type = "declaration_set"
-    @init(object)
+    @hash = {}
+    @declarations = F.map(F.compose(@index.bind(this), @factory.bind(this)), declarations)
 
-  stringify: -> ""
+  index: (declaration) ->
+    @hash[declaration.property] = declaration
+
+  stringify: -> @stringifyArray(@declarations).join("; ")
 
 window.ScriptedCss.Nodes.DeclarationSet = DeclarationSet if window?
