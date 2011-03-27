@@ -93,6 +93,7 @@ scriptFiles = [
   "scripted_css.coffee"
   "support/functional_extensions.coffee"
   "scripted_css/parser/css_parser.coffee"
+  "scripted_css/parser/expression_parser.coffee"
   "scripted_css/nodes.coffee"
   "scripted_css/nodes/base.coffee"
   "scripted_css/nodes/stylesheet.coffee"
