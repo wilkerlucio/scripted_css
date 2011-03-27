@@ -19,9 +19,10 @@
 # THE SOFTWARE.
 
 class Expression extends ScriptedCss.Nodes.Base
-  constructor: (object) ->
-    @init(object, "expression")
+  constructor: (values) ->
+    @type = "expression"
+    @values = F.map(@factory.bind(this), values)
 
-  stringify: -> ""
+  stringify: -> @stringifyArray(@values).join(" ")
 
 window.ScriptedCss.Nodes.Expression = Expression if window?

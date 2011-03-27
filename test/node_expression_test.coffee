@@ -20,8 +20,15 @@
 
 module("Expression Node Test")
 
+g = (values) -> new ScriptedCss.Nodes.Expression(values)
+
 test "initialize", ->
-  ok(false)
+  e = g([{type: "plain"}])
+
+  same(e.type, "expression")
+  ok(e.values[0].plain)
 
 test "stringify", ->
-  ok(false)
+  e = g([{type: "plain", stringify: -> "a"}, {type: "plain", stringify: -> "b"}])
+
+  same(e.stringify(), "a b")
