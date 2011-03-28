@@ -19,6 +19,48 @@
 # THE SOFTWARE.
 
 class PseudoSelector extends ScriptedCss.Nodes.Base
+  @parseNth = (fn) ->
+    str = fn.params.stringify().replace(/\s+/g, "")
+    pos = {slice: 0, index: 0}
+
+    if match = str.match(/^([+-]?\d+)?n([+-]\d+)?$/)
+      pos.slice = parseInt(match[1]) || 1
+      pos.index = parseInt(match[2]) || 0
+      return pos
+
+    if match = str.match(/^([+-])n([+-]\d+)?$/)
+      pos.slice = parseInt(match[1] + "1")
+      pos.index = parseInt(match[2]) || 0
+      return pos
+
+    if match = str.match(/^[+-]?\d+$/)
+      pos.index = parseInt(match[0])
+      return pos
+
+    if str == "odd"
+      pos.slice = 2
+      pos.index = 1
+      return pos
+
+    if str == "even"
+      pos.slice = 2
+      pos.index = 0
+      return pos
+
+    throw new TypeError("Can't parse #{str}")
+
+  @checkNth = (distance, slice, index) ->
+    if slice == 0
+      return distance == index
+
+    if slice > 0
+      distance = distance % slice
+      distance = distance - slice if index < 0
+      return distance == index
+
+    if slice < 0
+      return distance < index
+
   @pseudos = {}
   @register = (id, matcher) -> @pseudos[id] = matcher
 
@@ -39,10 +81,34 @@ class PseudoSelector extends ScriptedCss.Nodes.Base
   stringify: -> @symbol + @value.stringify()
 
   @register ":root",             (element) -> !element.parentNode
-  @register ":nth-child",        (element) -> false
-  @register ":nth-last-child",   (element) -> false
-  @register ":nth-of-type",      (element) -> false
-  @register ":nth-last-of-type", (element) -> false
+  @register ":nth-child",        (element, fn) ->
+    distance = F.collectUntil("!x", '.previousSibling', F.collect('+1', 0))(element.previousSibling)
+    info = PseudoSelector.parseNth(fn)
+    PseudoSelector.checkNth(distance, info.slice, info.index)
+
+  @register ":nth-last-child",   (element, fn) ->
+    distance = F.collectUntil("!x", '.nextSibling', F.collect('+1', 0))(element.nextSibling)
+    info = PseudoSelector.parseNth(fn)
+    PseudoSelector.checkNth(distance, info.slice, info.index)
+
+  @register ":nth-of-type",      (element, fn) ->
+    col = (x, y) ->
+      x += 1 if y.tagName == element.tagName
+      x
+
+    distance = F.collectUntil("!x", '.previousSibling', F.collect(col, 0))(element.previousSibling)
+    info = PseudoSelector.parseNth(fn)
+    PseudoSelector.checkNth(distance, info.slice, info.index)
+
+  @register ":nth-last-of-type", (element, fn) ->
+    col = (x, y) ->
+      x += 1 if y.tagName == element.tagName
+      x
+
+    distance = F.collectUntil("!x", '.nextSibling', F.collect(col, 0))(element.nextSibling)
+    info = PseudoSelector.parseNth(fn)
+    PseudoSelector.checkNth(distance, info.slice, info.index)
+
   @register ":first-child",      (element) -> !element.previousSibling
   @register ":last-child",       (element) -> !element.nextSibling
   @register ":first-of-type",    (element) -> F.every(".tagName != '#{element.tagName}'", F.collectUntilLeaf(element, 'previousSibling'))

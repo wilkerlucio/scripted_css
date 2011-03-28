@@ -73,24 +73,95 @@ e = (string, filter = null, attr = undefined) ->
   context = context.find(filter) if filter
   context[0]
 
-ps = (id, string, filter = null, attr = undefined, value = undefined) ->
+ps = (id, string, filter = null, value = undefined, attr = undefined) ->
   PseudoSelector.pseudos[id](e(string, filter, attr), value)
+
+gf = (name, params) -> new ScriptedCss.Nodes.Function(type: "function", name: name, params: params)
+nths = (s) -> gf("nth-child", [{type: "plain", stringify: -> s}])
 
 test ":root", ->
   ok(ps(":root", "<div></div>"))
   ok(!ps(":root", "<div><span></span></div>", "span"))
 
+test "parseNth", ->
+  same(PseudoSelector.parseNth(nths("odd")),   {slice: 2,  index: 1})
+  same(PseudoSelector.parseNth(nths("even")),  {slice: 2,  index: 0})
+  same(PseudoSelector.parseNth(nths("2")),     {slice: 0,  index: 2})
+  same(PseudoSelector.parseNth(nths("n")),     {slice: 1,  index: 0})
+  same(PseudoSelector.parseNth(nths("n+1")),   {slice: 1,  index: 1})
+  same(PseudoSelector.parseNth(nths("2n-1")),  {slice: 2,  index: -1})
+  same(PseudoSelector.parseNth(nths("-2n+1")), {slice: -2, index: 1})
+  same(PseudoSelector.parseNth(nths("-n+3")),  {slice: -1, index: 3})
+  same(PseudoSelector.parseNth(nths("-n")),    {slice: -1, index: 0})
+
+  raises(
+    -> PseudoSelector.parseNth(nths("cascas"))
+    TypeError
+  )
+
+test "checkNth", ->
+  ok(PseudoSelector.checkNth(2, 0, 2), "simple index ok")
+  ok(!PseudoSelector.checkNth(2, 0, 3), "simple index not ok")
+  ok(PseudoSelector.checkNth(4, 2, 0), "nth ok")
+  ok(!PseudoSelector.checkNth(4, 2, 1), "nth not ok")
+  ok(PseudoSelector.checkNth(3, 2, 1), "nth with index ok")
+  ok(!PseudoSelector.checkNth(3, 2, 0), "nth with index not ok")
+  ok(PseudoSelector.checkNth(3, 4, -1), "nth with negative index ok")
+  ok(!PseudoSelector.checkNth(3, 4, -2), "nth with negative index not ok")
+  ok(PseudoSelector.checkNth(3, -1, 4), "nth negative less")
+  ok(!PseudoSelector.checkNth(3, -1, 2), "nth negative not ok")
+
 test ":nth-child", ->
-  ok(false)
+  spy = sinon.stub(PseudoSelector, 'checkNth')
+  spy.returns('ok')
+  spy2 = sinon.stub(PseudoSelector, 'parseNth')
+  spy2.returns({slice: 0, index: 0})
+
+  r = ps(":nth-child", "<div><span></span><p></p><span></span></div>", "span:eq(1)")
+  ok(spy.calledWith(2, 0, 0))
+  same(r, 'ok')
+
+  spy.restore()
+  spy2.restore()
 
 test ":nth-last-child", ->
-  ok(false)
+  spy = sinon.stub(PseudoSelector, 'checkNth')
+  spy.returns('ok')
+  spy2 = sinon.stub(PseudoSelector, 'parseNth')
+  spy2.returns({slice: 0, index: 0})
+
+  r = ps(":nth-last-child", "<div><span></span><p></p><span></span></div>", "span:eq(0)")
+  ok(spy.calledWith(2, 0, 0))
+  same(r, 'ok')
+
+  spy.restore()
+  spy2.restore()
 
 test ":nth-of-type", ->
-  ok(false)
+  spy = sinon.stub(PseudoSelector, 'checkNth')
+  spy.returns('ok')
+  spy2 = sinon.stub(PseudoSelector, 'parseNth')
+  spy2.returns({slice: 0, index: 0})
+
+  r = ps(":nth-of-type", "<div><span></span><p></p><span></span></div>", "span:eq(1)")
+  ok(spy.calledWith(1, 0, 0))
+  same(r, 'ok')
+
+  spy.restore()
+  spy2.restore()
 
 test ":nth-last-of-type", ->
-  ok(false)
+  spy = sinon.stub(PseudoSelector, 'checkNth')
+  spy.returns('ok')
+  spy2 = sinon.stub(PseudoSelector, 'parseNth')
+  spy2.returns({slice: 0, index: 0})
+
+  r = ps(":nth-last-of-type", "<div><span></span><p></p><span></span></div>", "span:eq(0)")
+  ok(spy.calledWith(1, 0, 0))
+  same(r, 'ok')
+
+  spy.restore()
+  spy2.restore()
 
 test ":first-child", ->
   ok(ps(":first-child", "<div></div>"))
@@ -135,12 +206,12 @@ test ":empty", ->
   ok(!ps(":empty", "<div>other</div>"))
 
 test ":enabled", ->
-  ok(ps(":enabled", "<input />", null, type: "text"))
-  ok(!ps(":enabled", "<input />", null, type: "text", disabled: "disabled"))
+  ok(ps(":enabled", "<input />", null, undefined, type: "text"))
+  ok(!ps(":enabled", "<input />", null, undefined, type: "text", disabled: "disabled"))
 
 test ":disabled", ->
-  ok(!ps(":disabled", "<input />", null, type: "text"))
-  ok(ps(":disabled", "<input />", null, type: "text", disabled: "disabled"))
+  ok(!ps(":disabled", "<input />", null, undefined, type: "text"))
+  ok(ps(":disabled", "<input />", null, undefined, type: "text", disabled: "disabled"))
 
 test ":checked", ->
   ok(ps(":checked", '<input type="checkbox" checked="checked" />'))
@@ -154,5 +225,5 @@ test ":not", ->
       type: "plain"
       match: -> m
 
-  ok(ps(":not", "<input type='text' />", null, undefined, fakeNot(false)))
-  ok(!ps(":not", "<input type='text' />", null, undefined, fakeNot(true)))
+  ok(ps(":not", "<input type='text' />", null, fakeNot(false)))
+  ok(!ps(":not", "<input type='text' />", null, fakeNot(true)))
