@@ -119,6 +119,7 @@ class MacroDict
 
 class EmitterData
   constructor: (@items, @macros = new MacroDict()) ->
+    @items = @items.slice(0)
     @labels = {}
 
   compute: (fn) ->

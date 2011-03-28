@@ -66,6 +66,14 @@ test "initialize", ->
   same(ed.macros, new MacroDict())
   same(ed.labels, {})
 
+test "initialize use a clone of items", ->
+  arr = ['a']
+  ed = new EmitterData(arr)
+
+  ed.items.pop()
+
+  same(arr, ['a'])
+
 test "compute with success", ->
   ed = new EmitterData(['a', 'b'])
   res = ed.compute (d) -> d.items.pop()
