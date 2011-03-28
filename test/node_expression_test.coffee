@@ -28,6 +28,17 @@ test "initialize", ->
   same(e.type, "expression")
   ok(e.values[0].plain)
 
+test "parse", ->
+  e = g([
+    {type: "plain", stringify: -> "a"}
+    {type: "plain", stringify: -> "b"}
+  ])
+
+  r = e.parse("one:a || two:c")
+
+  same(r.one.stringify(), "a")
+  same(r.two, false)
+
 test "stringify", ->
   e = g([{type: "plain", stringify: -> "a"}, {type: "plain", stringify: -> "b"}])
 

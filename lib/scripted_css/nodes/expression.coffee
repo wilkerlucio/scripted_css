@@ -23,6 +23,14 @@ class Expression extends ScriptedCss.Nodes.Base
     @type = "expression"
     @values = F.map(@factory.bind(this), values)
 
+  parse: (expression, dict) ->
+    exp = ScriptedCss.ExpressionParser.parse(expression)
+    data = new ScriptedCss.ExpressionParser.EmitterData(@values, dict)
+
+    result = ScriptedCss.ExpressionParser.Emitter.emmit(exp, data)
+    data.labels._result = result
+    data.labels
+
   stringify: -> @stringifyArray(@values).join(" ")
 
 window.ScriptedCss.Nodes.Expression = Expression if window?
