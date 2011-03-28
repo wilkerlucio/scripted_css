@@ -19,11 +19,13 @@
 # THE SOFTWARE.
 
 class Expression extends ScriptedCss.Nodes.Base
+  @defaultDict = new ScriptedCss.ExpressionParser.MacroDict()
+
   constructor: (values) ->
     @type = "expression"
     @values = F.map(@factory.bind(this), values)
 
-  parse: (expression, dict) ->
+  parse: (expression, dict = ScriptedCss.Nodes.Expression.defaultDict) ->
     exp = ScriptedCss.ExpressionParser.parse(expression)
     data = new ScriptedCss.ExpressionParser.EmitterData(@values, dict)
 

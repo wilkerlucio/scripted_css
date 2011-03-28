@@ -39,6 +39,19 @@ test "parse", ->
   same(r.one.stringify(), "a")
   same(r.two, false)
 
+test "parse use defaultDict by default", ->
+  ScriptedCss.Nodes.Expression.defaultDict.add("test-sample-info": "o:a || t:b")
+
+  e = g([
+    {type: "plain", stringify: -> "a"}
+    {type: "plain", stringify: -> "b"}
+  ])
+
+  r = e.parse("<test-sample-info>")
+
+  same(r.o.stringify(), "a")
+  same(r.t.stringify(), "b")
+
 test "stringify", ->
   e = g([{type: "plain", stringify: -> "a"}, {type: "plain", stringify: -> "b"}])
 
