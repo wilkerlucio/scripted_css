@@ -72,7 +72,7 @@ Emitter =
     macro = data.macros.get(id)
 
     result = @emmit(macro.value, data)
-    result = macro.return(result) if result
+    result = macro.return(result) if result and macro.return
     result
 
   function: (obj, data) ->
