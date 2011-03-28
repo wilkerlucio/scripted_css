@@ -20,8 +20,19 @@
 
 module("Function Node Test")
 
+g = (name, params = []) ->
+  new ScriptedCss.Nodes.Function(type: "function", name: name, params: params)
+
 test "initialize", ->
-  ok(false)
+  d = g("a", [{type: "plain"}], true)
+
+  same(d.type, "function")
+  same(d.name, "a")
+  same(d.params.type, "expression")
+  ok(d.params.parent == d)
 
 test "stringify", ->
-  ok(false)
+  d = g("a")
+  d.params.stringify = -> "properties"
+
+  same(d.stringify(), "a(properties)")
