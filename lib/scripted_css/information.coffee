@@ -236,6 +236,17 @@ ScriptedCss.Information =
     "800":     true
     "900":     true
 
+  lengthUnits: [
+    "em"
+    "ex"
+    "px"
+    "cm"
+    "mm"
+    "in"
+    "pt"
+    "pc"
+  ]
+
   listTypes:
     "circle":               true
     "disc":                 true
@@ -455,15 +466,15 @@ ScriptedCss.Information =
     "relative-size": "larger | smaller"
 
     # internal grammar
-    "literal":    (nodes) -> @collect nodes, (node) -> node.type == "ident"
-    "string":     (nodes) -> @collect nodes, (node) -> node.type == "string"
-    "length":     (nodes) -> @collect nodes, (node) -> node.type == "value"
-    "percentage": (nodes) -> @collect nodes, (node) -> node.type == "value"
-    "number":     (nodes) -> @collect nodes, (node) -> node.type == "value"
-    "url":        (nodes) -> @collect nodes, (node) -> node.type == "uri"
+    "literal":    (data) -> data.collect (node) -> node.type == "ident"
+    "string":     (data) -> data.collect (node) -> node.type == "string"
+    "length":     (data) -> data.collect (node) -> node.type == "value" and _.include(ScriptedCss.Information.lengthUnits, node.unit)
+    "percentage": (data) -> data.collect (node) -> node.type == "value" and node.unit == "%"
+    "number":     (data) -> data.collect (node) -> node.type == "value" and node.unit == ""
+    "url":        (data) -> data.collect (node) -> node.type == "uri"
     "image":      "<url> | <gradient>"
-    "color": (nodes) -> # color spec following CSS 3 colors draft: http://www.w3.org/TR/2010/PR-css3-color-20101028/
-      @collect nodes, (node) ->
+    "color": (data) -> # color spec following CSS 3 colors draft: http://www.w3.org/TR/2010/PR-css3-color-20101028/
+      data.collect (node) ->
         return true if node.type == "hexcolor"
         return true if ScriptedCss.Information.colors[node.stringify()]
         return true if node.type == "function" and _.include(["rgb", "rgba", "hsl"], node.name)
