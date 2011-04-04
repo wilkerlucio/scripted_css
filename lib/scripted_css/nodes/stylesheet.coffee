@@ -69,7 +69,7 @@ Stylesheet.RuleSetExtractor =
 
     ScriptedCss.trigger("stylesheetRulesExtracted", stylesheet) if triggerEvent
 
-ScriptedCss.bind "stylesheetInitialized", Stylesheet.RuleSetExtractor.extract
+ScriptedCss.bind "stylesheetReady", Stylesheet.RuleSetExtractor.extract
 
 # index rulesets
 Stylesheet.RulesIndexer =
