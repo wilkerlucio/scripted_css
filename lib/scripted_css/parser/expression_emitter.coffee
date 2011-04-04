@@ -79,12 +79,7 @@ Emitter =
     obj.fn(data)
 
   value: (obj, data) ->
-    for el, i in data.items
-      if el.stringify() == obj.value
-        data.items = data.items.slice(0, i).concat(data.items.slice(i + 1))
-        return el
-
-    false
+    data.collect (node) -> node.stringify() == obj.value
 
 Emitter.macros = {}
 
@@ -129,6 +124,14 @@ class EmitterData
     @items = safe unless result
 
     result
+
+  collect: (fn) ->
+    for el, i in @items
+      if fn(el)
+        @items = @items.slice(0, i).concat(@items.slice(i + 1))
+        return el
+
+    false
 
 window.ScriptedCss.ExpressionParser.Emitter     = Emitter if window?
 window.ScriptedCss.ExpressionParser.EmitterData = EmitterData if window?

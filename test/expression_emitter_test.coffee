@@ -256,7 +256,7 @@ test "function", ->
 test "value parsing with value", ->
   ea = stringify: -> "a"
   eb = stringify: -> "b"
-  data = {items: [ea, eb]}
+  data = {items: [ea, eb], collect: ScriptedCss.ExpressionParser.EmitterData.prototype.collect}
   obj = value: "b"
 
   res = Emitter.value(obj, data)
@@ -267,7 +267,7 @@ test "value parsing with value", ->
 test "value parsing without value", ->
   ea = stringify: -> "a"
   eb = stringify: -> "b"
-  data = {items: [ea, eb]}
+  data = {items: [ea, eb], collect: ScriptedCss.ExpressionParser.EmitterData.prototype.collect}
   obj = value: "c"
 
   res = Emitter.value(obj, data)
