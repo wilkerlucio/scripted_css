@@ -245,20 +245,20 @@
 
         attributes
 
-  ScriptedCss.Nodes.AttributeSet.registerExpansion "background",    Expanders.background
-  ScriptedCss.Nodes.AttributeSet.registerExpansion "border",        Expanders.border
-  ScriptedCss.Nodes.AttributeSet.registerExpansion "border-top",    Expanders.borderDirection
-  ScriptedCss.Nodes.AttributeSet.registerExpansion "border-right",  Expanders.borderDirection
-  ScriptedCss.Nodes.AttributeSet.registerExpansion "border-bottom", Expanders.borderDirection
-  ScriptedCss.Nodes.AttributeSet.registerExpansion "border-left",   Expanders.borderDirection
-  ScriptedCss.Nodes.AttributeSet.registerExpansion "border-color",  Expanders.borderColor
-  ScriptedCss.Nodes.AttributeSet.registerExpansion "border-style",  Expanders.borderStyle
-  ScriptedCss.Nodes.AttributeSet.registerExpansion "border-width",  Expanders.borderWidth
-  ScriptedCss.Nodes.AttributeSet.registerExpansion "border-image",  Expanders.borderImage
-  ScriptedCss.Nodes.AttributeSet.registerExpansion "border-radius", Expanders.borderRadius
-  ScriptedCss.Nodes.AttributeSet.registerExpansion "font",          Expanders.font
-  ScriptedCss.Nodes.AttributeSet.registerExpansion "list-style",    Expanders.listStyle
-  ScriptedCss.Nodes.AttributeSet.registerExpansion "margin",        Expanders.margin
-  ScriptedCss.Nodes.AttributeSet.registerExpansion "outline",       Expanders.outline
-  ScriptedCss.Nodes.AttributeSet.registerExpansion "padding",       Expanders.padding
+  ScriptedCss.Nodes.DeclarationSet.registerExpansion "background",    Expanders.background
+  ScriptedCss.Nodes.DeclarationSet.registerExpansion "border",        Expanders.border
+  ScriptedCss.Nodes.DeclarationSet.registerExpansion "border-top",    Expanders.borderDirection
+  ScriptedCss.Nodes.DeclarationSet.registerExpansion "border-right",  Expanders.borderDirection
+  ScriptedCss.Nodes.DeclarationSet.registerExpansion "border-bottom", Expanders.borderDirection
+  ScriptedCss.Nodes.DeclarationSet.registerExpansion "border-left",   Expanders.borderDirection
+  ScriptedCss.Nodes.DeclarationSet.registerExpansion "border-color",  Expanders.borderColor
+  ScriptedCss.Nodes.DeclarationSet.registerExpansion "border-style",  Expanders.borderStyle
+  ScriptedCss.Nodes.DeclarationSet.registerExpansion "border-width",  Expanders.borderWidth
+  ScriptedCss.Nodes.DeclarationSet.registerExpansion "border-image",  Expanders.borderImage
+  ScriptedCss.Nodes.DeclarationSet.registerExpansion "border-radius", Expanders.borderRadius
+  ScriptedCss.Nodes.DeclarationSet.registerExpansion "font",          Expanders.font
+  ScriptedCss.Nodes.DeclarationSet.registerExpansion "list-style",    Expanders.listStyle
+  ScriptedCss.Nodes.DeclarationSet.registerExpansion "margin",        Expanders.margin
+  ScriptedCss.Nodes.DeclarationSet.registerExpansion "outline",       Expanders.outline
+  ScriptedCss.Nodes.DeclarationSet.registerExpansion "padding",       Expanders.padding
 )(jQuery)
