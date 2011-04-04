@@ -29,18 +29,22 @@ class DeclarationSet extends ScriptedCss.Nodes.Base
     F.map(F.compose(@index.bind(this), @factory.bind(this)), declarations)
 
   index: (declaration) ->
-    if expander = DeclarationSet.expanders[declaration.property]
-      expanded = expander.explode(declaration)
+    unless @expandDeclaration(declaration)
+      @declarations.push(declaration)
+      @hash[declaration.property] = declaration
 
-      if expanded
-        for dec in expanded
-          dec = _.extend({"type": "declaration", important: declaration.important || false}, dec)
-          @index(@factory(dec))
+  expandDeclaration: (declaration) ->
+    expander = DeclarationSet.expanders[declaration.property]
+    return false unless expander
 
-        return
+    expanded = expander.explode(declaration)
+    return false unless expanded
 
-    @declarations.push(declaration)
-    @hash[declaration.property] = declaration
+    for dec in expanded
+      dec = _.extend({"type": "declaration", important: declaration.important || false}, dec)
+      @index(@factory(dec))
+
+    true
 
   stringify: -> @stringifyArray(@declarations).join("; ")
 
