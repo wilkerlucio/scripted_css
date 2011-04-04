@@ -256,7 +256,7 @@ ScriptedCss.Information =
     "inside":  true
     "outside": true
 
-  expressionGrammar: new MacroDict(
+  expressionGrammar:
     # background grammar, based on CSS 3 specification:
     "background":
       value: (v, grammar) ->
@@ -469,6 +469,5 @@ ScriptedCss.Information =
         return true if node.type == "function" and _.include(["rgb", "rgba", "hsl"], node.name)
 
         false
-  )
 
 ScriptedCss.Nodes.Expression.defaultDict.add(ScriptedCss.Information.expressionGrammar)
