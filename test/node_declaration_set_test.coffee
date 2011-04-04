@@ -22,6 +22,26 @@ module("DeclarationSet Node Test")
 
 g = (list) -> new ScriptedCss.Nodes.DeclarationSet(list)
 
+expanderTransaction = (fn) ->
+  expanders =
+    "test":
+      explode: (declaration) ->
+        [
+          {
+            property: "test-one"
+            expression: [{type:"plain", value:"a"}]
+          }
+          {
+            property: "test-two"
+            expression: [{type:"plain", value:"b"}]
+          }
+        ]
+
+    "other":
+      explode: (declaration) ->
+        false
+  runAttributeTransaction(ScriptedCss.Nodes.DeclarationSet, 'expanders', fn, expanders)
+
 test "initialize", ->
   ds = g([{type: "plain", property: "a"}])
 
@@ -38,6 +58,35 @@ test "generate attribute hash", ->
 
   same(ds.hash["a"].stringify(), "10px")
   same(ds.hash["b"].stringify(), "left")
+
+test "expanding attributes", ->
+  expanderTransaction ->
+    ds = g([
+      {type: "plain", property: "test"}
+    ])
+
+    equal(ds.declarations.length, 2)
+    ok(!ds.hash["test"])
+    equal(ds.hash["test-one"].expression.values[0].value, "a")
+    equal(ds.hash["test-two"].expression.values[0].value, "b")
+
+test "keep important state", ->
+  expanderTransaction ->
+    ds = g([
+      {type: "plain", property: "test", important: true}
+    ])
+
+    equal(ds.hash["test-one"].expression.values[0].value, "a")
+    equal(ds.hash["test-one"].important, true)
+
+test "skip if expander return false", ->
+  expanderTransaction ->
+    ds = g([
+      {type: "plain", property: "other"}
+    ])
+
+    equal(ds.declarations.length, 1)
+    ok(ds.hash["other"])
 
 test "stringify", ->
   ds = g([

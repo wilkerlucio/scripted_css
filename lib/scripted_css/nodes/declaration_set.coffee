@@ -19,12 +19,27 @@
 # THE SOFTWARE.
 
 class DeclarationSet extends ScriptedCss.Nodes.Base
+  @expanders = {}
+
   constructor: (declarations) ->
-    @type = "declaration_set"
-    @hash = {}
-    @declarations = F.map(F.compose(@index.bind(this), @factory.bind(this)), declarations)
+    @type         = "declaration_set"
+    @hash         = {}
+    @declarations = []
+
+    F.map(F.compose(@index.bind(this), @factory.bind(this)), declarations)
 
   index: (declaration) ->
+    if expander = DeclarationSet.expanders[declaration.property]
+      expanded = expander.explode(declaration)
+
+      if expanded
+        for dec in expanded
+          dec = _.extend({"type": "declaration", important: declaration.important || false}, dec)
+          @index(@factory(dec))
+
+        return
+
+    @declarations.push(declaration)
     @hash[declaration.property] = declaration
 
   stringify: -> @stringifyArray(@declarations).join("; ")
