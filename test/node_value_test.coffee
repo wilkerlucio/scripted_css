@@ -30,6 +30,7 @@ test "initialize", ->
 
 test "extracting unit", ->
   same(gv("1px").unit,   "px")
+  same(gv("1PX").unit,   "px")
   same(gv("3em").unit,   "em")
   same(gv("3s").unit,    "s")
   same(gv("+3%").unit,   "%")
