@@ -31,3 +31,7 @@ window.runAttributeTransaction = (obj, attribute, fn, start = null) ->
   obj[attribute] = start
   fn()
   obj[attribute] = oldValue
+
+window.runMacro = (values, expression) ->
+  css = ScriptedCss.Nodes.factory(ScriptedCss.CssParser.parse("* {test: #{values}}"))
+  css.rules[0].declarations.declarations[0].expression.parse(expression)
