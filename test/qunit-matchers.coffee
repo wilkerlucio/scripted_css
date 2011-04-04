@@ -25,3 +25,9 @@ window.cancelEvents = (callback) ->
   stub = sinon.stub(ScriptedCss, 'trigger')
   callback()
   stub.restore()
+
+window.runAttributeTransaction = (obj, attribute, fn, start = null) ->
+  oldValue = obj[attribute]
+  obj[attribute] = start
+  fn()
+  obj[attribute] = oldValue
