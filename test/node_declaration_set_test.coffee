@@ -23,8 +23,8 @@ module("DeclarationSet Node Test")
 g = (list) -> new ScriptedCss.Nodes.DeclarationSet(list)
 
 expanderTransaction = (fn) ->
-  expanders =
-    "test":
+  block = ->
+    ScriptedCss.Nodes.DeclarationSet.registerExpansion "test",
       explode: (declaration) ->
         [
           {
@@ -37,10 +37,13 @@ expanderTransaction = (fn) ->
           }
         ]
 
-    "other":
+    ScriptedCss.Nodes.DeclarationSet.registerExpansion "other",
       explode: (declaration) ->
         false
-  runAttributeTransaction(ScriptedCss.Nodes.DeclarationSet, 'expanders', fn, expanders)
+
+    fn()
+
+  runAttributeTransaction ScriptedCss.Nodes.DeclarationSet, 'expanders', block, {}
 
 test "initialize", ->
   ds = g([{type: "plain", property: "a"}])
