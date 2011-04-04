@@ -172,6 +172,27 @@ task 'dev:compile', 'compile files for development', (options) ->
       fs.writeFileSync(outputPath, source)
       console.log "Compiled test file #{outputPath}"
 
+task 'dev:watch', 'watch files, recompile if needed or just update test file', (options) ->
+  callback = (file, curr, prev) ->
+    if curr.mtime.valueOf() != prev.mtime.valueOf() or curr.ctime.valueOf() != prev.ctime.valueOf()
+      base = file.split("/")[1]
+
+      if base == "test"
+        source = CoffeeScript.compile(fs.readFileSync(file).toString())
+        outputPath = path.join(path.dirname(file), path.basename(file, ".coffee") + ".js")
+        fs.writeFileSync(outputPath, source)
+        console.log "Compiled test file #{outputPath}"
+      else
+        invoke 'build'
+
+  child_process.exec 'find . | grep "\.coffee$"', (error, stdout, stderr) ->
+    files = stdout.trim().split("\n")
+
+    for file in files
+      fs.watchFile file, {interval: 500}, callback.bind(this, file)
+
+    console.log "Watcher started, waiting for changes"
+
 task 'compile:attr_parser', 'compile the css attributes parser', (options) ->
   nodesSource  = fs.readFileSync("./lib/scripted_css/parser/attributes_nodes.coffee").toString()
   parser       = require "./lib/scripted_css/parser/attributes.coffee"
