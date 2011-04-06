@@ -221,44 +221,44 @@ for direction in ["top", "right", "bottom", "left"]
         ["border-#{dir}-width", "medium"]
       ]
   )()
-#
-# for attribute in ["margin", "padding"]
-#   (->
-#     attr = attribute
-#
-#     test "test expanding #{attr} with 1 value", ->
-#       testExpansion "#{attr}: 10px", [
-#         ["#{attr}-top",    "10px"]
-#         ["#{attr}-right",  "10px"]
-#         ["#{attr}-bottom", "10px"]
-#         ["#{attr}-left",   "10px"]
-#       ]
-#
-#     test "test expanding #{attr} with 2 values", ->
-#       testExpansion "#{attr}: 10px 8px", [
-#         ["#{attr}-top",    "10px"]
-#         ["#{attr}-right",  "8px"]
-#         ["#{attr}-bottom", "10px"]
-#         ["#{attr}-left",   "8px"]
-#       ]
-#
-#     test "test expanding #{attr} with 3 values", ->
-#       testExpansion "#{attr}: 10px 8px 6px", [
-#         ["#{attr}-top",    "10px"]
-#         ["#{attr}-right",  "8px"]
-#         ["#{attr}-bottom", "6px"]
-#         ["#{attr}-left",   "8px"]
-#       ]
-#
-#     test "test expanding #{attr} with 4 values", ->
-#       testExpansion "#{attr}: 10px 8px 6px 4px", [
-#         ["#{attr}-top",    "10px"]
-#         ["#{attr}-right",  "8px"]
-#         ["#{attr}-bottom", "6px"]
-#         ["#{attr}-left",   "4px"]
-#       ]
-#   )()
-#
+
+for attribute in ["margin", "padding"]
+  (->
+    attr = attribute
+
+    test "test expanding #{attr} with 1 value", ->
+      testExpansion "#{attr}: 10px", [
+        ["#{attr}-top",    "10px"]
+        ["#{attr}-right",  "10px"]
+        ["#{attr}-bottom", "10px"]
+        ["#{attr}-left",   "10px"]
+      ]
+
+    test "test expanding #{attr} with 2 values", ->
+      testExpansion "#{attr}: 10px 8px", [
+        ["#{attr}-top",    "10px"]
+        ["#{attr}-right",  "8px"]
+        ["#{attr}-bottom", "10px"]
+        ["#{attr}-left",   "8px"]
+      ]
+
+    test "test expanding #{attr} with 3 values", ->
+      testExpansion "#{attr}: 10px 8px 6px", [
+        ["#{attr}-top",    "10px"]
+        ["#{attr}-right",  "8px"]
+        ["#{attr}-bottom", "6px"]
+        ["#{attr}-left",   "8px"]
+      ]
+
+    test "test expanding #{attr} with 4 values", ->
+      testExpansion "#{attr}: 10px 8px 6px 4px", [
+        ["#{attr}-top",    "10px"]
+        ["#{attr}-right",  "8px"]
+        ["#{attr}-bottom", "6px"]
+        ["#{attr}-left",   "4px"]
+      ]
+  )()
+
 # test "expanding list-style", ->
 #   testExpansion "list-style: square inside url('/images/blueball.gif');", [
 #     ["list-style-image",    "url('/images/blueball.gif')"]

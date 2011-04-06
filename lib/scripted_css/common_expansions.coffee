@@ -174,23 +174,23 @@
 
     margin:
       explode: (attribute) ->
-        values = ScriptedCss.parseAttributes(attribute.values, "margin")
-        return false unless values and !values.string
+        values = attribute.expression.parse("<margin>")
+        return false unless values
 
-        comp = Expanders.helpers.computeDirections(values[0])
+        comp = Expanders.helpers.computeDirections(values._result)
 
         for dir, i in ["top", "right", "bottom", "left"]
-          new CssAST.AttributeNode("#{attribute.name}-#{dir}", [comp[i]])
+          {property: "#{attribute.property}-#{dir}", expression: [comp[i]]}
 
     padding:
       explode: (attribute) ->
-        values = ScriptedCss.parseAttributes(attribute.values, "padding")
-        return false unless values and !values.string
+        values = attribute.expression.parse("<padding>")
+        return false unless values
 
-        comp = Expanders.helpers.computeDirections(values[0])
+        comp = Expanders.helpers.computeDirections(values._result)
 
         for dir, i in ["top", "right", "bottom", "left"]
-          new CssAST.AttributeNode("#{attribute.name}-#{dir}", [comp[i]])
+          {property: "#{attribute.property}-#{dir}", expression: [comp[i]]}
 
     outline:
       explode: (attribute) ->
