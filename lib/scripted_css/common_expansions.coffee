@@ -224,23 +224,23 @@
 
     font:
       explode: (attribute) ->
-        values = ScriptedCss.parseAttributes(attribute.values, "font")
-        return false unless values and !values.string
+        values = attribute.expression.parse("<font>")
+        return false if !values or values._result.type == "ident"
 
         family     = values.family
-        size       = values.size or $n("medium")
-        style      = values.style or $n("normal")
-        variant    = values.variant or $n("normal")
-        weight     = values.weight or $n("normal")
+        size       = values.size or {type: "ident", value: "medium"}
+        style      = values.style or {type: "ident", value: "normal"}
+        variant    = values.variant or {type: "ident", value: "normal"}
+        weight     = values.weight or {type: "ident", value: "normal"}
         lineHeight = values.lineHeight
 
         attributes = []
-        attributes.push(new CssAST.AttributeNode("#{attribute.name}-family", family))
-        attributes.push(new CssAST.AttributeNode("#{attribute.name}-size", [size]))
-        attributes.push(new CssAST.AttributeNode("line-height", [lineHeight])) if lineHeight
-        attributes.push(new CssAST.AttributeNode("#{attribute.name}-style", [style]))
-        attributes.push(new CssAST.AttributeNode("#{attribute.name}-variant", [variant]))
-        attributes.push(new CssAST.AttributeNode("#{attribute.name}-weight", [weight]))
+        attributes.push({property: "#{attribute.property}-family", expression: family})
+        attributes.push({property: "#{attribute.property}-size", expression: [size]})
+        attributes.push({property: "line-height", expression: [lineHeight]}) if lineHeight
+        attributes.push({property: "#{attribute.property}-style", expression: [style]})
+        attributes.push({property: "#{attribute.property}-variant", expression: [variant]})
+        attributes.push({property: "#{attribute.property}-weight", expression: [weight]})
 
         attributes
 

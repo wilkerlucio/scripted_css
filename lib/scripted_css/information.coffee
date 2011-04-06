@@ -359,23 +359,18 @@ ScriptedCss.Information =
     # font grammar, based on CSS 2.1 specification: http://www.w3.org/TR/2010/WD-CSS2-20101207/fonts.html
     "font-family":
       value: "[ <family-name> | <generic-family> ] [, <family-name> | <generic-family> ]*"
-      return: (v) -> if v.get(1) then [_.flatten([v.get(0)].concat(v.get(1)))] else v.results
+      return: (result, data) -> [result.left].concat(_.flatten(_.map(result.right, (x) -> [x.left, x.right])))
 
     "font-weight":  "normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900"
     "font-style":   "normal | italic | oblique"
     "font-variant": "normal | small-caps"
     "font-size":    "<absolute-size> | <relative-size> | <length> | <percentage>"
-    "font":
-      value: "[ [ <font-style> || <font-variant> || <font-weight> ]? <font-size> [ / <line-height> ]? <font-family> ] | caption | icon | menu | message-box | small-caption | status-bar | inherit"
-      return: (v) ->
-        return v.results unless v.isList()
-
-        style:      v.get(0, 0, 0)
-        variant:    v.get(0, 0, 1)
-        weight:     v.get(0, 0, 2)
-        size:       v.get(0, 1)
-        lineHeight: v.get(0, 2, 1)
-        family:     v.get(0, 3)
+    "font": "
+      [
+        [ style:<font-style> || variant:<font-variant> || weight:<font-weight> ]?
+        size:<font-size> [ / lineHeight:<line-height> ]? family:<font-family>
+      ] | caption | icon | menu | message-box | small-caption | status-bar | inherit
+    "
 
     "generic-family": "serif | sans-serif | cursive | fantasy | monospace"
     "family-name":    "<literal> | <string>"

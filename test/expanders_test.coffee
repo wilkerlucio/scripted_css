@@ -287,24 +287,26 @@ test "expanding outline with none", ->
     ["outline-width", "medium"]
   ]
 
-# test "expanding font", ->
-#   testExpansion "font: italic bold 12px/30px Georgia, serif", [
-#     ["font-family",  "Georgia , serif"]
-#     ["font-size",    "12px"]
-#     ["line-height",  "30px"]
-#     ["font-style",   "italic"]
-#     ["font-variant", "normal"]
-#     ["font-weight",  "bold"]
-#   ]
-#
-#   testExpansion "font: Courier 12px;", [
-#     ["font-family",  "Courier"]
-#     ["font-size",    "12px"]
-#     ["font-style",   "normal"]
-#     ["font-variant", "normal"]
-#     ["font-weight",  "normal"]
-#   ]
-#
-#   testExpansion "font: caption;", [
-#     ["font",  "caption"]
-#   ]
+test "expanding font", ->
+  testExpansion "font: italic bold 12px/30px Georgia, serif", [
+    ["font-family",  "Georgia , serif"]
+    ["font-size",    "12px"]
+    ["line-height",  "30px"]
+    ["font-style",   "italic"]
+    ["font-variant", "normal"]
+    ["font-weight",  "bold"]
+  ]
+
+test "expanding font with minimum content", ->
+  testExpansion "font: 12px Courier;", [
+    ["font-family",  "Courier"]
+    ["font-size",    "12px"]
+    ["font-style",   "normal"]
+    ["font-variant", "normal"]
+    ["font-weight",  "normal"]
+  ]
+
+test "expanding simple font", ->
+  testExpansion "font: caption;", [
+    ["font",  "caption"]
+  ]
