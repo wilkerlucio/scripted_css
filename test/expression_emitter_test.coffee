@@ -241,17 +241,6 @@ test "multi with both invalid", ->
   same(res, false)
 
 test "multi try sequential order", ->
-  # data = new EmitterData([
-  #   {stringify: -> "a"}
-  #   {stringify: -> "b"}
-  # ])
-
-  # nodes = ScriptedCss.ExpressionParser.parse("x:a || y:b")
-  # res = Emitter.emmit(nodes, data)
-
-  # same(data.labels.x.stringify(), "a")
-  # same(data.labels.y.stringify(), "b")
-
   data = new EmitterData([
     {stringify: -> "a"}
     {stringify: -> "b"}
