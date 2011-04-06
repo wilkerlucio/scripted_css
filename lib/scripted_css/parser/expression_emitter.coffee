@@ -34,7 +34,7 @@ Emitter =
     res  = false
 
     while data.items.length
-      break if data.items[0].type == "operator"
+      break if data.items[0].type == "operator" and data.items[0].value == ","
       break if res = @emmit(object, data)
       head.push(data.items.shift())
 

@@ -33,7 +33,7 @@ testExpansion = (attr, expected) ->
     same(attr.declarations[i].expression.stringify(), item[1])
 
 test "test expanding background", ->
-  testExpansion "background: url('test.gif') center center / 50% no-repeat fixed padding-box border-box #000", [
+  testExpansion "background: center center / 50% url('test.gif') no-repeat fixed padding-box border-box #000", [
     ["background-color",      "#000"]
     ["background-image",      'url("test.gif")']
     ["background-repeat",     "no-repeat"]
