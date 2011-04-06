@@ -31,6 +31,8 @@ class DeclarationSet extends ScriptedCss.Nodes.Base
 
     F.map(F.compose(@index.bind(this), @factory.bind(this)), declarations)
 
+  get: (property) -> @hash[property] || null
+
   index: (declaration) ->
     unless @expandDeclaration(declaration)
       @declarations.push(declaration)
