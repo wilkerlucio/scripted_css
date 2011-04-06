@@ -209,17 +209,17 @@
 
     listStyle:
       explode: (attribute) ->
-        values = ScriptedCss.parseAttributes(attribute.values, "list-style")
-        return false unless values and !values.string
+        values = attribute.expression.parse("<list-style>")
+        return false unless values
 
-        image    = values.image    or $n("none")
-        position = values.position or $n("outside")
-        type     = values.type     or $n("disc")
+        image    = values.image    or {type: "ident", value: "none"}
+        position = values.position or {type: "ident", value: "outside"}
+        type     = values.type     or {type: "ident", value: "disc"}
 
         attributes = []
-        attributes.push($n("attribute", "#{attribute.name}-image", [image]))
-        attributes.push($n("attribute", "#{attribute.name}-position", [position]))
-        attributes.push($n("attribute", "#{attribute.name}-type", [type]))
+        attributes.push({property: "#{attribute.property}-image", expression: [image]})
+        attributes.push({property: "#{attribute.property}-position", expression: [position]})
+        attributes.push({property: "#{attribute.property}-type", expression: [type]})
 
         attributes
 

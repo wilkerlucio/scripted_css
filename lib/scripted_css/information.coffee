@@ -391,15 +391,7 @@ ScriptedCss.Information =
     "list-style-type":     "disc | circle | square | decimal | decimal-leading-zero | lower-roman | upper-roman | lower-greek | lower-latin | upper-latin | armenian | georgian | lower-alpha | upper-alpha | none"
     "list-style-image":    "<url> | none"
     "list-style-position": "inside | outside"
-    "list-style":
-      value: "[ <list-style-type> || <list-style-position> || <list-style-image> ] | inherit"
-      return: (v) ->
-        return v.results unless v.isList()
-        return false unless _.any(v.results)
-
-        type:     v.get(0, 0)
-        position: v.get(0, 1)
-        image:    v.get(0, 2)
+    "list-style":          "[ type:<list-style-type> || position:<list-style-position> || image:<list-style-image> ] | inherit"
 
     # margin grammar, based on CSS 2.1 specification: http://www.w3.org/TR/2010/WD-CSS2-20101207/box.html#margin-properties
     "margin-width": "<length> | <percentage> | auto"

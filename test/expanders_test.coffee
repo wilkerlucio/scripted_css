@@ -259,20 +259,20 @@ for attribute in ["margin", "padding"]
       ]
   )()
 
-# test "expanding list-style", ->
-#   testExpansion "list-style: square inside url('/images/blueball.gif');", [
-#     ["list-style-image",    "url('/images/blueball.gif')"]
-#     ["list-style-position", "inside"]
-#     ["list-style-type",     "square"]
-#   ]
-#
-# test "expanding list-style with none", ->
-#   testExpansion "list-style: none;", [
-#     ["list-style-image",    "none"]
-#     ["list-style-position", "outside"]
-#     ["list-style-type",     "none"]
-#   ]
-#
+test "expanding list-style", ->
+  testExpansion "list-style: square inside url('/images/blueball.gif');", [
+    ["list-style-image",    'url("/images/blueball.gif")']
+    ["list-style-position", "inside"]
+    ["list-style-type",     "square"]
+  ]
+
+test "expanding list-style with none", ->
+  testExpansion "list-style: none;", [
+    ["list-style-image",    "none"]
+    ["list-style-position", "outside"]
+    ["list-style-type",     "none"]
+  ]
+
 # test "expanding outline", ->
 #   testExpansion "outline: #00ff00 dotted thick", [
 #     ["outline-color", "#00ff00"]
