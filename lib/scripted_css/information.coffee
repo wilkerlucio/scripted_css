@@ -330,14 +330,7 @@ ScriptedCss.Information =
     "border-color-attr": "<color>{1,4}"
     "border-style-attr": "<border-style>{1,4}"
     "border-width-attr": "<border-width>{1,4}"
-    "border":
-      value: "<border-width> || <border-style> || <color>"
-      return: (v) ->
-        return false unless _.any(v.results)
-
-        width: v.get(0)
-        style: v.get(1)
-        color: v.get(2)
+    "border":            "width:<border-width> || style:<border-style> || color:<color>"
 
     # border corners grammar, based on CSS 3 specification: http://www.w3.org/TR/2011/CR-css3-background-20110215/#corners
     "border-radius":
@@ -347,28 +340,21 @@ ScriptedCss.Information =
 
     # border image grammar, based on CSS 3 specification: http://www.w3.org/TR/2011/CR-css3-background-20110215/#border-images
     "border-image-source": "none | <image>"
-    "border-image-slice":  "[ <percentage> | <number> ] fill?"
-    "border-image-width":  "[ <length> | <percentage> | <number> | auto ]"
-    "border-image-outset": "[ <length> | <number> ]"
-    "border-image-repeat": "[ stretch | repeat | round ]"
-    "border-image":
-      value: "
-         <border-image-source>
-      || [<border-image-slice> [[ / <border-image-width> ]? [ / <border-image-outset> ]? ]?]
-      || <border-image-repeat>
-      "
-
-      return: (v) ->
-        return false unless _.any(v.results)
-
-        slice = v.get(1, 0)
-        slice = [slice, v.get(1, 1)] if slice and v.get(1, 1)
-
-        source: v.get(0)
-        slice: slice
-        width: v.get(1, 2, 0, 1)
-        outset: v.get(1, 2, 1, 1)
-        repeat: v.get(2)
+    "border-image-slice":
+      value: "[ <percentage> | <number> ] fill?"
+      return: (result, data) ->
+        if result.right == true
+          result.left
+        else
+          [result.left, result.right]
+    "border-image-width":  "<length> | <percentage> | <number> | auto"
+    "border-image-outset": "<length> | <number>"
+    "border-image-repeat": "stretch | repeat | round"
+    "border-image": "
+      source:<border-image-source> ||
+      slice:<border-image-slice> [[ / width:<border-image-width> ]? [ / outset:<border-image-outset> ]? ]? ||
+      repeat:<border-image-repeat>
+    "
 
     # font grammar, based on CSS 2.1 specification: http://www.w3.org/TR/2010/WD-CSS2-20101207/fonts.html
     "font-family":

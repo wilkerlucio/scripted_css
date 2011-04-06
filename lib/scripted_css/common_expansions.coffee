@@ -54,8 +54,6 @@
         values = attribute.expression.parse("<background>")._result
         return false unless values
 
-        console.log(values)
-
         defaults =
           image:      {type: "ident", value: "none"}
           repeat:     {type: "ident", value: "repeat"}
@@ -88,61 +86,62 @@
 
     border:
       explode: (attribute) ->
-        values = ScriptedCss.parseAttributes(attribute.values, "border")
+        values = attribute.expression.parse("<border>")
         return false unless values
 
         items = []
-        for key, item of values
-          items.push(item) if item
+        items.push(values.width) if values.width
+        items.push(values.style) if values.style
+        items.push(values.color) if values.color
 
         attributes = for dir, i in ["top", "right", "bottom", "left"]
-          $n("attribute", "#{attribute.name}-#{dir}", items)
+          {property: "#{attribute.property}-#{dir}", expression: items}
 
-        attributes.push($n("attribute", "#{attribute.name}-image", [$n("none")])) # border specification says to reset border-image when setting border property
+        attributes.push({property: "#{attribute.property}-image", expression: [{type: "ident", value: "none"}]})
         attributes
 
     borderDirection:
       explode: (attribute) ->
-        values = ScriptedCss.parseAttributes(attribute.values, "border")
+        values = attribute.expression.parse("<border>")
         return false unless values
 
         defaults =
-          color: $n "currentColor"
-          style: $n "none"
-          width: $n "medium"
+          color: {type: "ident", value: "currentColor"}
+          style: {type: "ident", value: "none"}
+          width: {type: "ident", value: "medium"}
 
         for key, value of defaults
-          $n("attribute", "#{attribute.name}-#{key}", [values[key] || value])
+          {property: "#{attribute.property}-#{key}", expression: [values[key] || value]}
 
     borderColor:
       explode: (attribute) ->
-        values = ScriptedCss.parseAttributes(attribute.values, "border-color-attr")
+        values = attribute.expression.parse("<border-color-attr>")
         return false unless values
 
-        comp = Expanders.helpers.computeDirections(values[0])
+        comp = Expanders.helpers.computeDirections(values._result)
 
         for dir, i in ["top", "right", "bottom", "left"]
-          new CssAST.AttributeNode("border-#{dir}-color", [comp[i]])
+          {property: "border-#{dir}-color", expression: [comp[i]]}
 
     borderStyle:
       explode: (attribute) ->
-        values = ScriptedCss.parseAttributes(attribute.values, "border-style-attr")
+        values = attribute.expression.parse("<border-style-attr>")
         return false unless values
 
-        comp = Expanders.helpers.computeDirections(values[0])
+        comp = Expanders.helpers.computeDirections(values._result)
 
         for dir, i in ["top", "right", "bottom", "left"]
-          new CssAST.AttributeNode("border-#{dir}-style", [comp[i]])
+          {property: "border-#{dir}-style", expression: [comp[i]]}
 
     borderWidth:
       explode: (attribute) ->
-        values = ScriptedCss.parseAttributes(attribute.values, "border-width-attr")
+        values = attribute.expression.parse("<border-width-attr>")
         return false unless values
 
-        comp = Expanders.helpers.computeDirections(values[0])
+        comp = Expanders.helpers.computeDirections(values._result)
 
         for dir, i in ["top", "right", "bottom", "left"]
-          new CssAST.AttributeNode("border-#{dir}-width", [comp[i]])
+          {property: "border-#{dir}-width", expression: [comp[i]]}
 
     borderRadius:
       explode: (attribute) ->
@@ -160,18 +159,19 @@
 
     borderImage:
       explode: (attribute) ->
-        values = ScriptedCss.parseAttributes(attribute.values, "border-image")
-        return false unless values and !values.string
+        values = attribute.expression.parse("<border-image>")
+        return false unless values
 
         defaults =
-          source: $n "none"
-          slice:  $n "100%"
-          width:  $n "1"
-          outset: $n "0"
-          repeat: $n "stretch"
+          source: {type: "ident", value: "none"}
+          slice:  {type: "value", value: "100%"}
+          width:  {type: "value", value: "1"}
+          outset: {type: "value", value: "0"}
+          repeat: {type: "ident", value: "stretch"}
 
-        for key, value of values
-          $n("attribute", "border-image-#{key}", _.flatten([value || defaults[key]]))
+        for key, value of defaults
+          {property: "border-image-#{key}", expression: _.flatten([values[key] || value])}
+
     margin:
       explode: (attribute) ->
         values = ScriptedCss.parseAttributes(attribute.values, "margin")
