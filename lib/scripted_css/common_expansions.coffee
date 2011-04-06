@@ -51,28 +51,28 @@
 
     background:
       explode: (attribute) ->
-        values = ScriptedCss.parseAttributes(attribute.values, "background")
+        values = attribute.expression.parse("<background>")._result
         return false unless values
 
-        values = _.flatten(values)
+        console.log(values)
 
         defaults =
-          image:      $n "none"
-          repeat:     $n "repeat"
-          attachment: $n "scroll"
-          position:   [$n("0%"), $n("0%")]
-          clip:       $n "border-box"
-          origin:     $n "padding-box"
-          size:       $n "auto"
+          image:      {type: "ident", value: "none"}
+          repeat:     {type: "ident", value: "repeat"}
+          attachment: {type: "ident", value: "scroll"}
+          position:   [{type: "value", value: "0%"}, {type: "value", value: "0%"}]
+          origin:     {type: "ident", value: "padding-box"}
+          clip:       {type: "ident", value: "border-box"}
+          size:       {type: "ident", value: "auto"}
 
         result = {
-          color:      [$n "transparent"]
+          color:      [{type: "ident", value: "transparent"]}
           image:      []
           repeat:     []
           attachment: []
           position:   []
-          clip:       []
           origin:     []
+          clip:       []
           size:       []
         }
 
@@ -81,10 +81,10 @@
           result.color = [layer.color] if layer.color
 
           for key, value of defaults
-            result[key].push($n(",")) unless result[key].length == 0
-            result[key].push(layer[key] || value)
+            result[key].push({type: "operator", value: ","}) unless result[key].length == 0
+            result[key] = result[key].concat(_.flatten([layer[key] || value]))
 
-        $n("attribute", "#{attribute.name}-#{key}", _.flatten(value)) for key, value of result
+        {property: "background-#{key}", expression: value} for key, value of result
 
     border:
       explode: (attribute) ->

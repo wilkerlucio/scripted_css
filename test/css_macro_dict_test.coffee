@@ -83,3 +83,40 @@ test "color", ->
 
   res = runMacro("string", "<color>")
   ok(!res._result)
+
+test "image", ->
+  res = runMacro("url(something.png)", "<image>")._result
+  same(res.stringify(), "url(\"something.png\")")
+
+test "bg-position", ->
+  res = runMacro("top", "<bg-position>")._result
+  same(res.horizontal.value, "center")
+  same(res.vertical.value, "top")
+  same(res.full[0].value, "center")
+  same(res.full[1].value, "top")
+
+  res = runMacro("left", "<bg-position>")._result
+  same(res.horizontal.value, "left")
+  same(res.vertical.value, "center")
+
+  res = runMacro("left top", "<bg-position>")._result
+  same(res.horizontal.value, "left")
+  same(res.vertical.value, "top")
+
+  res = runMacro("center top", "<bg-position>")._result
+  same(res.horizontal.value, "center")
+  same(res.vertical.value, "top")
+
+  res = runMacro("center center", "<bg-position>")._result
+  same(res.horizontal.value, "center")
+  same(res.vertical.value, "center")
+
+  res = runMacro("10px 50%", "<bg-position>")._result
+  same(res.horizontal.value, "10px")
+  same(res.vertical.value, "50%")
+
+  res = runMacro("right 100px top 20px", "<bg-position>")._result
+  same(res.horizontal[0].value, "right")
+  same(res.horizontal[1].value, "100px")
+  same(res.vertical[0].value, "top")
+  same(res.vertical[1].value, "20px")

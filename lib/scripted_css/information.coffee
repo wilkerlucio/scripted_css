@@ -270,68 +270,55 @@ ScriptedCss.Information =
   expressionGrammar:
     # background grammar, based on CSS 3 specification:
     "background":
-      value: (v, grammar) ->
-        layers = @splitOnValue(v, ",")
-        finalLayer = @parse(layers.pop(), "final-bg-layer", grammar)
-
-        return false unless finalLayer
-
-        results = []
-
-        for layer in layers
-          obj = @parse(layer, "bg-layer", grammar)
-          results.push(obj) if obj
-
-        results.push(finalLayer)
-        results
+      value: "[<bg-layer> ,]* <final-bg-layer>"
+      return: (result, data) -> F.map(F.pluck("left"), result.left).concat([result.right])
 
     "bg-layer":
-      value:    "<bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <box>{1,2}"
-      return: (v) ->
-        return false unless _.any(v.results)
-
-        image:      v.get(0)
-        position:   v.get(1, 0)
-        size:       v.get(1, 1, 1)
-        repeat:     v.get(2)
-        attachment: v.get(3)
-        origin:     v.get(4, 0)
-        clip:       v.get(4, 1) || v.get(4, 0)
+      value: "image:<bg-image> || position:<bg-position> [ / size:<bg-size> ]? || repeat:<repeat-style> || attachment:<attachment> || origin:<box> clip:<box>?"
+      return: (result, data) ->
+        image:      data.labels.image
+        position:   data.labels.position?.full
+        size:       data.labels.size
+        repeat:     data.labels.repeat
+        attachment: data.labels.attachment
+        origin:     data.labels.origin
+        clip:       data.labels.clip
 
     "final-bg-layer":
-      value:    "<bg-image> || [<bg-position> [ / <bg-size> ]?] || <repeat-style> || <attachment> || <box>{1,2} || <color>"
-      return: (v) ->
-        return false unless _.any(v.results)
-
-        image:      v.get(0)
-        position:   v.get(1, 0)
-        size:       v.get(1, 1, 1)
-        repeat:     v.get(2)
-        attachment: v.get(3)
-        origin:     v.get(4, 0)
-        clip:       v.get(4, 1) || v.get(4, 0)
-        color:      v.get(5)
+      value: "image:<bg-image> || position:<bg-position> [ / size:<bg-size> ]? || repeat:<repeat-style> || attachment:<attachment> || origin:<box> clip:<box>? || color:<color>"
+      return: (result, data) ->
+        image:      data.labels.image
+        position:   data.labels.position?.full
+        size:       data.labels.size
+        repeat:     data.labels.repeat
+        attachment: data.labels.attachment
+        origin:     data.labels.origin
+        clip:       data.labels.clip
+        color:      data.labels.color
 
     "bg-image": "<image> | none"
     "bg-position":
       value: "
-          [ top | bottom ]
+          v:[ top | bottom ]
+        |
+          h:[ <percentage> | <length> | left | center | right ]
+          v:[ <percentage> | <length> | top | center | bottom ]?
         |
           [
-            [ left | center | right | <percentage> | <length> ]
-            [ top | center | bottom | <percentage> | <length> ]?
+            h:[ center | [ left | right ] [ <percentage> | <length> ] ]
+            v:[ center | [ top | bottom ] [ <percentage> | <length> ] ]
           ]
-        |
-          [
-            [ center | [ left | right ] [ <percentage> | <length> ]? ]
-            [ center | [ top | bottom ] [ <percentage> | <length> ]? ]
-          ]
-        "
-      return: (v) ->
-        if v.results.length > 1
-          [_.flatten([v.results])]
-        else
-          v.results
+      "
+      return: (result, data) ->
+        for dir in ['h', 'v']
+          data.labels[dir] = {type: "ident", value: "center"} if !data.labels[dir] || data.labels[dir] == true
+
+          unless data.labels[dir].value
+            data.labels[dir] = [data.labels[dir].left, data.labels[dir].right]
+
+        vertical:   data.labels.v
+        horizontal: data.labels.h
+        full:       _.flatten([data.labels.h, data.labels.v])
 
     "bg-size": "[ <length> | <percentage> | auto ]{1,2} | cover | contain"
     "attachment": "scroll | fixed | local"
@@ -408,11 +395,11 @@ ScriptedCss.Information =
     "family-name":    "<literal> | <string>"
 
     # gradients, based on CSS 3 specification: http://www.w3.org/TR/2011/WD-css3-images-20110217/#gradients
-    "gradient": "<linear-gradient> | <radial-gradient> | <repeating-linear-gradient> | <repeating-radial-gradient>"
-    "linear-gradient": (nodes) -> @collect nodes, (node) -> node.type == "FUNCTION" and node.name == "linear-gradient"
-    "radial-gradient": (nodes) -> @collect nodes, (node) -> node.type == "FUNCTION" and node.name == "radial-gradient"
-    "repeating-linear-gradient": (nodes) -> @collect nodes, (node) -> node.type == "FUNCTION" and node.name == "repeating-linear-gradient"
-    "repeating-radial-gradient": (nodes) -> @collect nodes, (node) -> node.type == "FUNCTION" and node.name == "repeating-radial-gradient"
+    "gradient":                  "<linear-gradient> | <radial-gradient> | <repeating-linear-gradient> | <repeating-radial-gradient>"
+    "linear-gradient":           (data) -> data.collect (node) -> node.type == "function" and node.name == "linear-gradient"
+    "radial-gradient":           (data) -> data.collect (node) -> node.type == "function" and node.name == "radial-gradient"
+    "repeating-linear-gradient": (data) -> data.collect (node) -> node.type == "function" and node.name == "repeating-linear-gradient"
+    "repeating-radial-gradient": (data) -> data.collect (node) -> node.type == "function" and node.name == "repeating-radial-gradient"
 
     # lists grammar, based on CSS 2.1 specification: http://www.w3.org/TR/2010/WD-CSS2-20101207/generate.html#lists
     "list-style-type":     "disc | circle | square | decimal | decimal-leading-zero | lower-roman | upper-roman | lower-greek | lower-latin | upper-latin | armenian | georgian | lower-alpha | upper-alpha | none"

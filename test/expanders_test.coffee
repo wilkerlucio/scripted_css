@@ -32,41 +32,46 @@ testExpansion = (attr, expected) ->
     same(attr.declarations[i].property,    item[0])
     same(attr.declarations[i].expression.stringify(), item[1])
 
-# test "test expanding background", ->
-#   testExpansion "background: url('test.gif') center center / 50% no-repeat fixed padding-box border-box #000", [
-#     ["background-color",      "#000"]
-#     ["background-image",      "url('test.gif')"]
-#     ["background-repeat",     "no-repeat"]
-#     ["background-attachment", "fixed"]
-#     ["background-position",   "center center"]
-#     ["background-clip",       "padding-box"]
-#     ["background-origin",     "border-box"]
-#     ["background-size",       "50%"]
-#   ]
-#
-#   testExpansion "background: transparent", [
-#     ["background-color",      "transparent"]
-#     ["background-image",      "none"]
-#     ["background-repeat",     "repeat"]
-#     ["background-attachment", "scroll"]
-#     ["background-position",   "0% 0%"]
-#     ["background-clip",       "border-box"]
-#     ["background-origin",     "padding-box"]
-#     ["background-size",       "auto"]
-#   ]
-#
-# test "expanding multiple backgrounds", ->
-#   testExpansion "background: url('test.gif') no-repeat, #aaa url('other.gif') center repeat-x", [
-#     ["background-color",      "#aaa"]
-#     ["background-image",      "url('test.gif') , url('other.gif')"]
-#     ["background-repeat",     "no-repeat , repeat-x"]
-#     ["background-attachment", "scroll , scroll"]
-#     ["background-position",   "0% 0% , center"]
-#     ["background-clip",       "border-box , border-box"]
-#     ["background-origin",     "padding-box , padding-box"]
-#     ["background-size",       "auto , auto"]
-#   ]
-#
+test "test expanding background", ->
+  testExpansion "background: url('test.gif') center center / 50% no-repeat fixed padding-box border-box #000", [
+    ["background-color",      "#000"]
+    ["background-image",      'url("test.gif")']
+    ["background-repeat",     "no-repeat"]
+    ["background-attachment", "fixed"]
+    ["background-position",   "center center"]
+    ["background-origin",     "padding-box"]
+    ["background-clip",       "border-box"]
+    ["background-size",       "50%"]
+  ]
+
+  testExpansion "background: transparent", [
+    ["background-color",      "transparent"]
+    ["background-image",      "none"]
+    ["background-repeat",     "repeat"]
+    ["background-attachment", "scroll"]
+    ["background-position",   "0% 0%"]
+    ["background-origin",     "padding-box"]
+    ["background-clip",       "border-box"]
+    ["background-size",       "auto"]
+  ]
+
+test "expanding multiple backgrounds", ->
+  testExpansion "background: url('test.gif') no-repeat, #aaa url('other.gif') center repeat-x", [
+    ["background-color",      "#aaa"]
+    ["background-image",      'url("test.gif") , url("other.gif")']
+    ["background-repeat",     "no-repeat , repeat-x"]
+    ["background-attachment", "scroll , scroll"]
+    ["background-position",   "0% 0% , center center"]
+    ["background-origin",     "padding-box , padding-box"]
+    ["background-clip",       "border-box , border-box"]
+    ["background-size",       "auto , auto"]
+  ]
+
+test "invalid background", ->
+  testExpansion "background: hello", [
+    ["background", "hello"]
+  ]
+
 # test "test expanding border", ->
 #   testExpansion "border: 1px solid #000", [
 #     ["border-top-color",    "#000"]
