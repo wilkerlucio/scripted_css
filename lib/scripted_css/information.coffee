@@ -367,8 +367,8 @@ ScriptedCss.Information =
     "font-size":    "<absolute-size> | <relative-size> | <length> | <percentage>"
     "font": "
       [
-        [ style:<font-style> || variant:<font-variant> || weight:<font-weight> ]?
-        size:<font-size> [ / lineHeight:<line-height> ]? family:<font-family>
+        style:<font-style> || variant:<font-variant> || weight:<font-weight> ||
+        size:<font-size> [ / lineHeight:<line-height> ]? || family:<font-family>
       ] | caption | icon | menu | message-box | small-caption | status-bar | inherit
     "
 
