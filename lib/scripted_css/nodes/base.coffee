@@ -22,6 +22,7 @@ class Base
   init: (object, type) ->
     @checkType(object.type, type)
     _.extend(this, object)
+    @nodeInitialized = true
 
   checkType: (currentType, expectedType) ->
     return unless expectedType
