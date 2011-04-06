@@ -81,6 +81,31 @@ test "compute with success", ->
   same(res, "b")
   same(ed.items, ['a'])
 
+test "split on value", ->
+  ed = new EmitterData([
+    {stringify: -> "a"}
+    {stringify: -> "b"}
+    {stringify: -> "/"}
+    {stringify: -> "c"}
+    {stringify: -> "/"}
+    {stringify: -> "d"}
+  ])
+
+  res = ed.splitOnValue("/")
+
+  same(res[0].items[0].stringify(), "a")
+  same(res[0].items[1].stringify(), "b")
+  same(res[1].items[0].stringify(), "c")
+  same(res[2].items[0].stringify(), "d")
+
+test "parsing again", ->
+  ed = new EmitterData([
+    {stringify: -> "a"}
+    {stringify: -> "b"}
+  ])
+
+  same(ed.parse("a").stringify(), "a")
+
 test "compute failing", ->
   ed = new EmitterData(['a', 'b'])
   res = ed.compute (d) -> d.items.pop(); false
@@ -121,6 +146,8 @@ FakeContext =
       return false if data.times <= 0
 
     obj
+
+  emmitAny: (obj, data) -> @emmit(obj, data)
   value: (obj, data) -> data.items.shift()
 
 # ---- expression
@@ -213,6 +240,29 @@ test "multi with both invalid", ->
   res = Emitter.multi.call(FakeContext, {left: null, right: null})
   same(res, false)
 
+test "multi try sequential order", ->
+  # data = new EmitterData([
+  #   {stringify: -> "a"}
+  #   {stringify: -> "b"}
+  # ])
+
+  # nodes = ScriptedCss.ExpressionParser.parse("x:a || y:b")
+  # res = Emitter.emmit(nodes, data)
+
+  # same(data.labels.x.stringify(), "a")
+  # same(data.labels.y.stringify(), "b")
+
+  data = new EmitterData([
+    {stringify: -> "a"}
+    {stringify: -> "b"}
+  ])
+
+  nodes = ScriptedCss.ExpressionParser.parse("y:b || x:a")
+  res = Emitter.emmit(nodes, data)
+
+  same(data.labels.x.stringify(), "a")
+  same(data.labels.y.stringify(), "b")
+
 # ---- or
 test "or with left valid", ->
   res = Emitter.or.call(FakeContext, {left: "a", right: null})
@@ -257,12 +307,12 @@ test "value parsing with value", ->
   ea = stringify: -> "a"
   eb = stringify: -> "b"
   data = {items: [ea, eb], collect: ScriptedCss.ExpressionParser.EmitterData.prototype.collect}
-  obj = value: "b"
+  obj = value: "a"
 
   res = Emitter.value(obj, data)
 
-  same(res, eb)
-  same(data.items, [ea])
+  same(res, ea)
+  same(data.items, [eb])
 
 test "value parsing without value", ->
   ea = stringify: -> "a"

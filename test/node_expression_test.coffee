@@ -37,7 +37,7 @@ test "parse", ->
   r = e.parse("one:a || two:c")
 
   same(r.one.stringify(), "a")
-  same(r.two, false)
+  ok(!r.two)
 
 test "parse use defaultDict by default", ->
   ScriptedCss.Nodes.Expression.defaultDict.add("test-sample-info": "o:a || t:b")

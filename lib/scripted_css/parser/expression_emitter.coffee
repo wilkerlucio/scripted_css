@@ -28,6 +28,21 @@ Emitter =
 
     data.compute -> fn.call(self, object, data)
 
+  emmitAny: (object, data) ->
+    i    = 0
+    head = []
+    res  = false
+
+    while data.items.length
+      break if res = @emmit(object, data)
+      head.push(data.items.shift())
+
+      i += 1
+
+    data.items = head.concat(data.items)
+
+    res
+
   expression: (obj, data) ->
     [min, max] = obj.quantity
     exp        = obj.value
@@ -53,8 +68,8 @@ Emitter =
     result
 
   multi: (obj, data) ->
-    l = @emmit(obj.left, data)
-    r = @emmit(obj.right, data)
+    l = @emmitAny(obj.left, data)
+    r = @emmitAny(obj.right, data)
 
     if l or r then {left: l, right: r} else false
 
@@ -62,8 +77,8 @@ Emitter =
     @emmit(obj.right, data) || @emmit(obj.left, data) || false
 
   and: (obj, data) ->
-    r = @emmit(obj.right, data)
     l = @emmit(obj.left, data)
+    r = @emmit(obj.right, data)
 
     if l and r then {left: l, right: r} else false
 
@@ -72,7 +87,7 @@ Emitter =
     macro = data.macros.get(id)
 
     result = @emmit(macro.value, data)
-    result = macro.return(result) if result and macro.return
+    result = macro.return(result, data) if result and macro.return
     result
 
   function: (obj, data) ->
@@ -119,17 +134,41 @@ class EmitterData
 
   compute: (fn) ->
     safe = @items.slice(0)
+    safeLabels = _.extend({}, @labels)
     result = fn(this)
 
-    @items = safe unless result
+    unless result
+      @items = safe
+      @labels = safeLabels
 
     result
 
+  parse: (expression) ->
+    nodes = ScriptedCss.ExpressionParser.parse(expression)
+    Emitter.emmit(nodes, this)
+
+  splitOnValue: (value) ->
+    lines = []
+    row   = []
+
+    for el in @items
+      if el.stringify() == value
+        lines.push(row)
+        row = []
+      else
+        row.push(el)
+
+    lines.push(row)
+
+    F.map(((row) => new EmitterData(row, @macros)), lines)
+
   collect: (fn) ->
-    for el, i in @items
-      if fn(el)
-        @items = @items.slice(0, i).concat(@items.slice(i + 1))
-        return el
+    return false if @items.length == 0
+    el = @items[0]
+
+    if fn(el)
+      @items = @items.slice(1)
+      return el
 
     false
 

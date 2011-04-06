@@ -59,7 +59,7 @@ source = dslPeg(
   value: [
     "  '[' W exp:expression ']'", -> exp
     "/ '<' id:IDENT '>'", -> type: "macro", value: id
-    "/ val:(IDENT / NUMBER)", -> type: "value", value: val
+    "/ val:(IDENT / NUMBER / OPERATOR)", -> type: "value", value: val
   ]
 
   length: [
@@ -74,6 +74,7 @@ source = dslPeg(
 
   NUMBER: ['n:SNUMBER', -> parseInt(n)]
   SNUMBER: '[0-9]+'
+  OPERATOR: "'/' / ','"
   IDENT: ['h:[a-zA-Z] t:[a-zA-Z0-9-]*', -> h + t.join("")]
   LABEL: ['name:[a-zA-Z]+ ":"', -> name.join("")]
   S: '[ \\t\\r\\n]+'
