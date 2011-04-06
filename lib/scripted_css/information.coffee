@@ -286,7 +286,7 @@ ScriptedCss.Information =
         results
 
     "bg-layer":
-      value:    "<bg-image> || [<bg-position> [ / <bg-size> ]?] || <repeat-style> || <attachment> || <box>{1,2}"
+      value:    "<bg-image> || <bg-position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <box>{1,2}"
       return: (v) ->
         return false unless _.any(v.results)
 
@@ -354,15 +354,7 @@ ScriptedCss.Information =
 
     # border corners grammar, based on CSS 3 specification: http://www.w3.org/TR/2011/CR-css3-background-20110215/#corners
     "border-radius":
-      # value: "[ <length> | <percentage> ]{1,4} [ / [ <length> | <percentage> ]{1,4} ]?"
-      value: (v, grammar) ->
-        parts = @splitOnValue(v, "/")
-        @parse(part, "border-radius-item", grammar) for part in parts
-
-      return: (v) ->
-        return false unless _.any(v.results)
-        horizontal: v.get(0, 0)
-        vertical: v.get(1, 0)
+      value: "horizontal:[ <length> | <percentage> ]{1,4} [ / vertical:[ <length> | <percentage> ]{1,4} ]?"
 
     "border-radius-item": "[ <length> | <percentage> ]{1,4}"
 

@@ -146,8 +146,8 @@
 
     borderRadius:
       explode: (attribute) ->
-        values = ScriptedCss.parseAttributes(attribute.values, "border-radius")
-        return false unless values
+        values = attribute.expression.parse("<border-radius>")
+        return false unless values._result
 
         horizontal = ([h] for h, i in ScriptedCss.Expanders.helpers.computeDirections(values.horizontal))
 
@@ -156,7 +156,7 @@
           horizontal[i].push(v) for v, i in vertical
 
         for dir, i in ["top-left", "top-right", "bottom-right", "bottom-left"]
-          $n("attribute", "border-#{dir}-radius", horizontal[i])
+          {property: "border-#{dir}-radius", expression: horizontal[i]}
 
     borderImage:
       explode: (attribute) ->
