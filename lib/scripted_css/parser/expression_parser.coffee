@@ -35,7 +35,7 @@ dslPeg = (source) ->
   rules.join("\n\n")
 
 source = dslPeg(
-  start: ["exp:expression", -> exp]
+  start: ["W exp:expression", -> exp]
 
   expression: [
     "  l:or '||' W r:expression", -> type: "multi", left: l, right: r
