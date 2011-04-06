@@ -194,17 +194,17 @@
 
     outline:
       explode: (attribute) ->
-        values = ScriptedCss.parseAttributes(attribute.values, "outline")
-        return false unless values and !values.string
+        values = attribute.expression.parse("<outline>")
+        return false unless values
 
-        color = values.color || $n("invert")
-        style = values.style || $n("none")
-        width = values.width || $n("medium")
+        color = values.color or {type: "ident", value: "invert"}
+        style = values.style or {type: "ident", value: "none"}
+        width = values.width or {type: "ident", value: "medium"}
 
         [
-          $n("attribute", "#{attribute.name}-color", [color])
-          $n("attribute", "#{attribute.name}-style", [style])
-          $n("attribute", "#{attribute.name}-width", [width])
+          {property: "#{attribute.property}-color", expression: [color]}
+          {property: "#{attribute.property}-style", expression: [style]}
+          {property: "#{attribute.property}-width", expression: [width]}
         ]
 
     listStyle:
@@ -216,12 +216,11 @@
         position = values.position or {type: "ident", value: "outside"}
         type     = values.type     or {type: "ident", value: "disc"}
 
-        attributes = []
-        attributes.push({property: "#{attribute.property}-image", expression: [image]})
-        attributes.push({property: "#{attribute.property}-position", expression: [position]})
-        attributes.push({property: "#{attribute.property}-type", expression: [type]})
-
-        attributes
+        [
+          {property: "#{attribute.property}-image", expression: [image]}
+          {property: "#{attribute.property}-position", expression: [position]}
+          {property: "#{attribute.property}-type", expression: [type]}
+        ]
 
     font:
       explode: (attribute) ->

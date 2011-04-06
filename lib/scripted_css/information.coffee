@@ -401,15 +401,7 @@ ScriptedCss.Information =
     "outline-width": "<border-width>"
     "outline-style": "<border-style>"
     "outline-color": "<color> | invert"
-    "outline":
-      value: "[ <outline-color> || <outline-style> || <outline-width> ] | inherit"
-      return: (v) ->
-        return v.results unless v.isList()
-        return false unless _.any(v.results)
-
-        color: v.get(0, 0)
-        style: v.get(0, 1)
-        width: v.get(0, 2)
+    "outline": "[ color:<outline-color> || style:<outline-style> || width:<outline-width> ] | inherit"
 
     # padding grammar, based on CSS 2.1 specification: http://www.w3.org/TR/2010/WD-CSS2-20101207/box.html#padding-properties
     "padding-width": "<length> | <percentage>"

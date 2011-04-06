@@ -273,20 +273,20 @@ test "expanding list-style with none", ->
     ["list-style-type",     "none"]
   ]
 
-# test "expanding outline", ->
-#   testExpansion "outline: #00ff00 dotted thick", [
-#     ["outline-color", "#00ff00"]
-#     ["outline-style", "dotted"]
-#     ["outline-width", "thick"]
-#   ]
-#
-# test "expanding outline with none", ->
-#   testExpansion "outline: none", [
-#     ["outline-color", "invert"]
-#     ["outline-style", "none"]
-#     ["outline-width", "medium"]
-#   ]
-#
+test "expanding outline", ->
+  testExpansion "outline: #00ff00 dotted thick", [
+    ["outline-color", "#00ff00"]
+    ["outline-style", "dotted"]
+    ["outline-width", "thick"]
+  ]
+
+test "expanding outline with none", ->
+  testExpansion "outline: none", [
+    ["outline-color", "invert"]
+    ["outline-style", "none"]
+    ["outline-width", "medium"]
+  ]
+
 # test "expanding font", ->
 #   testExpansion "font: italic bold 12px/30px Georgia, serif", [
 #     ["font-family",  "Georgia , serif"]
