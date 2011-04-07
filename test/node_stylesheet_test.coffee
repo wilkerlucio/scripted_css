@@ -158,44 +158,13 @@ test "indexing rules", ->
   equal(s.rules.length, 3)
 
 test "indexing declarations and selector details", ->
-  css =
-    rules: [
-      {
-        selector: "a"
-        selections: -> ["TAG", ".class"]
-        declarations: [
-          {
-            property: "aa"
-            expression: []
-          }
-          {
-            property: "ab"
-            expression: []
-          }
-        ]
-      },
-      {
-        selector: "b"
-        selections: -> ["#id", ".class"]
-        declarations: [
-          {
-            property: "aa"
-            expression: []
-          }
-        ]
-      },
-    ]
-
-  css.regularRules       = _.toArray(css.rules)
-  css.rulesWithProperty  = style::rulesWithProperty
-  css.rulesWithSelection = style::rulesWithSelection
-
-  cancelEvents -> style.DetailsIndexer.index(css)
+  css = ScriptedCss.CssParser.parse("TAG.class {aa: 0; bb: 0} #id.class {aa: 0}")
+  css = ScriptedCss.Nodes.factory(css)
 
   equal(css.rulesWithProperty("aa").length, 2)
-  same(css.rulesWithProperty("aa")[0].selector, "a")
-  same(css.rulesWithProperty("aa")[1].selector, "b")
-  same(css.rulesWithSelection("TAG")[0].selector, "a")
-  same(css.rulesWithSelection(".class")[0].selector, "a")
-  same(css.rulesWithSelection("#id")[0].selector, "b")
-  same(css.rulesWithSelection(".class")[1].selector, "b")
+  equal(css.rulesWithProperty("aa")[0].selector.element, "TAG")
+  equal(css.rulesWithProperty("aa")[1].selector.element, "*")
+  equal(css.rulesWithSelection("TAG")[0].selector.element, "TAG")
+  equal(css.rulesWithSelection(".class")[0].selector.element, "TAG")
+  equal(css.rulesWithSelection("#id")[0].selector.element, "*")
+  equal(css.rulesWithSelection(".class")[1].selector.element, "*")

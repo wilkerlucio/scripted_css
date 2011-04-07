@@ -31,6 +31,15 @@ class Stylesheet extends ScriptedCss.Nodes.Base
 
     ScriptedCss.trigger("stylesheetReady", this)
 
+  merge: (stylesheet) ->
+    imports = stylesheet.imports
+    rules   = stylesheet.rules
+
+    @imports = @imports.concat(imports)
+    @rules = @rules.concat(rules)
+
+    ScriptedCss.trigger("stylesheetReady", this)
+
   stringify: ->
     ["@charset '#{@charset}';"].concat(@stringifyArray(@rules)).join("\n")
 
@@ -74,6 +83,8 @@ ScriptedCss.bind "stylesheetReady", Stylesheet.RuleSetExtractor.extract
 # index rulesets
 Stylesheet.RulesIndexer =
   index: (stylesheet) ->
+    ScriptedCss.trigger("stylesheetBeforeIndex", stylesheet)
+
     removes = []
 
     stylesheet.regularRules = _.reduce stylesheet.regularRules, ((memo, rule) ->
@@ -102,12 +113,12 @@ Stylesheet.DetailsIndexer =
     declarations = {}
     selections   = {}
 
-    for rule in stylesheet.regularRules
-      for selection in rule.selections()
+    for selector, rule of stylesheet.regularRules
+      for selection in rule.selector.selections()
         selections[selection] ?= []
         selections[selection].push(rule)
 
-      for declaration in rule.declarations
+      for declaration in rule.declarations.declarations
         declarations[declaration.property] ?= []
         declarations[declaration.property].push(rule)
 
@@ -118,6 +129,9 @@ Stylesheet.DetailsIndexer =
 
 Stylesheet::rulesWithProperty = (property) ->
   @declarationsIndex[property] || []
+
+Stylesheet::property = (property) ->
+  _.map(@rulesWithProperty(property), (r) -> r.declarations.get(property))
 
 Stylesheet::rulesWithSelection = (selection) ->
   @selectorIndex[selection] || []
