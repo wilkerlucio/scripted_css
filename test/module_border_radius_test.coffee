@@ -23,14 +23,14 @@ module "Module - Border Radius"
 parser = ScriptedCss.CssParser
 
 testAddedAttributes = (attr, expected, step = 1) ->
-  css  = parser.parse "* {#{attr}}"
-  ScriptedCss.trigger("scriptLoaded", css)
+  css = parser.parse "* {#{attr}}"
+  css = ScriptedCss.Nodes.factory(css)
 
-  attr = css.rules[0].attributes
+  attr = css.rules[0].declarations
 
   for item, i in expected
-    same(attr.items[i + step].name,    item[0])
-    same(attr.items[i + step].value(), item[1])
+    same(attr.declarations[i + step].property, item[0])
+    same(attr.declarations[i + step].expression.stringify(), item[1])
 
 test "adding browser specific rounded borders for top left", ->
   testAddedAttributes "border-top-left-radius: 5px", [

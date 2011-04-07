@@ -20,23 +20,23 @@
 
 class ScriptedCss.Modules.BorderRadius
   constructor: ->
-    ScriptedCss.bind 'scriptLoaded', (css) => @parseCss(css)
+    ScriptedCss.bind 'stylesheetDetailsIndexed', (css) => @parseCss(css)
 
   parseCss: (css) ->
-    for attr in css.attribute("border-top-left-radius")
-      attr.rule.attributes.add($n("attribute", "-moz-border-radius-topleft", attr.values, attr.important))
-      attr.rule.attributes.add($n("attribute", "-webkit-border-top-left-radius", attr.values, attr.important))
+    for attr in css.property("border-top-left-radius")
+      attr.parent.add("-moz-border-radius-topleft", attr.expression, attr.important)
+      attr.parent.add("-webkit-border-top-left-radius", attr.expression, attr.important)
 
-    for attr in css.attribute("border-top-right-radius")
-      attr.rule.attributes.add($n("attribute", "-moz-border-radius-topright", attr.values, attr.important))
-      attr.rule.attributes.add($n("attribute", "-webkit-border-top-right-radius", attr.values, attr.important))
+    for attr in css.property("border-top-right-radius")
+      attr.parent.add("-moz-border-radius-topright", attr.expression, attr.important)
+      attr.parent.add("-webkit-border-top-right-radius", attr.expression, attr.important)
 
-    for attr in css.attribute("border-bottom-right-radius")
-      attr.rule.attributes.add($n("attribute", "-moz-border-radius-bottomright", attr.values, attr.important))
-      attr.rule.attributes.add($n("attribute", "-webkit-border-bottom-right-radius", attr.values, attr.important))
+    for attr in css.property("border-bottom-right-radius")
+      attr.parent.add("-moz-border-radius-bottomright", attr.expression, attr.important)
+      attr.parent.add("-webkit-border-bottom-right-radius", attr.expression, attr.important)
 
-    for attr in css.attribute("border-bottom-left-radius")
-      attr.rule.attributes.add($n("attribute", "-moz-border-radius-bottomleft", attr.values, attr.important))
-      attr.rule.attributes.add($n("attribute", "-webkit-border-bottom-left-radius", attr.values, attr.important))
+    for attr in css.property("border-bottom-left-radius")
+      attr.parent.add("-moz-border-radius-bottomleft", attr.expression, attr.important)
+      attr.parent.add("-webkit-border-bottom-left-radius", attr.expression, attr.important)
 
 ScriptedCss.Modules.register(ScriptedCss.Modules.BorderRadius)
