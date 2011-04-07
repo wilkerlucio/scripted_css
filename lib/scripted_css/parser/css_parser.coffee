@@ -134,6 +134,7 @@ source = dslPeg(
     '  "/" S*', -> type: "operator", value: "/"
     '/ "," S*', -> type: "operator", value: ","
     '/ "=" S*', -> type: "operator", value: "="
+    '/ "*" S*', -> type: "operator", value: "*"
   ]
 
   combinator: [
