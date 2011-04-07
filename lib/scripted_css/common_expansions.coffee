@@ -218,7 +218,7 @@
         values = attribute.expression.parse("<font>")
         return false if !values._result or values._result.type == "ident"
 
-        family     = values.family
+        family     = values.family or [{type: "ident", value: "inherit"}]
         size       = values.size or {type: "ident", value: "medium"}
         style      = values.style or {type: "ident", value: "normal"}
         variant    = values.variant or {type: "ident", value: "normal"}

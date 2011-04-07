@@ -26,7 +26,7 @@ testExpansion = (attr, expected) ->
   css  = ScriptedCss.Nodes.factory(parser.parse "* {#{attr}}")
   attr = css.rules[0].declarations
 
-  equal(attr.declarations.length, expected.length)
+  ok(attr.declarations.length >= expected.length)
 
   for item, i in expected
     same(attr.declarations[i].property,    item[0])
@@ -305,6 +305,16 @@ test "expanding font with minimum content", ->
     ["font-variant", "normal"]
     ["font-weight",  "normal"]
   ]
+
+test "expanding font with 100%", ->
+  testExpansion "font: 100%;", [
+    ["font-family",  "inherit"]
+    ["font-size",    "100%"]
+    ["font-style",   "normal"]
+    ["font-variant", "normal"]
+    ["font-weight",  "normal"]
+  ]
+
 
 test "expanding simple font", ->
   testExpansion "font: caption;", [
