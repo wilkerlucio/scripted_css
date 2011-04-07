@@ -41,18 +41,21 @@
 				$("#compile-input").click(function() {
 					var source = $("#source-area").val();
 					var output = "";
+					var parseTree = "";
 
 					try {
-						var parseTree = jsDump.parse(ScriptedCss.CssParser.parse(source));
+						var nodes = ScriptedCss.CssParser.parse(source);
+						parseTree = jsDump.parse(nodes);
 
 						/* ScriptedCss.trigger("scriptLoaded", css); */
 						/* ScriptedCss.trigger("cssReady", css); */
 
 						/* last_css = css; */
 
-						/* output = css.string(); */
+						output = ScriptedCss.Nodes.factory(nodes).stringify();
 					} catch(error) {
 						output = error;
+						throw error;
 					}
 
 					$("#tokens-area").val(parseTree);
