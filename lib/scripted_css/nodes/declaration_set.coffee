@@ -25,9 +25,10 @@ class DeclarationSet extends ScriptedCss.Nodes.Base
     DeclarationSet.expanders[property] = expander
 
   constructor: (declarations) ->
-    @type         = "declaration_set"
-    @hash         = {}
-    @declarations = []
+    @type            = "declaration_set"
+    @hash            = {}
+    @declarations    = []
+    @nodeInitialized = true
 
     @merge(declarations)
 

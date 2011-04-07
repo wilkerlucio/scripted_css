@@ -24,6 +24,7 @@ class Expression extends ScriptedCss.Nodes.Base
   constructor: (values) ->
     @type = "expression"
     @values = F.map(@factory.bind(this), values)
+    @nodeInitialized = true
 
   parse: (expression, dict = ScriptedCss.Nodes.Expression.defaultDict) ->
     exp = ScriptedCss.ExpressionParser.parse(expression)
