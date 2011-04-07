@@ -21,7 +21,7 @@
 class Declaration extends ScriptedCss.Nodes.Base
   constructor: (object) ->
     @init(object, "declaration")
-    @expression = new ScriptedCss.Nodes.Expression(@expression)
+    @expression = new ScriptedCss.Nodes.Expression(@expression) unless @expression.nodeInitialized
     @expression.parent = this
 
   stringify: -> "#{@property}: #{@expression.stringify()}"
