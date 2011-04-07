@@ -26,6 +26,9 @@ class Rule extends ScriptedCss.Nodes.Base
     @declarations = new ScriptedCss.Nodes.DeclarationSet(@declarations)
     @declarations.parent = this
 
+  merge: (rule) ->
+    @declarations.merge(rule.declarations.declarations)
+
   stringify: -> "#{@selector.stringify()} {#{@declarations.stringify()}}"
 
 window.ScriptedCss.Nodes.Rule = Rule if window?

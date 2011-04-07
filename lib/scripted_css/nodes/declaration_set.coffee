@@ -29,6 +29,9 @@ class DeclarationSet extends ScriptedCss.Nodes.Base
     @hash         = {}
     @declarations = []
 
+    @merge(declarations)
+
+  merge: (declarations) ->
     F.map(F.compose(@index.bind(this), @factory.bind(this)), declarations)
 
   get: (property) -> @hash[property] || null
