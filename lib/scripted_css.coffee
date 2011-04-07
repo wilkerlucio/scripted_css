@@ -24,15 +24,15 @@ window.ScriptedCss =
   autoStart: true
 
   start: ->
-    # @documentStyle = new ScriptedCss.Nodes.Document([])
+    @documentStyle = new ScriptedCss.Nodes.Stylesheet({type: "stylesheet", charset: null, imports: [], rules: []})
 
-    # return unless ScriptedCss.autoStart
+    return unless ScriptedCss.autoStart
 
-    # originalDisplay = $(document.body).css("display")
-    # $(document.body).css(display: "none")
+    originalDisplay = $(document.body).css("display")
+    $(document.body).css(display: "none")
 
-    # @loadStyles ->
-    #   $(document.body).css(display: originalDisplay)
+    @loadStyles ->
+      $(document.body).css(display: originalDisplay)
 
   addStyle: (styleText) ->
     css = document.createElement("style")
@@ -51,11 +51,12 @@ window.ScriptedCss =
     $("style[type='text/scripted-css']").each ->
       source = this.innerHTML
       css    = ScriptedCss.CssParser.parse(source)
+      css    = ScriptedCss.Nodes.factory(css)
 
       ScriptedCss.trigger("scriptLoaded", css)
       self.documentStyle.merge(css)
 
-      ScriptedCss.addStyle(css.string())
+      ScriptedCss.addStyle(css.stringify())
 
     ScriptedCss.trigger("cssReady", @documentStyle)
     callback()
@@ -70,11 +71,5 @@ window.ScriptedCss =
   trigger: (event, args...) ->
     callbacks = @eventList?[event] || []
     callback.apply(this, args) for callback in callbacks
-
-  # helpers
-  parseAttributes: (nodes, rule, customGrammar = {}) ->
-    grammar = _.extend(customGrammar, ScriptedCss.Information.attributeGrammar)
-
-    ScriptedCss.AttributesParser.parseNodes(nodes, rule, grammar)
 
 $ -> ScriptedCss.start()
