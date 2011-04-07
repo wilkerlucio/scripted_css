@@ -19,15 +19,6 @@
 # THE SOFTWARE.
 
 (($) ->
-  concatImplode = (attributes, property, sulfixes) ->
-    items = []
-
-    for p in sulfixes
-      attr = attributes.get("#{property}-#{p}")
-      items.push(value) for value in attr.values if attr
-
-    new CssAST.AttributeNode(property, items)
-
   window.ScriptedCss.Expanders = Expanders =
     helpers:
       computeDirections: (v) ->
@@ -87,7 +78,7 @@
     border:
       explode: (attribute) ->
         values = attribute.expression.parse("<border>")
-        return false unless values
+        return false unless values._result
 
         items = []
         items.push(values.width) if values.width
@@ -103,7 +94,7 @@
     borderDirection:
       explode: (attribute) ->
         values = attribute.expression.parse("<border>")
-        return false unless values
+        return false unless values._result
 
         defaults =
           color: {type: "ident", value: "currentColor"}
@@ -116,7 +107,7 @@
     borderColor:
       explode: (attribute) ->
         values = attribute.expression.parse("<border-color-attr>")
-        return false unless values
+        return false unless values._result
 
         comp = Expanders.helpers.computeDirections(values._result)
 
@@ -126,7 +117,7 @@
     borderStyle:
       explode: (attribute) ->
         values = attribute.expression.parse("<border-style-attr>")
-        return false unless values
+        return false unless values._result
 
         comp = Expanders.helpers.computeDirections(values._result)
 
@@ -136,7 +127,7 @@
     borderWidth:
       explode: (attribute) ->
         values = attribute.expression.parse("<border-width-attr>")
-        return false unless values
+        return false unless values._result
 
         comp = Expanders.helpers.computeDirections(values._result)
 
@@ -160,7 +151,7 @@
     borderImage:
       explode: (attribute) ->
         values = attribute.expression.parse("<border-image>")
-        return false unless values
+        return false unless values._result
 
         defaults =
           source: {type: "ident", value: "none"}
@@ -175,7 +166,7 @@
     margin:
       explode: (attribute) ->
         values = attribute.expression.parse("<margin>")
-        return false unless values
+        return false unless values._result
 
         comp = Expanders.helpers.computeDirections(values._result)
 
@@ -185,7 +176,7 @@
     padding:
       explode: (attribute) ->
         values = attribute.expression.parse("<padding>")
-        return false unless values
+        return false unless values._result
 
         comp = Expanders.helpers.computeDirections(values._result)
 
@@ -195,7 +186,7 @@
     outline:
       explode: (attribute) ->
         values = attribute.expression.parse("<outline>")
-        return false unless values
+        return false unless values._result
 
         color = values.color or {type: "ident", value: "invert"}
         style = values.style or {type: "ident", value: "none"}
@@ -210,7 +201,7 @@
     listStyle:
       explode: (attribute) ->
         values = attribute.expression.parse("<list-style>")
-        return false unless values
+        return false unless values._result
 
         image    = values.image    or {type: "ident", value: "none"}
         position = values.position or {type: "ident", value: "outside"}
@@ -225,7 +216,7 @@
     font:
       explode: (attribute) ->
         values = attribute.expression.parse("<font>")
-        return false if !values or values._result.type == "ident"
+        return false if !values._result or values._result.type == "ident"
 
         family     = values.family
         size       = values.size or {type: "ident", value: "medium"}
