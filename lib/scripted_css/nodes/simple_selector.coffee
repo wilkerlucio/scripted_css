@@ -46,6 +46,8 @@ class SimpleSelector extends ScriptedCss.Nodes.Base
 
     tagMatch && _.all(_.invoke(@qualifiers, 'match', element))
 
-  stringify: -> @element + @stringifyArray(@qualifiers, '')
+  stringify: ->
+    el = if @element == "*" and @qualifiers.length > 0 then "" else @element
+    el + @stringifyArray(@qualifiers, '')
 
 window.ScriptedCss.Nodes.SimpleSelector = SimpleSelector if window?

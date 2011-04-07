@@ -222,3 +222,26 @@ test "stringify", ->
   )
 
   same(sel.stringify(), "body.class.other")
+
+test "stringify simple", ->
+  sel = new s(
+    type: "simple_selector"
+    element: "*"
+    qualifiers: []
+  )
+
+  same(sel.stringify(), "*")
+
+test "stringify global selector with qualifier", ->
+  sel = new s(
+    type: "simple_selector"
+    element: "*"
+    qualifiers: [
+      {
+        type: "plain"
+        stringify: -> ".class"
+      }
+    ]
+  )
+
+  same(sel.stringify(), ".class")
