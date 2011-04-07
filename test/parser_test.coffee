@@ -206,7 +206,7 @@ test "parsing IE function value", ->
 #       url:      path
 #       dataType: "text"
 #       success:  (content) ->
-#         parse(content)
+#         ScriptedCss.Nodes.factory parse(content)
 #       complete: ->
 #         total -= 1
 #         start() if total == 0
