@@ -37,6 +37,11 @@ class DeclarationSet extends ScriptedCss.Nodes.Base
 
   get: (property) -> @hash[property] || null
 
+  add: (property, expression, important = false) ->
+    dec = {"type": "declaration", property: property, expression: expression, important: important}
+    dec = @factory(dec)
+    @index(dec)
+
   index: (declaration) ->
     unless @expandDeclaration(declaration)
       @declarations.push(declaration)
