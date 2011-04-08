@@ -136,6 +136,42 @@ Stylesheet::property = (property) ->
 Stylesheet::rulesWithSelection = (selection) ->
   @selectorIndex[selection] || []
 
+Stylesheet::rulesForElement = (element, unknow = false) ->
+  rules           = []
+  rulesHash       = {}
+  relativeIndexes = []
+
+  elementClasses = if element.className then element.className.split(" ") else []
+  elementClasses = ("." + klass for klass in elementClasses)
+
+  relativeIndexes.push(element.tagName)
+  relativeIndexes.push("#" + element.id) if element.id
+  relativeIndexes.push(klass) for klass in elementClasses
+
+  relativeIndexes = ["*"] if relativeIndexes.length == 0
+
+  for index in relativeIndexes
+    for rule in @rulesWithSelection(index)
+      rulesHash[rule.selector.stringify()] = rule if rule.selector.match(element, unknow)
+
+  for selector, rule of rulesHash
+    rules.push(rule)
+
+  rules
+
+Stylesheet::propertyForElement = (element, property, stringify = true) ->
+  rules = @rulesForElement(element)
+  value = [{value: -> ""}, 0]
+
+  for rule in rules
+    attr = rule.declarations.get(property)
+
+    if attr
+      weight = attr.weight()
+      value = [attr, weight] if weight > value[1]
+
+  if stringify then value[0].value() else value[0]
+
 ScriptedCss.bind "stylesheetRulesIndexed", Stylesheet.DetailsIndexer.index
 
 # exporting
