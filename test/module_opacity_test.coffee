@@ -20,19 +20,7 @@
 
 module "Module - Border Radius"
 
-parser = ScriptedCss.CssParser
-
-testAddedAttributes = (attr, expected, step = 1) ->
-  css  = parser.parse "* {#{attr}}"
-  ScriptedCss.trigger("scriptLoaded", css)
-
-  attr = css.rules[0].attributes
-
-  for item, i in expected
-    same(attr.items[i + step].name,    item[0])
-    same(attr.items[i + step].value(), item[1])
-
 test "add IE filter", ->
   testAddedAttributes "opacity: .6", [
-    ["filter", "progid:DXImageTransform.Microsoft.Alpha(opacity=60)"]
+    ["filter", "progid:DXImageTransform.Microsoft.Alpha(opacity = 60)"]
   ]

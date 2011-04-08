@@ -20,14 +20,19 @@
 
 class ScriptedCss.Modules.Opacity
   constructor: ->
-    ScriptedCss.bind 'scriptLoaded', (css) => @parseCss(css)
+    ScriptedCss.bind 'stylesheetDetailsIndexed', (css) => @parseCss(css)
 
   parseCss: (css) ->
-    for attr in css.attribute("opacity")
-      value = parseFloat(attr.values[0].string())
+    for attr in css.property("opacity")
+      value = parseFloat(attr.expression.stringify())
       value = Math.floor(value * 100)
 
-      node = $n("function", "progid:DXImageTransform.Microsoft.Alpha", [$n("arg", "opacity", $n(value))])
-      attr.rule.attributes.addFilter(node)
+      expression = [
+        {type: "ident",    value: "opacity"}
+        {type: "operator", value: "="}
+        {type: "value",    value: value}
+      ]
+
+      attr.parent.add("filter", [{type: "function", name: "progid:DXImageTransform.Microsoft.Alpha", params: expression}], attr.important)
 
 ScriptedCss.Modules.register(ScriptedCss.Modules.Opacity)
