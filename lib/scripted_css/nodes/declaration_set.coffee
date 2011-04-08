@@ -42,6 +42,12 @@ class DeclarationSet extends ScriptedCss.Nodes.Base
     dec = @factory(dec)
     @index(dec)
 
+  append: (property, expression, important = false) ->
+    if @hash[property]
+      @hash[property].expression.merge(expression)
+    else
+      @add(property, expression, important)
+
   index: (declaration) ->
     unless @expandDeclaration(declaration)
       @declarations.push(declaration)

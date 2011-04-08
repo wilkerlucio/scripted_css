@@ -26,6 +26,13 @@ class Expression extends ScriptedCss.Nodes.Base
     @values = F.map(@factory.bind(this), values)
     @nodeInitialized = true
 
+  merge: (expression) ->
+    expression = new ScriptedCss.Nodes.Expression(expression) unless expression.nodeInitialized
+
+    for value in expression.values
+      value.parent = this
+      @values.push(value)
+
   parse: (expression, dict = ScriptedCss.Nodes.Expression.defaultDict) ->
     exp = ScriptedCss.ExpressionParser.parse(expression)
     data = new ScriptedCss.ExpressionParser.EmitterData(@values, dict)

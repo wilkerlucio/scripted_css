@@ -33,6 +33,6 @@ class ScriptedCss.Modules.Opacity
         {type: "value",    value: value}
       ]
 
-      attr.parent.add("filter", [{type: "function", name: "progid:DXImageTransform.Microsoft.Alpha", params: expression}], attr.important)
+      attr.parent.append("filter", [{type: "function", name: "progid:DXImageTransform.Microsoft.Alpha", params: expression}], attr.important)
 
 ScriptedCss.Modules.register(ScriptedCss.Modules.Opacity)
