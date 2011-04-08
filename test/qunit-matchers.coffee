@@ -35,3 +35,13 @@ window.runAttributeTransaction = (obj, attribute, fn, start = null) ->
 window.runMacro = (values, expression) ->
   css = ScriptedCss.Nodes.factory(ScriptedCss.CssParser.parse("* {test: #{values}}"))
   css.rules[0].declarations.declarations[0].expression.parse(expression)
+
+window.testAddedAttributes = (attr, expected, step = 1) ->
+  css = ScriptedCss.CssParser.parse "* {#{attr}}"
+  css = ScriptedCss.Nodes.factory(css)
+
+  attr = css.rules[0].declarations
+
+  for item, i in expected
+    same(attr.declarations[i + step].property, item[0])
+    same(attr.declarations[i + step].expression.stringify(), item[1])
