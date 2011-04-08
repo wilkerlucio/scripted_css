@@ -131,6 +131,14 @@ test "nest complex matching", ->
   obj = $("<div><ul><li><b>hey</b><span>joe</span></li></ul></div>").find("span")[0]
   ok(!sel.match(obj))
 
+test "integrated match test", ->
+  css = ScriptedCss.CssParser.parse("#container .footer {}")
+  css = ScriptedCss.Nodes.factory(css)
+  sel = css.rules[0].selector
+  obj = $('<div id="container"><div class="footer"></div></div>').find(".footer")[0]
+
+  ok(sel.match(obj))
+
 test "stringify", ->
   for combinator in [" ", ">", "+", "~"]
     sel = new selector(
