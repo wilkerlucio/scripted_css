@@ -26,6 +26,16 @@ class Rule extends ScriptedCss.Nodes.Base
     @declarations = new ScriptedCss.Nodes.DeclarationSet(@declarations)
     @declarations.parent = this
 
+  propertiesHash: ->
+    hash = {}
+
+    for property, declaration of @declarations.hash
+      hash[property] = declaration.value()
+
+    hash
+
+  weight: -> @selector.weight()
+
   merge: (rule) ->
     @declarations.merge(rule.declarations.declarations)
 

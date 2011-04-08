@@ -31,6 +31,8 @@ class SimpleSelector extends ScriptedCss.Nodes.Base
       memo
     ), [@element.toUpperCase()]
 
+  last: -> this
+
   weight: ->
     _.reduce @qualifiers, ((memo, qualifier) ->
       switch qualifier.type
@@ -41,10 +43,11 @@ class SimpleSelector extends ScriptedCss.Nodes.Base
         else memo
     ), if @element == "*" then 0 else 1
 
-  match: (element) ->
+  match: (element, unknow = false) ->
     tagMatch = if @element == "*" then true else @element.toUpperCase() == element.tagName
+    qualifiersMatch = _.all(_.invoke(@qualifiers, 'match', element, unknow))
 
-    tagMatch && _.all(_.invoke(@qualifiers, 'match', element))
+    if tagMatch && qualifiersMatch then element else false
 
   stringify: ->
     el = if @element == "*" and @qualifiers.length > 0 then "" else @element

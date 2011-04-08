@@ -26,26 +26,27 @@ class Selector extends ScriptedCss.Nodes.Base
     @right = @factory(@right)
 
   selections: -> @right.selections()
+  last: -> @right.last()
 
   weight: -> @left.weight() + @right.weight()
 
-  match: (element) ->
-    if element = @right.match(element)
+  match: (element, unknow = false) ->
+    if element = @right.match(element, unknow)
       switch @combinator
         when ' '
           while element = element.parentNode
-            return element if @left.match(element)
+            return element if @left.match(element, unknow)
 
         when '>'
-          return element if @left.match(element.parentNode)
+          return element if @left.match(element.parentNode, unknow)
 
         when '+'
           element = F.until(F.or('.nodeType == 1', F.not(F.I)), F.pluck("previousSibling"))(element.previousSibling)
-          return element if @left.match(element)
+          return element if @left.match(element, unknow)
 
         when '~'
           while element = element.previousSibling
-            return element if @left.match(element)
+            return element if @left.match(element, unknow)
 
     false
 

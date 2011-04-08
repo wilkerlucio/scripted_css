@@ -74,9 +74,9 @@ class PseudoSelector extends ScriptedCss.Nodes.Base
 
     @id = @symbol + @value.name
 
-  match: (element) ->
+  match: (element, unknow = false) ->
     matcher = PseudoSelector.pseudos[@id]
-    if matcher then matcher(element, @value) else false
+    if matcher then matcher(element, @value) else unknow
 
   stringify: -> @symbol + @value.stringify()
 
