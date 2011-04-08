@@ -123,11 +123,11 @@ scriptFiles = [
   "scripted_css/nodes/hexcolor.coffee"
   "scripted_css/information.coffee"
   "scripted_css/common_expansions.coffee"
-  # "scripted_css/jquery.coffee"
+  "scripted_css/jquery.coffee"
   "scripted_css/modules.coffee"
   "scripted_css/modules/border-radius.coffee"
   "scripted_css/modules/opacity.coffee"
-  # "scripted_css/modules/template_layout.coffee"
+  "scripted_css/modules/template_layout.coffee"
   # "scripted_css/modules/transition.coffee"
 ]
 

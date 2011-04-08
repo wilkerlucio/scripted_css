@@ -22,9 +22,9 @@
   class TemplateRenderer
     constructor: (@rule) ->
       try
-        [@table_matrix, @matrix, @columns, @rows] = TemplateLayoutParser.parse(@rule.attributes.get("display").values)
+        [@table_matrix, @matrix, @columns, @rows] = TemplateLayoutParser.parse(@rule.declarations.get("display").expression.values)
       catch error
-        console.error "Error parsing selector '#{@rule.selector.string()}': #{error}"
+        console.error "Error parsing selector '#{@rule.selector.stringify()}': #{error}"
 
       if @table_matrix
         @collectItems()
@@ -35,7 +35,7 @@
 
     collectItems: ->
       render = this
-      el     = $(@rule.selector.string())
+      el     = $(@rule.selector.stringify())
       @items = {}
 
       el.children().each ->
@@ -48,7 +48,7 @@
         render.items[position].push(self)
 
     parseElements: ->
-      el = $(@rule.selector.string())
+      el = $(@rule.selector.stringify())
 
       if el[0].tagName == "BODY"
         $("html").css(overflow: "hidden")
@@ -144,14 +144,15 @@
       available / (starCount || 1)
 
     attributesForPosition: (position) ->
-      el = $(@rule.selector.string())[0]
-      rules = ScriptedCss.documentStyle.rulesForElement(el)
+      el = $(@rule.selector.stringify())[0]
+      rules = ScriptedCss.documentStyle.rulesForElement(el, true)
 
       for rule in rules
-        meta = rule.selector.meta
+        sel = rule.selector.last()
 
-        if meta and meta.value.arguments and meta.value.name == "slot" and meta.value.arguments[0].string() == position
-          return rule.cssAttributes()
+        for qualifier in sel.qualifiers
+          if qualifier.type == "pseudo_selector" and qualifier.id == "::slot" and qualifier.value.params.stringify() == position
+            return rule.propertiesHash()
 
       {}
 
@@ -160,10 +161,10 @@
       ScriptedCss.bind 'afterCallback', (css) => @parseCss(css)
 
     parseCss: (css) ->
-      for attr in css.attribute("display")
-        continue unless attr.rule.attributes.get("display").values[0].text
+      for attr in css.property("display")
+        continue unless attr.expression.values[0].type == "string"
 
-        new TemplateRenderer(attr.rule)
+        new TemplateRenderer(attr.parent.parent)
 
   ScriptedCss.Modules.register(ScriptedCss.Modules.TemplateLayout)
 
@@ -191,7 +192,7 @@
       @normalizeColumns()
 
     parseValue: (values) ->
-      if values[0].text
+      if values[0].type == "string"
         @parseRow(values)
       else
         @columns.push(value.value) for value in values
@@ -199,7 +200,7 @@
 
     parseRow: (values) ->
       i   = 1
-      row = values[0].text.replace(/\s+/g, '').split('')
+      row = values[0].value.replace(/\s+/g, '').split('')
 
       @matrix.push(row)
       @biggerRow = Math.max(row.length, @biggerRow)
@@ -209,7 +210,7 @@
       if values[1]? and values[1].value == "/"
         i += 1
 
-        if values[2]? and !values[2].text
+        if values[2]? and values[2].type != "string"
           i += 1
           size = values[2].value
 
@@ -280,4 +281,3 @@
 
         @table.push(row)
 )(jQuery)
-
