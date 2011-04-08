@@ -21,7 +21,7 @@
 (($) ->
   $.fn.realCss = (attribute) ->
     return "" unless this[0]
-    ScriptedCss.documentStyle.attributeForElement(this[0], attribute)
+    ScriptedCss.documentStyle.propertyForElement(this[0], attribute)
 
   $.fn.withCss = (css, block) ->
     originals = {}
