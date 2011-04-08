@@ -21,7 +21,7 @@
 class Value extends ScriptedCss.Nodes.Base
   constructor: (object) ->
     @init(object, "value")
-    @unit = (@value.match(/[^\d]+$/)?[0] || "").toLowerCase()
+    @unit = ((@value + "").match(/[^\d]+$/)?[0] || "").toLowerCase()
 
   stringify: -> @value
 
