@@ -32,6 +32,17 @@ test "initialize", ->
   ok(d.expression.parent == d)
   same(d.important, true)
 
+test "weight", ->
+  d = g("a", [{type: "plain"}], true)
+  d.parent = {parent: {weight: -> 10}}
+
+  same(d.weight(), 1010)
+
+  d = g("a", [{type: "plain"}], false)
+  d.parent = {parent: {weight: -> 10}}
+
+  same(d.weight(), 10)
+
 test "stringify", ->
   d = g("a", [], true)
   d.expression.stringify = -> "properties"

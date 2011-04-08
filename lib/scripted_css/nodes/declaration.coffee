@@ -24,6 +24,8 @@ class Declaration extends ScriptedCss.Nodes.Base
     @expression = new ScriptedCss.Nodes.Expression(@expression) unless @expression.nodeInitialized
     @expression.parent = this
 
+  weight:    -> @parent.parent.weight() + (if @important then 1000 else 0)
+  value:     -> @expression.stringify()
   stringify: -> "#{@property}: #{@expression.stringify()}"
 
 window.ScriptedCss.Nodes.Declaration = Declaration if window?
