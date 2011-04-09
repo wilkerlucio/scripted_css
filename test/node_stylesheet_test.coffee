@@ -168,3 +168,15 @@ test "indexing declarations and selector details", ->
   equal(css.rulesWithSelection(".class")[0].selector.element, "TAG")
   equal(css.rulesWithSelection("#id")[0].selector.element, "*")
   equal(css.rulesWithSelection(".class")[1].selector.element, "*")
+
+test "get property for element", ->
+  css = createStylesheet("div {position: a}")
+  obj = $("<div />")[0]
+
+  same(css.propertyForElement(obj, "position"), "a")
+
+test "get property for element priorize element style", ->
+  css = createStylesheet("div {position: a}")
+  obj = $("<div style=\"position: b;\"></div>")[0]
+
+  same(css.propertyForElement(obj, "position"), "b")

@@ -160,6 +160,15 @@ Stylesheet::rulesForElement = (element, unknow = false) ->
   rules
 
 Stylesheet::propertyForElement = (element, property, stringify = true) ->
+  style = element.getAttribute("style")
+
+  if style
+    declarations = new ScriptedCss.Nodes.DeclarationSet(ScriptedCss.CssParser.parse(style, "declarations_items"))
+    attr = declarations.get(property)
+
+    if attr
+      return if stringify then attr.value() else attr
+
   rules = @rulesForElement(element)
   value = [{value: -> ""}, 0]
 
