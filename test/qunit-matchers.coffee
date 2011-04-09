@@ -45,3 +45,8 @@ window.testAddedAttributes = (attr, expected, step = 1) ->
   for item, i in expected
     same(attr.declarations[i + step].property, item[0])
     same(attr.declarations[i + step].expression.stringify(), item[1])
+
+window.createStylesheet = (string) ->
+  css = ScriptedCss.CssParser.parse(string)
+  css = ScriptedCss.Nodes.factory(css)
+  css
