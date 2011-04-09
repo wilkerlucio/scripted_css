@@ -38,7 +38,7 @@ test "length", ->
   res = runMacro("10px", "<length>")
   equal(res._result.value, "10px")
 
-  res = runMacro("10", "<length>")
+  res = runMacro("hi", "<length>")
   ok(!res._result)
 
 test "percentage", ->

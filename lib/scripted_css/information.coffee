@@ -245,6 +245,7 @@ ScriptedCss.Information =
     "in"
     "pt"
     "pc"
+    ""
   ]
 
   listTypes:
