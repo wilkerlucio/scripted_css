@@ -168,9 +168,14 @@ source = dslPeg(
 
   declarations: [
     '"{" S*'
+    'declarations:declarations_items'
+    '"}" S*'
+    -> declarations
+  ]
+
+  declarations_items: [
     'declarationsHead:declaration?'
     'declarationsTail:(";" S* declaration?)*'
-    '"}" S*'
     ->
       declarations = if declarationsHead != "" then [declarationsHead] else []
       for dec in declarationsTail
